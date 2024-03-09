@@ -1,0 +1,11 @@
+equipoID,nombreEq,nombreJug1,nombreJug2,setsGanados,setsPerdidos,DifJuegos,partidosGanados,dineroGenerado,mediaEspectadoresPorEquipo,entradasVendidasPorEquipo,enfrentamientosJugados,pais
+1,electroingenieros,Juan,Pedrito,8,4,4,2,300,1000,100,"[1, 2, 3]",España
+2,termonuecleares,Pedro,Adrian,4,8,-4,1,200,800,80,"[5, 6, 7]",EEUU
+3,ElPAPITO,Pablo,Elena,6,3,3,2,250,900,90,"[1, 5, 9]",China
+4,LosPibes,Elena,Blanca,3,6,-3,1,150,700,70,"[2, 6, 10]",URS
+5,herculanos,Carlos,Ana,7,3,4,2,300,1000,100,"[3, 7, 8]",China
+6,Palilleros,Federico,Carlos,4,6,-2,1,200,800,80,"[4, 9, 5]",Nepal
+7,MaurosTeam,Mauro,Alex,6,3,3,2,250,900,90,"[6, 7, 8]",Republica Democratica del Congo 
+8,ParricaElMejor,Parra,Teresa,5,4,1,2,300,1000,100,"[1, 4, 10]",España
+9,Ganadores,Gonzalo,Paco,9,2,7,3,400,1200,120,"[2, 3, 9]",China
+10,UltraTeam,Ulises,Luis,4,6,-2,1,200,800,80,"[4, 5, 6]",Nigeria
