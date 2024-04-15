@@ -7,9 +7,9 @@ def menuPrincipal():
     print("3. Salir")
     opcion = input("Ingrese una opción: ")
     if opcion == "1":
-        us.iniciar_sesion()
+        User.iniciar_sesion()
     elif opcion == "2":
-        us.crear_usuario()
+        User.crear_usuario()
     elif opcion == "3":
         return
     else:
@@ -38,3 +38,4 @@ def menuUsuario():
         menuUsuario()
 
 
+menuPrincipal()
