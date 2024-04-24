@@ -1,3 +1,4 @@
+import Inspirations
 import pickle
 import Exceptions as ex
 
@@ -63,6 +64,26 @@ class User:
         except ex.Email_Verified_Exception as eve:
             print(eve)
             return False
+
+    def __add__(self, other):
+        self.listaInspirations.append(other)
+        return
+
+    def __iadd__(self, other):
+        self.listaInspirations.append(other)
+        return
+    def __radd__ (self, other):
+        self.listaInspirations.append(other)
+        return
+
+    def mostrar_perfil(self):
+        print("Nombre:", self.nombre, end="       ")
+        print("Nickname:", self.nickname)
+        print("Seguidores:", len(self.listaSeguidores),  end="       ")
+        print("Siguiendo:", len(self.listaSiguiendo))
+        print("Inspirations:", len(self.listaInspirations))
+        Inspirations.mostrar_inspirations(User(None, None,None,None).listaSiguiendo[self.nickname])
+        return
 
 
 
