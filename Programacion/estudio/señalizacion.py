@@ -7,6 +7,8 @@ class abrir:
         self.archivo = archivo
         self.mode = mode
 
+
+
     def __enter__(self):
         self.archivo = open(self.archivo, mode=self.mode)
         print('archivo abierto')
@@ -27,6 +29,7 @@ def serializar(dictc:dict, modo):
         with abrir('bs.bson', mode='wb') as wbs:
             pickle.dump(dictc, wbs)
 
+
 def deserializar(archivo):
     if re.search(r'\.pickle$', archivo):
         with abrir(archivo, mode='rb') as rpk:
@@ -41,11 +44,14 @@ def deserializar(archivo):
         return
     return dictc
 
+# Serializamos el diccionario en un archivo json
+
+
 # Serializamos el diccionario en un archivo pickle
 serializar({'hola':3, 'tremendo':2}, 'pk')
 
 # Deserializamos el archivo pickle
-print(deserializar('bs.bson  '))
+print(deserializar('bs.bson  '))  
 
 
 def sacafechas(texto:str):
