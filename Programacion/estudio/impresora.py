@@ -51,23 +51,12 @@ class Lista:
 
     def __iter__(self):
         return self
-
-    def __next__(self):
-
-        if self.index < len(self.lista) and len(self.lista) != 0:
-            devolver = self.lista[self.index]
-            self.index += 2
-
-            return devolver
-        elif self.index < len(self.dict_keys):
-            key = self.dict_keys[self.index]
             devolver = {key: self.dict[key]}
             self.index += 2
             return devolver
 
         else:
             raise StopIteration
-
 
 
 for i in Lista(hola='s',tt='tetra', tonto=43):
