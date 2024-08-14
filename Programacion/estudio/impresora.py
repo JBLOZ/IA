@@ -37,9 +37,11 @@ with Hilo('hola.txt', 'r') as rtx:
     print(rtx.read())
 
 
-class Lista:
+class Lista():
     def __init__(self, *args, **kwargs):
-        self.lista = [a for a in args]
+
+        self.lista = list(args)
+        print(self.lista)
         self.dict = {}
         for key, value in kwargs.items():
             self.dict[key] = value
@@ -47,7 +49,7 @@ class Lista:
         self.dict_keys = list(self.dict.keys())
 
     def __str__(self):
-        return str(self.dict)
+        return str(self.lista)
 
     def __iter__(self):
         return self
@@ -57,8 +59,8 @@ class Lista:
         if self.index < len(self.lista) and len(self.lista) != 0:
             devolver = self.lista[self.index]
             self.index += 2
-
             return devolver
+
         elif self.index < len(self.dict_keys):
             key = self.dict_keys[self.index]
             devolver = {key: self.dict[key]}
@@ -70,6 +72,9 @@ class Lista:
 
 
 
-for i in Lista(hola='s',tt='tetra', tonto=43):
+
+for i in Lista(2,3,4,5,4,5,6,7,8,5,6,7,5):
     print(i)
+
+
 
