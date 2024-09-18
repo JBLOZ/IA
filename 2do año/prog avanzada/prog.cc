@@ -1,5 +1,6 @@
 #include <iostream>
 using namespace std;
+<<<<<<< HEAD
 
 int calculadora(int a, int b) {
     char oper;
@@ -118,3 +119,17 @@ int main(){
 
 
 
+=======
+
+void Hola()
+{
+  cout << "hola" << endl;
+}
+
+int main()
+{
+    Hola();
+    return 0;
+}
+
+>>>>>>> d4dfd3dff1f4ab9994aae7f7117bff207e3949ef
