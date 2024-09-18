@@ -1,1 +1,0 @@
-CMakeLists.txt not found in /Users/jordiblascolozano/Documents/IA/2do año Select CMakeLists.txt
