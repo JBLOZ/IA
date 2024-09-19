@@ -4,16 +4,16 @@
 #include <iostream>
 using namespace std;
 
-bool esBisiesto(int anyo) 
+bool esBisiesto(int anyo)
 {
-    if (anyo % 4 == 0) 
+    if (anyo % 4 == 0)
     {
-        if (anyo % 100 == 0) 
+        if (anyo % 100 == 0)
         {
-            if (anyo % 400 == 0) 
+            if (anyo % 400 == 0)
             {
                 return true;
-            } else 
+            } else
             {
                 return false;
             }
@@ -26,8 +26,8 @@ bool esBisiesto(int anyo)
 }
 
 int diasEnMesActual(int mes, int bisiesto)
-    {   
-        switch (mes) 
+    {
+        switch (mes)
         {
             case 1:
             case 3:
@@ -43,10 +43,10 @@ int diasEnMesActual(int mes, int bisiesto)
             case 11:
                 return 30;
             case 2:
-                if (bisiesto) 
+                if (bisiesto)
                 {
                     return 29;
-                } else 
+                } else
                 {
                     return 28;
                 }
@@ -56,17 +56,18 @@ int diasEnMesActual(int mes, int bisiesto)
     }
 
 
+
 tuple<int, int, int> CalculaDia(int dia, int mes, int anyo, int incremento)
 {
     int diaIncrementado = dia + incremento;
     bool bisiesto = esBisiesto(anyo);
 
-    
-    while (diaIncrementado > diasEnMesActual(mes, bisiesto)) 
+
+    while (diaIncrementado > diasEnMesActual(mes, bisiesto))
     {
         diaIncrementado -= diasEnMesActual(mes, bisiesto);
         mes++;
-        if (mes > 12) 
+        if (mes > 12)
         {
             mes = 1;
             anyo++;
@@ -90,9 +91,7 @@ int main() {
 
     auto nuevaFecha = CalculaDia(dia, mes, anyo, incremento);
 
-    
+
     cout << get<0>(nuevaFecha) << "-" << get<1>(nuevaFecha) << "-" << get<2>(nuevaFecha) << endl;
     return 0;
 }
-
-
