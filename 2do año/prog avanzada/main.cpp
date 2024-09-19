@@ -86,12 +86,12 @@ int main() {
     cin >> mes;
     cout << "Introduce el año: ";
     cin >> anyo;
-    cout << "Introduce el incremento: ";
-    cin >> incremento;
-
-    auto nuevaFecha = CalculaDia(dia, mes, anyo, incremento);
-
-
-    cout << get<0>(nuevaFecha) << "-" << get<1>(nuevaFecha) << "-" << get<2>(nuevaFecha) << endl;
+    while (incremento != -1)
+    {
+        cout << "Introduce el incremento: ";
+        cin >> incremento;
+        auto nuevaFecha = CalculaDia(dia, mes, anyo, incremento);
+        cout << get<0>(nuevaFecha) << "-" << get<1>(nuevaFecha) << "-" << get<2>(nuevaFecha) << endl;
+    }
     return 0;
 }
