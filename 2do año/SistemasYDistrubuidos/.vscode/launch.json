@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/a.out",  // Ruta al archivo compilado
+            "args": ["arg1", "arg2"], // Argumentos que deseas pasar
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true, // Permite abrir una consola externa
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "/usr/local/bin/gdb", // Ruta al depurador
+            "logging": { "engineLogging": true }
+        }
+    ]
+}
