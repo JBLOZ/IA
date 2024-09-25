@@ -2,7 +2,7 @@
 FROM python:3.9.20-bullseye
 
 # Establecer el directorio de trabajo en /app
-WORKDIR /app
+WORKDIR /workdir
 
 # Copiar el archivo de requerimientos en el contenedor
 COPY requirements.txt .
