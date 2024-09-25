@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 n = np.linspace(1, 20, 400)
 
 
-f1 = np.power(n, 1/2)  
-f2 = np.power(10, n)   
+f1 = np.power(n, 1/2)
+f2 = np.power(10, n)
 f3 = np.power(n, 1.5)
 f4 = 2 * np.sqrt(np.log2(n))
 f5 = np.power(n,2)*np.log2(n)*n
