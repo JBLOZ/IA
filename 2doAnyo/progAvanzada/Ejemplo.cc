@@ -1,14 +1,10 @@
 #include <iostream>
+#include "Fecha.h"
 using namespace std;
-
-void Hola()
-{
-  cout << "hola" << endl;
-}
 
 int main()
 {
-    Hola();
+    Fecha f;
+    cout << "todo bien" << endl;
     return 0;
 }
-
