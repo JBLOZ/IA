@@ -2,6 +2,7 @@
 // Created by jordi on 12/09/2024.
 //
 #include <iostream>
+#include <tuple>
 using namespace std;
 
 bool esBisiesto(int anyo)
@@ -75,7 +76,8 @@ tuple<int, int, int> CalculaDia(int dia, int mes, int anyo, int incremento)
         }
     }
 
-    return {diaIncrementado, mes, anyo};
+    return make_tuple(diaIncrementado, mes, anyo);
+
 }
 
 int main() {
