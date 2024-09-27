@@ -1,4 +1,4 @@
-FROM python:3.9.20-bullseye
+FROM python:3.12.6-bullseye
 WORKDIR /workdir
 COPY requirements.txt .
 RUN apt-get update && \
