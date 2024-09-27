@@ -1,8 +1,27 @@
-Ejemplo: Fecha.o Ejemplo.o
-	g++ -std=c++11 -Wall -o Ejemplo Fecha.o Ejemplo.o
+# Variables
+CXX = g++
+CXXFLAGS = -std=c++11 -Wall
 
-Ejemplo.o: Ejemplo.cc
-	g++ -std=c++11 -Wall -c Ejemplo.cc
+# Archivos de objeto
+OBJ = Fecha.o FechaUtils.o Ejemplo.o
 
-Fecha.o: Fecha.cc
-	g++ -std=c++11 -Wall -c Fecha.cc
+# Archivo ejecutable
+TARGET = Ejemplo
+
+# Regla principal
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJ)
+
+# Reglas para compilar los archivos de objeto
+Ejemplo.o: Ejemplo.cc Fecha.h FechaUtils.h
+	$(CXX) $(CXXFLAGS) -c Ejemplo.cc
+
+Fecha.o: Fecha.cc Fecha.h FechaUtils.h
+	$(CXX) $(CXXFLAGS) -c Fecha.cc
+
+FechaUtils.o: FechaUtils.cc FechaUtils.h
+	$(CXX) $(CXXFLAGS) -c FechaUtils.cc
+
+# Limpiar archivos objeto y ejecutables
+clean:
+	rm -f $(OBJ) $(TARGET)

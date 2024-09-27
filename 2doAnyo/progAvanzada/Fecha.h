@@ -5,13 +5,16 @@ using namespace std;
 
 class Fecha
 {
+    private:
+        int dia, mes, anyo;
+
     public:
         //Constructor por defecto: inicializa la fecha a 1/1/1900
         Fecha();
         //Constructor sobrecargado: inicializa la fecha según los parámetros
         Fecha(int dia,int mes,int anyo);
         //Constructor de copia
-        Fecha(const Fecha &);
+        Fecha(const Fecha& other);
         //Destructor: pone la fecha a 1/1/1900
         ~Fecha();
         //Operador de asignación
@@ -25,11 +28,11 @@ class Fecha
         //Devuelve el año
         int getAnyo() const;
         //Modifica el día: devuelve false si la fecha resultante es incorrecta
-        bool setDia();
+        bool setDia(int);
         //Modifica el mes: devuelve false si la fecha resultante es incorrecta
-        bool setMes();
+        bool setMes(int);
         //Modifica el anyo: devuelve false si la fecha resultante es incorrecta
-        bool setAnyo();
+        bool setAnyo(int);
         //Incrementa la fecha en el número de días pasado como parámetro.
         //Si el parámetro es negativo, la decrementa
         bool incrementaDias(int );
@@ -40,5 +43,6 @@ class Fecha
         //Si el parámetro es negativo, la decrementa
         bool incrementaAnyos(int );
         //Devuelve una representación como cadena de la fecha
-        string aCadena(bool larga, bool conDia);
+        string aCadena(bool larga, bool conDia) const;
+
 };
