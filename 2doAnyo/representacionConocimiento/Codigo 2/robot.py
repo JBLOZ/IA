@@ -11,8 +11,6 @@
 '''
 
 
-
-import pygame
 import numpy as np
 import math
 
@@ -25,8 +23,7 @@ WACC = 0.5 #rad/s2
 
 
 class Robot:
-    def __init__(self, sizeY):
-        self.sizeY = sizeY #Necesario para adaptar las coordenadas del entorno a las de la pantalla de pygame
+    def __init__(self):
 
         self.coordX = 0.0
         self.coordY = 0.0
@@ -36,8 +33,6 @@ class Robot:
         self.angularVel = 0 
         self.actualLinearVel = 0
         self.actualAngularVel = 0
-
-        self.image = pygame.image.load('robot1.png').convert_alpha();
     
     def setPose(self, pose):
         self.coordX = pose[0]
@@ -60,22 +55,9 @@ class Robot:
             self.angularVel = WMAX
         if self.angularVel < -WMAX:
             self.angularVel = -WMAX
-    
-    def drawRobot(self, screen):
-        #from Aleksandar haber
-        # over here we rotate an image and create a copy of the rotated image 
-        image1 = pygame.transform.rotate(self.image,self.heading)
-        # then we return a rectangle corresponding to the rotated copy
-        # the rectangle center is specified as an argument
-        image1_rect = image1.get_rect(center=(10.0*self.coordX, self.sizeY - 10.0*self.coordY))
-        # then we plot the rotated image copy with boundaries specified by 
-        # the rectangle
-        screen.blit(image1, image1_rect)
-
 
     #
     def updateDynamics(self, timelapse):
-        a = 1
         # Partimos de V y W
         # Actualizamos las velocidades si todavía no se ha llegado a la velocidad deseada!!!!!!
         timeSeconds = timelapse / 1000.0
@@ -126,7 +108,6 @@ class Robot:
 
                 self.coordX = rotatedICCx + ICCgx
                 self.coordY = rotatedICCy + ICCgy
-            #else: #rotation around robot center
             acAngVelDeg = self.actualAngularVel*180/math.pi
             self.heading = self.heading + acAngVelDeg * timeSeconds 
         else:

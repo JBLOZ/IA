@@ -9,10 +9,9 @@ pid_t pid_A, pid_B, pid_X, pid_Y, pid_Z;
 pid_t pid_primer_progenitor, pid_segundo_progenitor;
 char senyal;
 
-
 void manejador(int sig)
 {
-    printf("Senyal %d recibida desde %d\n", sig, getpid());
+    printf("Señal %d recibida desde %d\n", sig, getpid());
 }
 
 void ls(int sig)
@@ -106,17 +105,12 @@ int main (int argc, char *argv[])
             }
             if (pid_X == 0) // Proceso X
             {
+                signal(SIGUSR2, pstree);
                 printf("Soy el proceso X: mi pid es %d. Mi padre es %d. Mi abuelo es %d\n", getpid(), getppid(), pid_segundo_progenitor);
-                if (senyal == 'X')
-                {
-                    signal(SIGUSR2, pstree);
-                    pause();
-                }
-
-                printf("Soy el proceso X (%d) y muero\n", getpid());
-
+                pause();
+                exit(0);
             }
-            else // ejec, A, B
+            else
             {
                 pid_Y = fork();
                 if (pid_Y == -1)
@@ -126,19 +120,12 @@ int main (int argc, char *argv[])
                 }
                 if (pid_Y == 0) // Proceso Y
                 {
+                    signal(SIGUSR2, pstree);
                     printf("Soy el proceso Y: mi pid es %d. Mi padre es %d. Mi abuelo es %d\n", getpid(), getppid(), pid_segundo_progenitor);
-                    if (senyal == 'X')
-                    {
-                        signal(SIGUSR2, pstree);
-                        pause();
-                    }
-
-
-
-                    printf("Soy el proceso Y (%d) y muero\n", getpid());
-
+                    pause();
+                    exit(0);
                 }
-                else // ejec, A, B
+                else
                 {
                     pid_Z = fork();
                     if (pid_Z == -1)
@@ -152,6 +139,8 @@ int main (int argc, char *argv[])
                         alarm(atoi(argv[2]));
                         printf("Soy el proceso Z: mi pid es %d. Mi padre es %d. Mi abuelo es %d\n", getpid(), getppid(), pid_segundo_progenitor);
                         pause();
+
+                        // Enviar señal según el argumento
                         switch (senyal)
                         {
                             case 'A':
@@ -162,63 +151,49 @@ int main (int argc, char *argv[])
                                 break;
                             case 'X':
                                 kill(pid_X, SIGUSR2);
-
                                 break;
                             case 'Y':
                                 kill(pid_Y, SIGUSR2);
-
                                 break;
                             default:
                                 break;
-
                         }
-                        printf("Soy el proceso Z (%d) y muero\n", getpid());
-
+                        exit(0);
                     }
                     else
                     {
-                        if (senyal == 'B')
-                        {
-                            signal(SIGUSR1, ls);
-                            pause();
-                        }
-                        wait(NULL);
-                        printf("Soy B (%d) y muero\n", getpid());
-
-
-                        // ejec, A, B
-
+                        // Esperar a que Z termine
+                        waitpid(pid_Z, NULL, 0);
+                        printf("Soy Z (%d) y muero\n", pid_Z);
                     }
-                    // ejec, A, B
                 }
-                // ejec, A, B
-
+                // Esperar a que X e Y terminen
+                waitpid(pid_X, NULL, 0);
+                printf("Soy X (%d) y muero\n", pid_X);
+                waitpid(pid_Y, NULL, 0);
+                printf("Soy Y (%d) y muero\n", pid_Y);
             }
-            // B
-
-
+            // Esperar a que B termine
+            signal(SIGUSR1, ls);
+            pause();
+            exit(0);
         }
-        else // ejec, A
+        else
         {
-            if (senyal == 'A')
-                {
-                    signal(SIGUSR1, ls);
-                    pause();
-                }
-
-            wait(NULL);
-            printf("Soy A (%d) y muero\n", getpid());
-
-        } // A
-
-
+            waitpid(pid_B, NULL, 0);
+            printf("Soy B (%d) y muero\n", pid_B);
+            signal(SIGUSR1, ls);
+            pause();
+            exit(0);
+        }
     }
-    else // ejec
-
+    else
     {
-        wait(NULL);
-        printf("Soy ejec (%d) y muero\n", getpid());
+        // Espera a A y sus hijos
+        waitpid(pid_A, NULL, 0);
+        printf("Soy A (%d) y muero\n", pid_A);
     }
 
+    printf("Soy ejec (%d) y muero\n", getpid());
     return 0;
 }
