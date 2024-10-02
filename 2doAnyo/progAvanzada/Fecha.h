@@ -43,6 +43,6 @@ class Fecha
         //Si el parámetro es negativo, la decrementa
         bool incrementaAnyos(int );
         //Devuelve una representación como cadena de la fecha
-        string aCadena(bool larga, bool conDia) const;
+        string aCadena(bool larga = false, bool conDia = true);
 
 };
