@@ -26,7 +26,9 @@ Fecha::Fecha(int dia, int mes, int anyo)
     cout << "clase fecha construida con parametros" << endl;
     if (FechaUtils::compruebaFecha(dia, mes, anyo))
     {
-        cout << dia << mes << anyo;
+        this->dia = dia;
+        this->mes = mes;
+        this->anyo = anyo;
     } 
     else
     {   
@@ -68,19 +70,122 @@ int Fecha::getAnyo() const
     return anyo;
 }
 
-bool Fecha::setDia(int)
+bool Fecha::setDia(int nuevoDia)
 {
-    return true;
+    if (FechaUtils::compruebaFecha(nuevoDia, this->mes, this->anyo))
+    {
+        this->dia = nuevoDia;
+        return true;
+    }
+    return false;
 }
 
-string Fecha::aCadena(bool larga, bool conDia) const
+bool Fecha::setMes(int nuevoMes)
 {
+    if (FechaUtils::compruebaFecha(this->dia, nuevoMes, this->anyo))
+    {
+        this->mes = nuevoMes;
+        return true;
+    }
+    return false;
+}
+
+bool Fecha::setAnyo(int nuevoAnyo)
+{
+    if (FechaUtils::compruebaFecha(this->dia, this->mes, nuevoAnyo))
+    {
+        this->anyo = nuevoAnyo;
+        return true;
+    }
+    return false;
+}
+
+string Fecha::aCadena(bool larga, bool conDia) {
     string cadena = "";
+
     if (conDia)
     {
-        cadena += to_string(dia);
-    }  
-    cadena += "/" + to_string(mes) + "/" + to_string(anyo);
-
-    cout << cadena;
+        if (larga)
+        {
+            cadena += FechaUtils::nombreDia(dia, mes, anyo) + " " + to_string(dia) + " de " + FechaUtils::nombreMes(mes) + " de " + to_string(anyo);
+        }
+        else
+        {
+            cadena += to_string(dia) + "/" + to_string(mes) + "/" + to_string(anyo);
+        }
+    }
+    else
+    {
+        if (larga)
+        {
+            cadena += FechaUtils::nombreMes(mes) + " de " + to_string(anyo);
+        }
+        else
+        {
+            cadena += to_string(mes) + "/" + to_string(anyo);
+        }
+    }
+    return cadena + "\n";
 }
+
+bool Fecha::incrementaDias(int dias)
+{
+    int nuevoDia = this->dia + dias;
+    int nuevoMes = this->mes;
+    int nuevoAnyo = this->anyo;
+
+    while (nuevoDia > FechaUtils::diasEnMesActual(nuevoMes, FechaUtils::esBisiesto(nuevoAnyo)))
+    {
+        nuevoDia -= FechaUtils::diasEnMesActual(nuevoMes, FechaUtils::esBisiesto(nuevoAnyo));
+        nuevoMes++;
+        if (nuevoMes > 12)
+        {
+            nuevoMes = 1;
+            nuevoAnyo++;
+        }
+    }
+
+    if (FechaUtils::compruebaFecha(nuevoDia, nuevoMes, nuevoAnyo))
+    {
+        this->dia = nuevoDia;
+        this->mes = nuevoMes;
+        this->anyo = nuevoAnyo;
+        return true;
+    }
+    return false;
+}
+
+
+bool Fecha::incrementaMeses(int meses)
+{
+    int nuevoMes = this->mes + meses;
+    int nuevoAnyo = this->anyo;
+
+    while (nuevoMes > 12)
+    {
+        nuevoMes -= 12;
+        nuevoAnyo++;
+    }
+
+    if (FechaUtils::compruebaFecha(this->dia, nuevoMes, nuevoAnyo))
+    {
+        this->mes = nuevoMes;
+        this->anyo = nuevoAnyo;
+        return true;
+    }
+
+    return false;
+}
+
+bool Fecha::incrementaAnyos(int anyos)
+{
+    int nuevoAnyo = this->anyo + anyos;
+
+    if (FechaUtils::compruebaFecha(this->dia, this->mes, nuevoAnyo))
+    {
+        this->anyo = nuevoAnyo;
+        return true;
+    }
+
+    return false;
+}   
