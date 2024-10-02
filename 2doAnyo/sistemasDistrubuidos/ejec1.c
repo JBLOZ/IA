@@ -53,7 +53,6 @@ void pstree(int sig)
     {
         printf("pstree\n");
         execlp("pstree", "pstree", "-p", NULL);
-        
         exit(0);
     }
 }
