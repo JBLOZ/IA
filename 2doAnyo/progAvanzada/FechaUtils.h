@@ -1,3 +1,6 @@
+#ifndef FECHAUTILS_H
+#define FECHAUTILS_H
+
 #include <string>
 using namespace std;
 
@@ -12,3 +15,5 @@ class FechaUtils {
     static string nombreDia(int dia, int mes, int anyo);
 
 };
+
+#endif
