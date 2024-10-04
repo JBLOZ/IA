@@ -29,6 +29,7 @@ sizes = np.linspace(2, 10_000, 1000, dtype=int)
 tiempos_promedios_un_size = []
 eje_y = []
 
+'''
 for size in sizes:
     for i in range(100):
         tiempos_promedios_un_size.append(timer(list(np.random.randint(0, 100, size))))
@@ -38,8 +39,11 @@ for size in sizes:
     tiempos_promedios_un_size = []
 
 
+
 plt.plot(sizes, eje_y)
 plt.title('Tiempo de ejecución de la función g(n)')
 plt.xlabel('n')
 plt.ylabel('Tiempo (s)')
 plt.savefig('grafica2.pdf')
+'''
+print(sizes)
