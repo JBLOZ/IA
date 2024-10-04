@@ -1,6 +1,7 @@
 #include "Fecha.h"
 #include <iostream>
 #include "FechaUtils.h"
+
 using namespace std;
 
 
@@ -16,9 +17,7 @@ Fecha::Fecha()
 Fecha::~Fecha()
 {
     cout << "clase fecha destruida" << endl;
-    dia = 1;
-    mes = 1;
-    anyo = 1900;
+
 }
 
 Fecha::Fecha(int dia, int mes, int anyo)
