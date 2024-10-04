@@ -116,7 +116,7 @@ string FechaUtils::nombreDia(int dia, int mes, int anyo)
     // Validar si la fecha es correcta
     if (compruebaFecha(dia, mes, anyo))
     {
-        // Si el año es mayor o igual a 2024, ya tienes este código implementado correctamente
+        
         if (anyo >= 2024) 
         {
             while (anyo >= 2024)
