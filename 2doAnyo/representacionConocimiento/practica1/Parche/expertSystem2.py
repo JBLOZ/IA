@@ -1,130 +1,56 @@
-import numpy as np
 import math
 
 class ExpertSystem:
+    
     def __init__(self):
-        self.objetivoAlcanzado = False
-        self.segmentoObjetivo = None
-        self.trayectoria_calculada = False
-        self.trajectory = []
-        self.current_step = 0
-        self.initial_pose = None
-        self.VMAX = 3.0    # Velocidad lineal máxima (m/s)
-        self.WMAX = 1.0    # Velocidad angular máxima (rad/s)
-        self.VACC = 1.0    # Aceleración lineal máxima (m/s²)
-        self.WACC = 0.5    # Aceleración angular máxima (rad/s²)
-        self.FPS = 60
-        self.TIME_STEP = 1 / self.FPS  # Tiempo entre frames
+        pass
+    
+    def tomarDecision(self, pose, segmentoObjetivo):
+        # Datos del robot
+        x_robot, y_robot, theta_robot = pose['x'], pose['y'], pose['theta']
 
-    def setObjetivo(self, segmento):
-        self.objetivoAlcanzado = False
-        self.segmentoObjetivo = segmento
-        self.trayectoria_calculada = False
-        self.trajectory = []
-        self.current_step = 0
-        self.initial_pose = None  # Se establecerá en tomarDecision()
+        # Datos del segmento objetivo
+        x_inicial, y_inicial = segmentoObjetivo.inicio['x'], segmentoObjetivo.inicio['y']
+        x_final, y_final = segmentoObjetivo.fin['x'], segmentoObjetivo.fin['y']
 
-    def tomarDecision(self, poseRobot):
-        if not self.trayectoria_calculada:
-            # Capturar la posición inicial del robot
-            self.initial_pose = poseRobot
-            # Calcular la trayectoria óptima
-            self.calculate_trajectory()
-            self.trayectoria_calculada = True
+        # Calcular el vector dirección del segmento
+        dir_segmento_x = x_final - x_inicial
+        dir_segmento_y = y_final - y_inicial
 
-        # Si hemos alcanzado el final de la trayectoria
-        if self.current_step >= len(self.trajectory):
-            self.objetivoAlcanzado = True
-            return (0.0, 0.0)
+        # Calcular el vector desde el robot al punto inicial del segmento
+        vector_inicial_x = x_inicial - x_robot
+        vector_inicial_y = y_inicial - y_robot
 
-        # Obtener las velocidades para el paso actual
-        velocidades = self.trajectory[self.current_step]
-        self.current_step += 1
+        # Calcular la distancia al punto inicial
+        distancia_inicial = (vector_inicial_x**2 + vector_inicial_y**2)**0.5
 
-        return velocidades
+        # Calcular el ángulo al punto inicial
+        angulo_deseado = math.atan2(vector_inicial_y, vector_inicial_x)
+        error_angular = angulo_deseado - theta_robot
 
-    def calculate_trajectory(self):
-        # Extract positions
-        x0, y0, theta0 = self.initial_pose
-        x1, y1 = self.segmentoObjetivo.getInicio()
-        x2, y2 = self.segmentoObjetivo.getFin()
+        # Ajuste de la velocidad angular
+        K_angular = 1.0  # Constante de proporcionalidad
+        velocidad_angular = K_angular * error_angular
 
-        # Convert theta to radians
-        theta_rad = math.radians(theta0)
+        # Limitar la velocidad angular a los máximos permitidos
+        velocidad_angular = max(-1, min(velocidad_angular, 1))
 
-        # Initialize variables
-        trajectory = []
+        # Ajuste de la velocidad lineal
+        K_lineal = 0.5  # Constante de proporcionalidad
+        velocidad_lineal = K_lineal * distancia_inicial
 
-        # Waypoints: from current position to start point, then to end point
-        waypoints = [(x1, y1), (x2, y2)]
+        # Limitar la velocidad lineal a los máximos permitidos
+        velocidad_lineal = max(0, min(velocidad_lineal, 3))
 
-        for target_x, target_y in waypoints:
-            # Calculate distance and angle to target
-            dx = target_x - x0
-            dy = target_y - y0
-            distance = np.hypot(dx, dy)
-            angle_to_target = math.atan2(dy, dx)
+        # Cuando el robot está cerca del punto final, marcar como alcanzado
+        if distancia_inicial < 0.1:  # Tolerancia para estar cerca del objetivo
+            objetivoAlcanzado = True
+            velocidad_lineal = 0
+            velocidad_angular = 0
 
-            # Calculate angle difference
-            delta_theta = angle_to_target - theta_rad
-            delta_theta = (delta_theta + math.pi) % (2 * math.pi) - math.pi  # Normalize
-
-            # Time to rotate
-            time_rotate = abs(delta_theta) / self.WACC
-            num_frames_rotate = int(time_rotate / self.TIME_STEP) + 1
-
-            # Angular velocity
-            angular_velocity = np.sign(delta_theta) * min(self.WMAX, abs(delta_theta) / time_rotate)
-
-            # Add rotation commands
-            for _ in range(num_frames_rotate):
-                trajectory.append((0.0, angular_velocity))
-
-            # Update orientation
-            theta_rad += delta_theta
-
-            # Time to move forward
-            # Calculate time to accelerate to VMAX
-            time_accel = self.VMAX / self.VACC
-            distance_accel = 0.5 * self.VACC * time_accel**2
-
-            if distance_accel * 2 >= distance:
-                # Cannot reach VMAX
-                time_accel = math.sqrt(distance / self.VACC)
-                max_velocity = self.VACC * time_accel
-                time_const = 0
-            else:
-                # Can reach VMAX
-                max_velocity = self.VMAX
-                distance_const = distance - 2 * distance_accel
-                time_const = distance_const / max_velocity
-
-            num_frames_accel = int(time_accel / self.TIME_STEP)
-            num_frames_const = int(time_const / self.TIME_STEP)
-            num_frames_decel = num_frames_accel  # Symmetric
-
-            # Accelerate
-            for i in range(num_frames_accel):
-                v = self.VACC * self.TIME_STEP * (i + 1)
-                trajectory.append((v, 0.0))
-
-            # Constant speed
-            for _ in range(num_frames_const):
-                trajectory.append((max_velocity, 0.0))
-
-            # Decelerate
-            for i in range(num_frames_decel):
-                v = max_velocity - self.VACC * self.TIME_STEP * (i + 1)
-                trajectory.append((v, 0.0))
-
-            # Update position
-            x0, y0 = target_x, target_y
-
-        # Store the trajectory
-        self.trajectory = trajectory
-
-    def esObjetivoAlcanzado(self):
-        return self.objetivoAlcanzado
+        return velocidad_lineal, velocidad_angular
 
     def hayParteOptativa(self):
+        # Por defecto, no implementamos la parte optativa
         return False
+
