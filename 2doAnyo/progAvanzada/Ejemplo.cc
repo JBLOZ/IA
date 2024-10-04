@@ -2,6 +2,7 @@
 #include "Fecha.h"
 #include <string>
 #include "FechaUtils.h"
+#include "evento.h"
 using namespace std;
 
 
@@ -17,6 +18,8 @@ int main()
     fecha4.incrementaAnyos(4);
     cout << fecha4.aCadena();
     cout << FechaUtils::nombreMes(12);
+    Evento evento1(fecha3);
+
 
     
     return 0;

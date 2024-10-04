@@ -109,14 +109,12 @@ string FechaUtils::nombreMes(int mes)
 
 string FechaUtils::nombreDia(int dia, int mes, int anyo)
 {
-    // Día de referencia: 1 de enero de 2024 es un lunes
+
     int pivote_Lunes_1_enero_2024 = 0;
     int dias_transcurridos = 0;
 
-    // Validar si la fecha es correcta
     if (compruebaFecha(dia, mes, anyo))
     {
-        
         if (anyo >= 2024) 
         {
             while (anyo >= 2024)
@@ -142,7 +140,7 @@ string FechaUtils::nombreDia(int dia, int mes, int anyo)
         } 
         else 
         {
-            // Si el año es menor a 2024
+            
             while (anyo < 2024)
             {
                 if (esBisiesto(anyo))
@@ -160,21 +158,13 @@ string FechaUtils::nombreDia(int dia, int mes, int anyo)
                     }
                 }
                 anyo++;
-                mes = 1; // Reiniciar al primer mes del siguiente año
-                
+                mes = 1; 
             }
-
-            // Ahora restamos los días acumulados desde el pivote (1 de enero de 2024)
             pivote_Lunes_1_enero_2024 -= dias_transcurridos;
         }
-
-
-
-        // Determinar el día de la semana
         int diaSemana = (pivote_Lunes_1_enero_2024 + dia) % 7;
-        if (diaSemana < 0) diaSemana += 7; // Asegurar que el resultado esté en el rango 0-6
+        if (diaSemana < 0) {diaSemana += 7;}
 
-        // Retornar el nombre del día de la semana
         switch (diaSemana)
         {
             case 0:
@@ -194,7 +184,7 @@ string FechaUtils::nombreDia(int dia, int mes, int anyo)
         }
     }
 
-    return "Fecha inválida"; // Si la fecha no es válida
+    return "Fecha inválida"; 
 }
 
 

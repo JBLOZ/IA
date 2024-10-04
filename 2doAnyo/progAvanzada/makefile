@@ -7,7 +7,7 @@ CXXFLAGS = -std=c++11 -Wall -g
 TARGET = Ejemplo
 
 # Archivos fuente
-SOURCES = Ejemplo.cc Fecha.cc FechaUtils.cc
+SOURCES = Ejemplo.cc Fecha.cc FechaUtils.cc Evento.cc
 
 # Archivos objeto generados a partir de los fuentes
 OBJECTS = $(SOURCES:.cc=.o)
@@ -24,9 +24,10 @@ $(TARGET): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Dependencias
-Ejemplo.o: Ejemplo.cc Fecha.h FechaUtils.h
+Ejemplo.o: Ejemplo.cc Fecha.h FechaUtils.h Evento.h
 Fecha.o: Fecha.cc Fecha.h FechaUtils.h
 FechaUtils.o: FechaUtils.cc FechaUtils.h
+Evento.o: Evento.cc Evento.h Fecha.h
 
 # Limpiar archivos generados
 clean:

@@ -1,6 +1,10 @@
+#ifndef FECHA_H
+#define FECHA_H
+
+
 #include <iostream>
-using namespace std;
 #include <string>
+using namespace std;
 
 
 class Fecha
@@ -45,4 +49,6 @@ class Fecha
         //Devuelve una representación como cadena de la fecha
         string aCadena(bool larga = false, bool conDia = true);
 
+
 };
+#endif
