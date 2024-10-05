@@ -1,7 +1,7 @@
 '''
  ' Código principal de la aplicación para la práctica 1 de RyRDC
  ' No puede ser modificado por los alumnos
- ' 
+ '
  ' Creado por Diego Viejo
  ' el 16/09/2024
  ' V 0.3
@@ -30,12 +30,12 @@ robotIimage = pygame.image.load('robot1.png').convert_alpha();
 
 def drawRobot(pose):
     #from Aleksandar haber
-    # over here we rotate an image and create a copy of the rotated image 
+    # over here we rotate an image and create a copy of the rotated image
     image1 = pygame.transform.rotate(robotIimage, pose[2])
     # then we return a rectangle corresponding to the rotated copy
     # the rectangle center is specified as an argument
     image1_rect = image1.get_rect(center=(10.0*pose[0], sizeY - 10.0*pose[1]))
-    # then we plot the rotated image copy with boundaries specified by 
+    # then we plot the rotated image copy with boundaries specified by
     # the rectangle
     screen.blit(image1, image1_rect)
 
@@ -118,7 +118,7 @@ while running:
     # flip() the display to put your work on screen
     pygame.display.flip()
 
-    timeLapse = clock.tick(60)  
+    timeLapse = clock.tick(60)
     miRobot.updateDynamics(timeLapse)
     if experto.esObjetivoAlcanzado():
         elapsedTime = time.time() - tinicio

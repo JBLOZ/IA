@@ -33,28 +33,27 @@ void manejador(int sig)
 }
 void ls(int sig)
 {
-    
+
     pid_t ls = fork();
     if (ls == -1) {perror("Error en fork");exit(1);}
     if (ls == 0)
     {
         printf("ls\n");
         execlp("ls", "ls", NULL);
-        exit(0);
     }
 }
 
 void pstree(int sig)
 {
-   
+
     pid_t pstree = fork();
     if (pstree == -1) {perror("Error en fork");exit(1);}
     if (pstree == 0)
     {
         printf("pstree\n");
         execlp("pstree", "pstree", "-p", NULL);
-        exit(0);
     }
+
 }
 
 int main (int argc, char *argv[])
@@ -73,14 +72,14 @@ int main (int argc, char *argv[])
     printf("Soy el proceso ejec: mi pid es %d\n", pid_ejec_inicial);
 
     pid_A = fork();
-    
+
 
     if (pid_A == -1){perror("Error en fork");exit(1);}
     if (pid_A == 0)
     {
         pid_A_inicial = getpid();
         printf("Soy el proceso A: mi pid es %d. Mi padre es %d\n", getpid(), getppid());
-        
+
         pid_B = fork();
 
         if (pid_B == -1) {perror("Error en fork"); exit(1);}
@@ -89,10 +88,10 @@ int main (int argc, char *argv[])
         {
             pid_B_inicial = getpid();
             printf("Soy el proceso B: mi pid es %d. Mi padre es %d. Mi abuelo es %d\n", getpid(), getppid(), pid_ejec_inicial);
-            
+
 
             pid_X = fork();
-        
+
 
             if (pid_X == -1) {perror("Error en fork"); exit(EXIT_FAILURE);}
             if (pid_X == 0)
@@ -105,7 +104,7 @@ int main (int argc, char *argv[])
                 printf("Soy X (%d) y muero\n", getpid());
                 exit(0);
             }
-            
+
             pid_Y = fork();
 
 
@@ -120,19 +119,19 @@ int main (int argc, char *argv[])
                 printf("Soy Y (%d) y muero\n", getpid());
                 exit(0);
             }
-            
+
             pid_Z = fork();
-                
+
 
             if (pid_Z == -1) {perror("Error en fork"); exit(EXIT_FAILURE);}
             if (pid_Z == 0)
             {
-                
+
                 printf("Soy el proceso Z: mi pid es %d. Mi padre es %d. Mi abuelo es %d. Mi bisabuelo es %d\n", getpid(), getppid(), pid_A_inicial, pid_ejec_inicial);
                 signal(SIGALRM, manejador);
                 pid_Y_inicial = (getpid()-1);pid_X_inicial = (getpid()-2);
                 alarm(atoi(argv[2]));
-                
+
                 pause();
                 if (senyal == 'Y') {
                     sleep(1);
@@ -141,11 +140,12 @@ int main (int argc, char *argv[])
                 }
                 if (senyal == 'X') {
                     sleep(1);
-                    kill(pid_Y_inicial, 9); 
+                    kill(pid_Y_inicial, 9);
                     printf("Soy Y (%d) y muero\n", pid_Y_inicial);
                 }
                 if (senyal == 'B' || senyal == 'A') {
-                    kill(pid_X_inicial, 9); 
+                    sleep(1);
+                    kill(pid_X_inicial, 9);
                     kill(pid_Y_inicial, 9);
                     printf("Soy X (%d) y muero\n", pid_X_inicial);
                     printf("Soy Y (%d) y muero\n", pid_Y_inicial);
@@ -154,7 +154,7 @@ int main (int argc, char *argv[])
                 exit(0);
             }
             // solo B
-            
+
             signal(SIGUSR1, ls);
             if (senyal == 'B') {pause();}
             wait(NULL);wait(NULL);wait(NULL); wait(NULL);   // B espera a X, Y, Z y ls
@@ -174,5 +174,5 @@ int main (int argc, char *argv[])
     wait(NULL);  // espera a A
     printf("Soy ejec (%d) y muero\n", getpid());
     return 0;
-    
+
 }
