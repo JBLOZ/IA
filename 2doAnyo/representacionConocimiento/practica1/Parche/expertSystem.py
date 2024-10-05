@@ -29,8 +29,10 @@ class ExpertSystem:
         #No importa si la velocidad lineal o angular es mayor ya que el programa tiene una capa que lo regula 
         VMAX = 3.0
         WMAX = 1.0
+        #las constantes de aceleracion y frenado son importantes a la hora de calcular la velocidad lineal y angular para no derrapar ni pasarse del objetivo
         VACC = 1.0
         WACC = 0.5
+        
         FPS = 60
 
 
@@ -69,7 +71,8 @@ class ExpertSystem:
 
         elif self.estado == 3:
             self.primerSegmento = False
-            self.esObjetivoAlcanzado = True 
+            self.esObjetivoAlcanzado = True
+            #cuando es objetivo alcanzado sea True otro segmento será generado y volvera al estado 1 para intentar llegar al final del segundo segmento, ten en cuenta que no habrá mas de dos segmentos
 
         
 
