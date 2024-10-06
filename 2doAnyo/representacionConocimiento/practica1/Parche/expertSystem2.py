@@ -1,127 +1,154 @@
-import numpy as np
 import math
+import numpy as np
 
 class ExpertSystem:
     def __init__(self):
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = None
-        self.trayectoria_calculada = False
-        self.trajectory = []
-        self.current_step = 0
-        self.initial_pose = None
-        self.VMAX = 3.0    # Velocidad lineal máxima (m/s)
-        self.WMAX = 1.0    # Velocidad angular máxima (rad/s)
-        self.VACC = 1.0    # Aceleración lineal máxima (m/s²)
-        self.WACC = 0.5    # Aceleración angular máxima (rad/s²)
-        self.FPS = 60
-        self.TIME_STEP = 1 / self.FPS  # Tiempo entre frames
+        self.estado = 1
+        self.previous_linear_velocity = 0.0
+        self.previous_angular_velocity = 0.0
+        self.primerSegmento = True
 
     def setObjetivo(self, segmento):
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = segmento
-        self.trayectoria_calculada = False
-        self.trajectory = []
-        self.current_step = 0
-        self.initial_pose = None  # Se establecerá en tomarDecision()
+        self.estado = 1
+        self.previous_linear_velocity = 0.0
+        self.previous_angular_velocity = 0.0
+    @staticmethod
+    def straightToPointDistance(p1, p2, p3):
+        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
 
+    @staticmethod
+    def get_point_on_segment(t, start_point, end_point):
+        return (1 - t) * np.array(start_point) + t * np.array(end_point)
     def tomarDecision(self, poseRobot):
-        if not self.trayectoria_calculada:
-            # Capturar la posición inicial del robot
-            self.initial_pose = poseRobot
-            # Calcular la trayectoria óptima
-            self.calculate_trajectory()
-            self.trayectoria_calculada = True
+        # Definición de constantes
+        VMAX = 3.0  # Velocidad lineal máxima
+        WMAX = 1.0  # Velocidad angular máxima
+        VACC = 1.0  # Aceleración lineal máxima
+        WACC = 0.5  # Aceleración angular máxima
+        FPS = 60    # Fotogramas por segundo
 
-        # Si hemos alcanzado el final de la trayectoria
-        if self.current_step >= len(self.trajectory):
+        # Definición de variables
+        inicio = np.array(self.segmentoObjetivo.getInicio())
+        fin = np.array(self.segmentoObjetivo.getFin())
+
+        toleracionFinSegmento = 0.5
+        toleranciaDistanciaSegmento = 0.01
+
+        # Cálculo de la distancia al segmento
+        dist = np.abs(self.straightToPointDistance(inicio, fin, np.array(poseRobot[0:2])))
+        x, y, theta = poseRobot[0], poseRobot[1], math.radians(poseRobot[2])
+
+        # Cálculo del punto más cercano del segmento
+        t_numerador = ((x - inicio[0]) * (fin[0] - inicio[0]) + (y - inicio[1]) * (fin[1] - inicio[1]))
+        t_denominador = ((fin[0] - inicio[0]) ** 2 + (fin[1] - inicio[1]) ** 2)
+        t_closest = t_numerador / t_denominador if t_denominador != 0 else 0
+        t_closest = min(max(t_closest, 0.0), 1.0)  # Asegurar que t esté entre 0 y 1
+        puntoMasCercano = self.get_point_on_segment(t_closest, inicio, fin)
+
+        # Cálculo de la distancia al punto más cercano
+        distanciaPuntoMasCercano = np.linalg.norm(puntoMasCercano - poseRobot[0:2])
+
+        # Cálculo de la distancia al punto final del segmento
+        distanciaPuntoFinal = np.linalg.norm(fin - poseRobot[0:2])
+
+        # Actualización del estado del robot
+        if self.estado == 1 or dist > toleracionFinSegmento:
+            self.estado = 1
+            # Objetivo es un punto adelantado en el segmento
+            if dist <= toleranciaDistanciaSegmento:
+                self.estado = 2
+        elif self.estado == 2:
+            # Objetivo es el punto final del segmento
+            if distanciaPuntoFinal <= toleracionFinSegmento:
+                self.estado = 3
+        elif self.estado == 3:
+            self.primerSegmento = False
             self.objetivoAlcanzado = True
-            return (0.0, 0.0)
+            return 0.0, 0.0  # Velocidades cero al alcanzar el objetivo
 
-        # Obtener las velocidades para el paso actual
-        velocidades = self.trajectory[self.current_step]
-        self.current_step += 1
-
-        return velocidades
-
-    def calculate_trajectory(self):
-        # Extract positions
-        x0, y0, theta0 = self.initial_pose
-        x1, y1 = self.segmentoObjetivo.getInicio()
-        x2, y2 = self.segmentoObjetivo.getFin()
-
-        # Convert theta to radians
-        theta_rad = math.radians(theta0)
-
-        # Initialize variables
-        trajectory = []
-
-        # Waypoints: from current position to start point, then to end point
-        waypoints = [(x1, y1), (x2, y2)]
-
-        for target_x, target_y in waypoints:
-            # Calculate distance and angle to target
-            dx = target_x - x0
-            dy = target_y - y0
-            distance = np.hypot(dx, dy)
-            angle_to_target = math.atan2(dy, dx)
-
-            # Calculate angle difference
-            delta_theta = angle_to_target - theta_rad
-            delta_theta = (delta_theta + math.pi) % (2 * math.pi) - math.pi  # Normalize
-
-            # Time to rotate
-            time_rotate = abs(delta_theta) / self.WACC
-            num_frames_rotate = int(time_rotate / self.TIME_STEP) + 1
-
-            # Angular velocity
-            angular_velocity = np.sign(delta_theta) * min(self.WMAX, abs(delta_theta) / time_rotate)
-
-            # Add rotation commands
-            for _ in range(num_frames_rotate):
-                trajectory.append((0.0, angular_velocity))
-
-            # Update orientation
-            theta_rad += delta_theta
-
-            # Time to move forward
-            # Calculate time to accelerate to VMAX
-            time_accel = self.VMAX / self.VACC
-            distance_accel = 0.5 * self.VACC * time_accel**2
-
-            if distance_accel * 2 >= distance:
-                # Cannot reach VMAX
-                time_accel = math.sqrt(distance / self.VACC)
-                max_velocity = self.VACC * time_accel
-                time_const = 0
+        # Definición del punto objetivo basado en el estado
+        if self.estado == 1:
+            # Implementación del punto de mirada adelantada con anticipación temporal
+            # Calcular tiempo para llegar al punto más cercano
+            if self.previous_linear_velocity > 0:
+                tiempo_hasta_punto_cercano = distanciaPuntoMasCercano / self.previous_linear_velocity
             else:
-                # Can reach VMAX
-                max_velocity = self.VMAX
-                distance_const = distance - 2 * distance_accel
-                time_const = distance_const / max_velocity
+                tiempo_hasta_punto_cercano = float('inf')
 
-            num_frames_accel = int(time_accel / self.TIME_STEP)
-            num_frames_const = int(time_const / self.TIME_STEP)
-            num_frames_decel = num_frames_accel  # Symmetric
+            # Ajustar la distancia de mirada adelantada para anticipar el giro
+            anticipacion_tiempo = 1.35  # Segundos de anticipación
+            velocidad_promedio = (self.previous_linear_velocity + VMAX) / 2
+            distancia_anticipacion = velocidad_promedio * anticipacion_tiempo
 
-            # Accelerate
-            for i in range(num_frames_accel):
-                v = self.VACC * self.TIME_STEP * (i + 1)
-                trajectory.append((v, 0.0))
+            # Calcular t para el punto de mirada adelantada
+            longitud_segmento = np.linalg.norm(fin - inicio)
+            if longitud_segmento > 0:
+                t_lookahead = t_closest + distancia_anticipacion / longitud_segmento
+                t_lookahead = min(max(t_lookahead, 0.0), 1.0)
+            else:
+                t_lookahead = t_closest
 
-            # Constant speed
-            for _ in range(num_frames_const):
-                trajectory.append((max_velocity, 0.0))
+            target_point = self.get_point_on_segment(t_lookahead, inicio, fin)
+        else:
+            # En estado 2, el objetivo es el punto final del segmento (punto D)
+            target_point = fin
 
-            # Decelerate
-            for i in range(num_frames_decel):
-                v = max_velocity - self.VACC * self.TIME_STEP * (i + 1)
-                trajectory.append((v, 0.0))
+        # Cálculo del control
+        delta_x = target_point[0] - x
+        delta_y = target_point[1] - y
+        angle_to_target = math.atan2(delta_y, delta_x)
+        angle_error = angle_to_target - theta
+        angle_error = (angle_error + math.pi) % (2 * math.pi) - math.pi  # Normalización del ángulo
 
-            # Update position
-            x0, y0 = target_x, target_y
+        distance_to_target = math.hypot(delta_x, delta_y)
 
-        # Store the trajectory
-        self.trajectory = trajectory
+        # Ganancias de control
+        k_v = 1.0  # Ganancia proporcional para velocidad lineal
+        k_w = 2.0  # Ganancia proporcional para velocidad angular
+
+        if self.estado == 2:
+            # En estado 2, mantener velocidad lineal máxima
+            desired_linear_velocity = VMAX
+            # Ajustar velocidad angular para orientarse al punto D
+            desired_angular_velocity = k_w * angle_error
+        else:
+            # En estado 1, avanzar hacia el punto objetivo ajustando suavemente la velocidad angular
+            # Utilizar una función sigmoide para suavizar la velocidad angular
+            max_angle_speed = WMAX
+            desired_angular_velocity = max_angle_speed * math.tanh(k_w * angle_error)
+            desired_linear_velocity = k_v * distance_to_target
+
+        # Limitación de velocidades máximas
+        desired_linear_velocity = min(desired_linear_velocity, VMAX)
+        desired_angular_velocity = max(min(desired_angular_velocity, WMAX), -WMAX)
+
+        # Cálculo de las variaciones de velocidad
+        delta_v = desired_linear_velocity - self.previous_linear_velocity
+        max_delta_v = VACC / FPS
+        delta_v = max(min(delta_v, max_delta_v), -max_delta_v)
+
+        delta_w = desired_angular_velocity - self.previous_angular_velocity
+        max_delta_w = WACC / FPS
+        delta_w = max(min(delta_w, max_delta_w), -max_delta_w)
+
+        # Actualización de velocidades
+        velocidad_lineal = self.previous_linear_velocity + delta_v
+        velocidad_angular = self.previous_angular_velocity + delta_w
+
+        # Almacenamiento de velocidades anteriores para el siguiente ciclo
+        self.previous_linear_velocity = velocidad_lineal
+        self.previous_angular_velocity = velocidad_angular
+
+        print(dist)
+
+        return velocidad_lineal, velocidad_angular
+
+
+
 
     def esObjetivoAlcanzado(self):
         return self.objetivoAlcanzado
