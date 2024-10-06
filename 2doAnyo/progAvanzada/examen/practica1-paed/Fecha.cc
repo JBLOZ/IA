@@ -27,13 +27,9 @@ bool Fecha::esFechaCorrecta(int dia,int mes,int anyo) const
 
 
 
-bool Fecha::esBisiesto(int a) const{
-    if (a%4==0 && (a%100 !=0 || a%400== 0))
-    {
-        
-        return true;
-    }
-    return false;
+bool Fecha::esBisiesto(int a) const
+{
+    return (a%4==0 && (a%100 !=0 || a%400== 0));
 }
 
 
