@@ -23,17 +23,21 @@ def tiempo(A,B):
 
 
 eje_y = []
-sices = np.linspace(1,90,90, dtype=int)
+
 
 
 try:
 	with open('tiempos_matrices.json', 'r') as reader:
 		eje_y = json.load(reader)
+		sices = np.linspace(1,90,90, dtype=int)
+
+
 except:
+	sices = np.linspace(1,90,90, dtype=int)
 	tiempos = []
 	print(sices)
 	for sice in sices:
-		for i in range(10):
+		for i in range(100):
 			tiempos.append(tiempo(A=np.random.randint(0,10,(sice,sice))
 							,B=np.random.randint(0,10,(sice,sice))))
 		eje_y.append(np.mean(tiempos))
@@ -58,8 +62,8 @@ for num in func1:
     complejidad_teorica_escalada.append(num * factor_k)
 plt.figure(figsize=(10,6))
 
-plt.bar(sices,eje_y,label=r'$n^3$ Calculo empirico')
-plt.plot(sices, complejidad_teorica_escalada, label=r'$n^3$ Calculo teorico', color='red')
+plt.bar(sices,eje_y,label=r'(O)$n^3$ Calculo empirico')
+plt.plot(sices, complejidad_teorica_escalada, label=r'(O)$n^3$ Calculo teorico', color='red')
 plt.legend()
 plt.xlabel('n')
 plt.ylabel('f(n) seg')

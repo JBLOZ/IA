@@ -6,3 +6,5 @@
 .DS_Store
 **/.idea/
 **/*.dSYM/
+__pycache__/
+*.py[cod]
