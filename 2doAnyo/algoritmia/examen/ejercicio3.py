@@ -12,6 +12,10 @@ def g(n):
 	g(n[:-1])
 
 
+
+
+
+
 sizes = np.linspace(1,15,15, dtype=int)
 
 def tiempo(n):
