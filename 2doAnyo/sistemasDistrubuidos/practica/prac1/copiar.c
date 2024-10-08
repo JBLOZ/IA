@@ -4,15 +4,14 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#define BUFFER_SIZE 1024 // Definición del tamaño del buffer que se utilizará para leer y escribir los datos
-
+ 
 int main(int argc, char *argv[])
-{
+{   int BUFFER_SIZE = 1024;
     // Declaración de variables
     char *archivo_origen, *archivo_destino; // Variables para almacenar los nombres de los archivos
-    int fd_origen, fd_destino; // Descriptores de archivo para el archivo de origen y destino
-    int pipe_fd[2]; // Array para almacenar los descriptores de los extremos de la tubería: lectura y escritura
-    pid_t pid; // Variable para almacenar el identificador del proceso hijo
+    int d_origen, d_destino; // Descriptores de archivo para el archivo de origen y destino
+    int pipe_l_e[2]; // Array para almacenar los descriptores de los extremos de la tubería: lectura y escritura
+    pid_t pid_hijo, pid_pipe, pid_write_destino, pid_write_pipe; // Variable para almacenar el identificador del proceso hijo
     char buffer[BUFFER_SIZE]; // Buffer para almacenar los datos que se leerán y escribirán
     ssize_t bytes_leidos; // Variable para almacenar la cantidad de bytes leídos
 
@@ -20,7 +19,7 @@ int main(int argc, char *argv[])
     if (argc != 3)
     {
         fprintf(stderr, "Uso: %s archivo_origen archivo_destino\n", argv[0]);
-        exit(EXIT_FAILURE);
+        exit(1);
     }
 
     // Asignación de nombres de archivos
@@ -28,99 +27,52 @@ int main(int argc, char *argv[])
     archivo_destino = argv[2];
 
     // Abrir el archivo de origen
-    if ((fd_origen = open(archivo_origen, O_RDONLY)) == -1)
-    {
-        perror("Error al abrir el archivo origen");
-        exit(EXIT_FAILURE);
-    }
+    
+    d_origen = open(archivo_origen, O_RDONLY);
+    if (d_origen == -1) { perror("Error al abrir el archivo origen"); exit(1); }
 
     // Crear la tubería
-    if (pipe(pipe_fd) == -1)
-    {
-        perror("Error al crear la tubería");
-        exit(EXIT_FAILURE);
-    }
+    pid_pipe = pipe(pipe_l_e); 
+    if (pid_pipe == -1) { perror("Error al crear la tubería"); exit(1); }
 
     // Crear el proceso hijo
-    pid = fork();
-    if (pid == -1)
-    {
-        perror("Error al hacer fork");
-        exit(EXIT_FAILURE);
-    }
-
-    if (pid == 0)
+    pid_hijo = fork();
+    if (pid_hijo == -1) { perror("Error al hacer fork"); exit(1); }
+    if (pid_hijo == 0)
     {
         // Proceso hijo: lee de la tubería y escribe en el archivo destino
-        close(pipe_fd[1]); // Cerrar el extremo de escritura de la tubería, ya que el proceso hijo solo necesita leer.
+        close(pipe_l_e[1]); // Cerrar el extremo de escritura de la tubería, ya que el proceso hijo solo necesita leer.
 
         // Abrir el archivo de destino
-        fd_destino = open(archivo_destino, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (fd_destino == -1)
+        d_destino = open(archivo_destino, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if (d_destino == -1) { perror("Error al crear el archivo destino"); exit(1); }
+
+        // Leer de la tubería y escribir en el archivo destino
+        while ((bytes_leidos = read(pipe_l_e[0], buffer, BUFFER_SIZE)) > 0)
         {
-            perror("Error al crear el archivo destino");
-            exit(EXIT_FAILURE);
+            pid_write_destino = write(d_destino, buffer, bytes_leidos);
+            if (pid_write_destino == -1) { perror("Error al escribir en el archivo destino"); exit(1); }
         }
 
-        // Leer de la tubería y escribir en el archivo de destino
-        while (1)
-        {
-            bytes_leidos = read(pipe_fd[0], buffer, BUFFER_SIZE);
-            if (bytes_leidos == 0) // No hay más datos para leer
-            {
-                break;
-            }
-            if (bytes_leidos == -1) // Error al leer de la tubería
-            {
-                perror("Error al leer de la tubería");
-                exit(EXIT_FAILURE);
-            }
-            if (write(fd_destino, buffer, bytes_leidos) == -1)
-            {
-                perror("Error al escribir en el archivo destino");
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        // Cerrar el archivo de destino y el extremo de lectura de la tubería
-        close(fd_destino);
-        close(pipe_fd[0]);
+        close(d_destino);
+        close(pipe_l_e[0]);
+        exit(0); 
     }
-    else
+    // Código del proceso padre
+    // Proceso padre: lee del archivo de origen y escribe en la tubería
+    close(pipe_l_e[0]); // Cerrar el extremo de lectura de la tubería, ya que el proceso padre solo necesita escribir.
+
+    // Leer del archivo de origen y escribir en la tubería
+    while ((bytes_leidos = read(d_origen, buffer, BUFFER_SIZE)) > 0)
     {
-        // Proceso padre: lee del archivo origen y escribe en la tubería
-        close(pipe_fd[0]); // Cerrar el extremo de lectura de la tubería, ya que el proceso padre solo necesita escribir.
-
-        // Leer del archivo de origen y escribir en la tubería
-        while (1)
-        {
-            bytes_leidos = read(fd_origen, buffer, BUFFER_SIZE);
-            if (bytes_leidos == 0) // No hay más datos para leer
-            {
-                break;
-            }
-            if (bytes_leidos == -1) // Error al leer del archivo origen
-            {
-                perror("Error al leer el archivo origen");
-                exit(EXIT_FAILURE);
-            }
-            if (write(pipe_fd[1], buffer, bytes_leidos) == -1)
-            {
-                perror("Error al escribir en la tubería");
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        // Cerrar el archivo de origen y el extremo de escritura de la tubería
-        close(fd_origen);        
-        close(pipe_fd[1]);
-
-        // Esperar a que el proceso hijo termine
-        wait(NULL);
+        pid_write_pipe = write(pipe_l_e[1], buffer, bytes_leidos);
+        if (pid_write_pipe == -1) { perror("Error al escribir en la tubería"); exit(1); }
     }
 
-    return 0;
+    close(d_origen);
+    close(pipe_l_e[1]);
+
+    // Esperar a que el proceso hijo termine
+    wait(NULL);
+    exit(0);
 }
-
-
-

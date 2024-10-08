@@ -22,44 +22,25 @@ int main()
 
     // Crear un archivo para ftok si no existe
     int fd = open("shmfile", O_CREAT | O_RDWR, 0666);
-    if (fd == -1)
-    {
-        perror("Error al abrir shmfile");
-        exit(EXIT_FAILURE);
-    }
+    if (fd == -1) { perror("Error al abrir shmfile"); exit(1); }
+    if (fd == -1) { perror("Error al crear el archivo shmfile"); exit(1); }
     close(fd);
 
     // Crear una clave para la memoria compartida
     key = ftok("shmfile", 65);
-    if (key == -1)
-    {
-        perror("Error al crear la clave para la memoria compartida");
-        exit(EXIT_FAILURE);
-    }
+    if (key == -1) { perror("Error al crear la clave para la memoria compartida"); exit(1); }
 
     // Crear el segmento de memoria compartida
     shmid = shmget(key, shm_size, 0666 | IPC_CREAT);
-    if (shmid == -1)
-    {
-        perror("Error al crear la memoria compartida");
-        exit(EXIT_FAILURE);
-    }
+    if (shmid == -1) { perror("Error al crear la memoria compartida"); exit(1); }
 
     // Adjuntar el segmento de memoria compartida
     nums = (int *)shmat(shmid, NULL, 0);
-    if (nums == (int *)-1)
-    {
-        perror("Error al adjuntar la memoria compartida");
-        exit(EXIT_FAILURE);
-    }
+    if (nums == (int *)-1) { perror("Error al adjuntar la memoria compartida"); exit(1); }
 
     // Crear el proceso hijo
     pid = fork();
-    if (pid == -1)
-    {
-        perror("Error al hacer fork");
-        exit(EXIT_FAILURE);
-    }
+    if (pid == -1) { perror("Error al hacer fork"); exit(1); }
 
     if (pid == 0)
     {
@@ -69,43 +50,34 @@ int main()
         for (int i = 0; i < num_count; i++)
         {
             nums[i] = rand() % 100; // Generar un número aleatorio entre 0 y 99
-            printf("%d%s", nums[i], (i == num_count - 1) ? "\n" : ", ");
+            if (i == num_count - 1)
+                printf("%d\n", nums[i]);
+            else
+                printf("%d, ", nums[i]);
         }
         // Desadjuntar la memoria compartida
-        if (shmdt(nums) == -1)
-        {
-            perror("Error al desadjuntar la memoria compartida (hijo)");
-            exit(EXIT_FAILURE);
-        }
-        exit(EXIT_SUCCESS);
-    }
+        if (shmdt(nums) == -1) { perror("Error al desadjuntar la memoria compartida (hijo)"); exit(1); }
 
-    // Proceso padre: espera al hijo y luego lee los números de la memoria compartida
-    if (waitpid(pid, NULL, 0) == -1)
-    {
-        perror("Error al esperar al proceso hijo");
-        exit(EXIT_FAILURE);
+        exit(0);
     }
+    waitpid(pid, NULL, 0);
     printf("Soy el padre (%d). Los números generados fueron: ", getpid());
+
     for (int i = 0; i < num_count; i++)
     {
-        printf("%d%s", nums[i], (i == num_count - 1) ? "\n" : ", ");
+        if (i == num_count - 1)
+            printf("%d\n", nums[i]);
+        else
+            printf("%d, ", nums[i]);
         suma += nums[i];
     }
     media = suma / num_count;
     printf("La media es de %.2f\n", media);
 
     // Desadjuntar y liberar la memoria compartida
-    if (shmdt(nums) == -1)
-    {
-        perror("Error al desadjuntar la memoria compartida (padre)");
-        exit(EXIT_FAILURE);
-    }
-    if (shmctl(shmid, IPC_RMID, NULL) == -1)
-    {
-        perror("Error al liberar la memoria compartida");
-        exit(EXIT_FAILURE);
-    }
+    
+    if (shmdt(nums) == -1) { perror("Error al desadjuntar la memoria compartida (padre)"); exit(1); }
+    if (shmctl(shmid, IPC_RMID, NULL) == -1) { perror("Error al liberar la memoria compartida"); exit(1); }
 
     return 0;
 }
