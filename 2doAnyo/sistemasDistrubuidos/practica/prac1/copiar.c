@@ -48,10 +48,17 @@ int main(int argc, char *argv[])
         if (d_destino == -1) { perror("Error al crear el archivo destino"); exit(1); }
 
         // Leer de la tubería y escribir en el archivo destino
-        while ((bytes_leidos = read(pipe_l_e[0], buffer, BUFFER_SIZE)) > 0)
+        while (1)
         {
+            bytes_leidos = read(pipe_l_e[0], buffer, BUFFER_SIZE);
+            if (bytes_leidos == 0) // No hay más datos para leer
+            {
+                break;
+            }
+            if (bytes_leidos == -1) {perror("Error al leer de la tubería"); exit(1);}
+
             pid_write_destino = write(d_destino, buffer, bytes_leidos);
-            if (pid_write_destino == -1) { perror("Error al escribir en el archivo destino"); exit(1); }
+            if (pid_write_destino == -1) { perror("Error al escribir en el archivo destino");exit(1);}
         }
 
         close(d_destino);
@@ -63,11 +70,18 @@ int main(int argc, char *argv[])
     close(pipe_l_e[0]); // Cerrar el extremo de lectura de la tubería, ya que el proceso padre solo necesita escribir.
 
     // Leer del archivo de origen y escribir en la tubería
-    while ((bytes_leidos = read(d_origen, buffer, BUFFER_SIZE)) > 0)
-    {
-        pid_write_pipe = write(pipe_l_e[1], buffer, bytes_leidos);
-        if (pid_write_pipe == -1) { perror("Error al escribir en la tubería"); exit(1); }
-    }
+    while (1)
+        {
+            bytes_leidos = read(d_origen, buffer, BUFFER_SIZE);
+            if (bytes_leidos == 0) 
+            {
+                break;
+            }
+            if (bytes_leidos == -1) {perror("Error al leer el archivo origen");exit(1);}
+
+            pid_write_pipe = write(pipe_l_e[1], buffer, bytes_leidos);
+            if (pid_write_pipe == -1){perror("Error al escribir en la tubería");exit(1);}
+        }
 
     close(d_origen);
     close(pipe_l_e[1]);
