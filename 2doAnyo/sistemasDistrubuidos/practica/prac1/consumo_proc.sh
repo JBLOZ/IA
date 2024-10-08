@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Solicita al usuario el número de procesos que desea ver
 printf "Indica los procesos que quieras ver: "
 
