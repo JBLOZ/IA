@@ -1,0 +1,333 @@
+﻿Sistemas Operativos y 
+Distribuidos
+
+Iren Lorenzo Fonseca
+iren.fonseca@.ua.es
+
+Presentación de la asignatura
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.es
+
+Contenido
+Salud Electrónica
+
+Objetivos y Competencias
+Competencias definidas en el Plan de Estudios
+
+Objetivos y Competencias
+Contenido y Bibliografía
+
+Contenido para responder a las competencias y 
+Contenido y Bibliografía bibliografía básica de la asignatura
+
+Evaluación
+Evaluación Método de evaluación de la asignatura
+
+Secuenciación Secuenciación
+Secuenciación de la asignatura incluyendo contenido 
+
+y evaluación
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Resultados de Aprendizaje
+
+Conocer los problemas básicos Conocer la organización, estructura y 
+asociados a los Sistemas servicios de los sistemas operativos 
+
+Operativos: multiprocesamiento, y su administración
+concurrencia y gestión de recursos
+
+Conocer la problemática asociada Conocer los principales paradigmas 
+
+a la gestión de los dispositivos de de computación distribuida, 
+
+entrada/salida, los sistemas de tecnologías Web y Middleware, las 
+
+archivo características de cada modelo y sus 
+aplicaciones
+
+Diseñar la arquitectura de un sistema Implementar aplicaciones distribuidas 
+distribuido en función de los basadas en tecnologías y 
+requisitos establecidos en el arquitecturas de sistemas distribuidos 
+
+problema, así como proponer los (sockets, RPC, RMI, WS, Websockets, 
+paradigmas de computación SOAP, etc.).
+
+distribuida, protocolos y mecanismos 
+de comunicación
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Competencias
+
+CE13 
+Describir los principios fundamentales y técnicas básicas de la programación 
+paralela, concurrente, distribuida y de tiempo real y aplicarlos al desarrollo de 
+sistemas de inteligencia artificial
+
+CE14
+Describir las características, funcionalidades y estructura de los sistemas
+operativos, sistemas distribuidos, las redes de computadores e internet y 
+diseñar e implementar aplicaciones basadas en sus servicios
+
+CE17 
+Diseñar, construir y valorar sistemas de internet de las cosas y sistemas 
+ciberfísicos para aplicaciones industriales y de inteligencia artificial, o con 
+necesidades de funcionamiento específicas (tiempo real, precisión, consumo, 
+etc.)
+
+
+
+Francisco Maciá Pérez
+pmacia@dtSicO.uaD.es Resumen
+
+01 Contexto Diseño
+Asignatura se enmarca en el 2º curso del Grado en Diseñada para proporcionar a los estudiantes una 02
+Inteligencia Artificial comprensión profunda y práctica de los sistemas
+
+que subyacen al funcionamiento de la inteligencia 
+artificial (IA)
+
+03 Contenido Objetivo
+Se centra en conocimientos específicos de redes de Proporcionar a los estudiantes las habilidades y 04
+computadores y sistemas operativos, abarcando conocimientos necesarios para desarrollar 
+ampliamente la interconexión y gestión de redes de sistemas complejos y eficientes de inteligencia 
+computadores que conforman los sistemas artificial, preparándolos para enfrentar los desafíos 
+distribuidos tecnológicos y operativos en el campo de la IA
+
+moderna
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Contenido y Bibliografía
+
+1.Sistemas Operativos
+1. Conceptos básicos
+2. Gestión de Procesos
+3. Concurrencia
+4. Gestión de Memoria
+5. Sistema de archivos
+
+2.Fundamentos de las redes de computadores
+1. Conceptos básicos
+2. Red física y lógicas
+3. TCP/IP: Internet
+
+3.Sistemas Distribuidos
+1. Modelos y Arquitecturas de Sistemas Distribuidos
+2. Tecnologías Web y Middleware
+3. Seguridad
+4. Concurrencia y Sincronización
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Contenido y Bibliografía
+
+1.Sistemas Operativos Sistemas operativos modernos, Tanenbaum, Andrew 
+1. Conceptos básicos S. México : Pearson Educación, 2003, ISBN: 970-26-0315-3. 
+2. Gestión de Procesos [ Acceso al catálogo de la biblioteca universitaria]
+3. Concurrencia
+4. Gestión de Memoria
+5. Sistema de archivos
+
+Sistemas Operativos: aspectos internos y principios 
+de diseño, Stallings, William. Madrid : Pearson Prentice Hall, 
+2005, ISBN: 84-205-4462-0. [ Acceso al catálogo de la biblioteca 
+universitaria] [ Acceso a la edición electrónica ]
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Contenido y Bibliografía
+
+1.Sistemas Operativos
+1. Conceptos básicos
+2. Gestión de Procesos
+3. Concurrencia
+4. Gestión de Memoria
+5. Sistema de archivos
+
+2.Fundamentos de las redes de computadores
+1. Conceptos básicos
+2. Red física y lógicas
+3. TCP/IP: Internet
+
+3.Sistemas Distribuidos
+1. Modelos y Arquitecturas de Sistemas Distribuidos
+2. Tecnologías Web y Middleware
+3. Seguridad
+4. Concurrencia y Sincronización
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Contenido y Bibliografía
+
+2.Fundamentos de las redes Comunicaciones y redes de computadores, Stallings, 
+de computadores William. Madrid : Prentice Hall, 2004, ISBN: 84-205-4110-9. 
+
+1. Conceptos básicos [ Acceso al catálogo de la biblioteca universitaria] [ Acceso 
+2. Red física y lógicas a las ediciones anteriores ]
+
+3. TCP/IP: Internet
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Contenido y Bibliografía
+
+1.Sistemas Operativos
+1. Conceptos básicos
+2. Gestión de Procesos
+3. Concurrencia
+4. Gestión de Memoria
+5. Sistema de archivos
+
+2.Fundamentos de las redes de computadores
+1. Conceptos básicos
+2. Red física y lógicas
+3. TCP/IP: Internet
+
+3.Sistemas Distribuidos
+1. Modelos y Arquitecturas de Sistemas Distribuidos
+2. Tecnologías Web y Middleware
+3. Seguridad
+4. Concurrencia y Sincronización
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Contenido y Bibliografía
+
+3.Sistemas Distribuidos
+1. Modelos y Arquitecturas Sistemas distribuidos : conceptos y diseño, 
+
+de Sistemas Distribuidos Couloris, George ; Dollimore, Jean. Madrid : Addison-
+2. Tecnologías Web y Wesley, 2001, ISBN: 84-7829-049-4. [ Acceso al catálogo de 
+
+Middleware la biblioteca universitaria]
+3. Seguridad
+4. Concurrencia y
+
+Sistemas distribuidos : principios y paradigmas, 
+Sincronización
+
+Tanenbaum, Andrew S. Mexico : Pearson Educación, 2008, ISBN: 
+978-970-26-1280-3. [ Acceso al catálogo de la biblioteca 
+universitaria]
+
+Engineering Distributed Objects, Emmerich, Wolfgang. 
+Prentice Hall International, 2005, ISBN: 0-471-98657-7. 
+Complementario [ Acceso al catálogo de la biblioteca 
+universitaria]
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Evaluación
+
+EVALUACIÓN CONTINUA
+
+Teoría 01
+3 exámenes parciales de teoría y un examen final
+
+Práctica
+3 prácticas con su entrega y su presentación 02
+
+
+
+Francisco Maciá Pérez
+pmacia@dStiOc.uDa.es Evaluación
+
+Sesiones de Práctica
+Evaluación continua en cada sesión de 
+práctica
+
+Debates Presentación de Práctica
+A través de la herramienta de UACloud Presentaciones donde exponen la 
+
+práctica y se realizan preguntas
+
+Evaluación del tema Entrega de práctica
+Evaluación parcial, final y recuperación Incluye memoria, documentación del 
+
+proyecto y código
+
+EVALUACIÓN CONTINUA
+
+
+
+Francisco Maciá Pérez
+pmacia@dStiOc.uDa.es Evaluación
+
+NF
+Período Ordinario (Actividades de evaluación)
+
+𝑵𝑭 = 0.5 𝑁𝑃 + 0.5 𝑁𝑇 𝑠𝑖𝑖 𝑁𝑃 ≥  4 ∧  𝑁𝑇 ≥  4
+
+𝑒𝑛 𝑜𝑡𝑟𝑜 𝑐𝑎𝑠𝑜, 𝑁𝐹 = "𝑆𝑢𝑠𝑝𝑒𝑛𝑠𝑜"
+
+NT NP
+Evaluación de Teoría Evaluación de Prácticas
+
+𝑵𝑷 = 0.6 𝑁𝑆𝑃 + 0.4 𝑁𝐸𝑃
+4
+
+𝑵𝑻 = ෍ 𝑤𝑡𝑖 · 𝑃𝑇𝑖 , 𝑠𝑖𝑖 𝑃𝑇𝑖 ≥  4 15
+
+𝑖=1 𝑵𝑺𝑷 = ෍ 𝑤𝑠𝑖 · 𝑆𝑃𝑖 , 
+𝑒𝑛 𝑜𝑡𝑟𝑜 𝑐𝑎𝑠𝑜, 𝑵𝑻 = Suspenso, 𝑑𝑜𝑛𝑑𝑒 𝑐𝑎𝑑𝑎 𝑤𝑡𝑖𝑒𝑠 𝑢𝑛 𝑣𝑎𝑙𝑜𝑟 𝑞𝑢𝑒 𝑐𝑢𝑚𝑝𝑙𝑒 𝑖=1
+
+𝑐𝑜𝑛 0 ≤ 𝑤𝑠 𝑑𝑜𝑛𝑑𝑒 𝑐𝑎𝑑𝑎 𝑤𝑠𝑖𝑒𝑠 𝑢𝑛 𝑣𝑎𝑙𝑜𝑟 𝑞𝑢𝑒 𝑐𝑢𝑚𝑝𝑙𝑒 𝑐𝑜𝑛 0 ≤ 𝑤𝑠𝑖 ≤  1,
+𝑖 ≤  1, y la suma de todos los elementos es 1.
+
+y la suma de todos los elementos es 1
+
+𝑛
+
+𝑵𝑬𝑷 = ෍ 𝑤𝑒𝑖 · 𝐸𝑃𝑖 , 
+𝑖=1
+
+𝑑𝑜𝑛𝑑𝑒 𝑐𝑎𝑑𝑎 𝑤𝑒𝑖𝑒𝑠 𝑢𝑛 𝑣𝑎𝑙𝑜𝑟 𝑞𝑢𝑒 𝑐𝑢𝑚𝑝𝑙𝑒 𝑐𝑜𝑛 0 ≤ 𝑤𝑒𝑖 ≤  1,
+y la suma de todos los elementos es 1
+
+EVALUACIÓN CONTINUA
+
+
+
+Francisco Maciá Pérez
+pmacia@dtic.ua.eSsOD Planificación
+
+5
+
+6 15 Tema 1. Sistemas Operativos Semana 1 - 5
+
+Semanas
+Tema 2. Fundamentos de Redes de Computadores Semana 6 - 9
+
+4
+Tema 3. Sistemas Distribuidos Semana 10 - 15
+
+Parcial 1 Sistemas Operativos Semana 5
+
+Parcial 2. Fundamentos de Redes de Computadores Semana 9
+
+Parcial 3. Sistemas Distribuidos Semana 15
+
+
+
+Sistemas Operativos y 
+Distribuidos
+
+Iren Lorenzo Fonseca
+iren.fonseca@.ua.es
+
+Presentación de la asignatura
