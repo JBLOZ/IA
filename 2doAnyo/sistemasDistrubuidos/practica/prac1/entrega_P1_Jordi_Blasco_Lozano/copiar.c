@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     char *archivo_origen, *archivo_destino; // Variables para almacenar los nombres de los archivos
     int d_origen, d_destino; // Descriptores de archivo para el archivo de origen y destino
     int pipe_l_e[2]; // Array para almacenar los descriptores de los extremos de la tubería: lectura y escritura
-    pid_t pid_hijo, pid_pipe, pid_write_destino, pid_write_pipe; // Variable para almacenar el identificador del proceso hijo
+    pid_t pid_hijo, pid_pipe, pid_write_destino, pid_write_pipe; // Variable para almacenar el identificador del proceso hijo y los valores de retorno de las funciones write y pipe
     char buffer[BUFFER_SIZE]; // Buffer para almacenar los datos que se leerán y escribirán
     ssize_t bytes_leidos; // Variable para almacenar la cantidad de bytes leídos
 
@@ -27,7 +27,6 @@ int main(int argc, char *argv[])
     archivo_destino = argv[2];
 
     // Abrir el archivo de origen
-    
     d_origen = open(archivo_origen, O_RDONLY);
     if (d_origen == -1) { perror("Error al abrir el archivo origen"); exit(1); }
 
@@ -41,7 +40,7 @@ int main(int argc, char *argv[])
     if (pid_hijo == 0)
     {
         // Proceso hijo: lee de la tubería y escribe en el archivo destino
-        close(pipe_l_e[1]); // Cerrar el extremo de escritura de la tubería, ya que el proceso hijo solo necesita leer.
+        close(pipe_l_e[1]); // Cerrar el extremo de escritura de la tubería, ya que el proceso hijo solo necesita leer. 
 
         // Abrir el archivo de destino
         d_destino = open(archivo_destino, O_WRONLY | O_CREAT | O_TRUNC, 0644);
