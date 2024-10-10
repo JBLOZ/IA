@@ -1,0 +1,2739 @@
+﻿Sistemas Operativos y 
+Distribuidos
+
+Iren Lorenzo Fonseca
+iren.fonseca@.ua.es
+
+TEMA 1. Sistemas Operativos.
+
+Gestión de procesos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Tema 1.1 Gestión de procesos
+Contenidos
+
+Introducción
+Definiciones
+
+Conceptos fundamentales
+Procesos
+
+Implementación de procesos
+Operaciones y cambios de contexto
+
+Hilos (Threads)
+Conceptos
+
+Planificador CPU
+Algoritmos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Introducción
+Definiciones básicas
+
+Proceso ≠ programa Proceso: Programa en ejecución
+
+Servicios del SO
+
+Ejecución concurrente
+
+Sincronización de procesos 
+
+Comunicación entre procesos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Introducción
+Definiciones básicas
+
+Ejecución concurrente
+
+Multiprogramación Multiprocesamiento
+Técnica que permite que Capacidad de un sistema para utilizar
+
+múltiples procesos se mantengan más de un procesador físico o 
+cargados en la memoria y listos núcleo de procesador al mismo 
+para ejecutarse. Aunque en los tiempo para ejecutar varios procesos 
+sistemas tradicionales sólo hay de manera simultánea. En este caso, 
+
+un procesador, el SO alterna la hay varios procesadores disponibles 
+ejecución de diferentes procesos que pueden ejecutar diferentes 
+
+de forma rápida, lo que da la procesos o partes de un proceso en 
+apariencia de ejecución paralelo
+
+simultánea
+
+Procesamiento Distribuido
+Implica la ejecución de procesos en 
+
+múltiples máquinas o nodos distribuidos
+geográficamente o en una red. En lugar 
+de tener un solo sistema con múltiples 
+
+procesadores, los procesos se ejecutan en 
+diferentes sistemas interconectados.
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Introducción
+Definiciones básicas
+
+Proceso ≠ programa Proceso: Programa en ejecución
+
+Servicios del SO
+
+Ejecución concurrente
+
+Sincronización de procesos 
+
+Comunicación entre procesos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Relación entre procesos Conceptos fundamentales
+Estados de un proceso
+
+Contenidos
+
+Estructura de un proceso
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Relación entre procesos
+Tipos
+
+Características:
+✓ No intercambian información con otros procesos.
+✓ No afectan ni son afectados por el comportamiento o el 
+
+estado de otros procesos. Independientes
+Los procesos independientes son 01
+
+✓ Son totalmente autónomos y pueden ejecutarse en aquellos que no interactúan ni 
+
+cualquier orden sin afectar el resultado. dependen de otros procesos en el 
+sistema.
+
+Ejemplo:
+✓ Un proceso que realiza cálculos matemáticos o genera un 
+
+informe, y no necesita comunicarse con otros procesos 
+durante su ejecución.
+
+✓ La ejecución de un editor de texto mientras en otro proceso 
+se ejecuta un reproductor de música. Ambos procesos 
+pueden funcionar independientemente sin necesidad de 
+comunicarse.
+
+Ventajas:
+✓ Más fácil de gestionar, ya que no requiere coordinación o 
+
+sincronización con otros procesos.
+✓ No introduce problemas de interferencia o dependencia 
+
+entre procesos.
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Relación entre procesos
+Tipos
+
+Características:
+✓ Comparten datos o se comunican entre sí.
+✓ A menudo requieren mecanismos de sincronización.
+✓ Un proceso puede depender de otro para obtener 
+
+información o completar una tarea. Independientes
+Los procesos independientes son 01
+
+✓ Los procesos pueden compartir memoria o intercambiar aquellos que no interactúan ni 
+
+mensajes dependen de otros procesos en el 
+sistema.
+
+Ejemplo:
+✓ Un navegador web con múltiples pestañas abiertas, donde 
+
+Cooperativos
+cada pestaña es un proceso que puede cooperar con el 
+
+Los procesos cooperativos son 02
+proceso principal del navegador para gestionar el historial o aquellos que interactúan y 
+
+la memoria compartida. comparten datos o recursos entre 
+ellos.
+
+Ventajas:
+✓ Permiten la comunicación y el trabajo conjunto entre 
+
+procesos, lo que puede mejorar el rendimiento en ciertas 
+tareas distribuidas.
+
+✓ Útil en aplicaciones que requieren compartición de recursos 
+(como memoria o archivos). 
+
+Desafíos:
+✓ Sincronización.
+✓ Interbloqueo.
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Relación entre procesos
+Tipos
+
+Características:
+✓ Los procesos no cooperan entre sí, y deben competir para 
+
+obtener acceso a los recursos.
+✓ No comparten información, pero pueden interferir entre sí 
+
+si compiten por los mismos recursos. Independientes
+Los procesos independientes son 01
+
+✓ Los recursos son asignados por el sistema operativo, que aquellos que no interactúan ni 
+
+debe decidir cómo distribuirlos de manera justa y eficiente. dependen de otros procesos en el 
+sistema.
+
+Ejemplo:
+✓ Un proceso que intenta acceder a un dispositivo de 
+
+Cooperativos
+impresión mientras otro proceso también intenta utilizarlo. 
+
+Los procesos cooperativos son 02
+Aquí, el sistema operativo deberá gestionar qué proceso aquellos que interactúan y 
+
+obtiene acceso al dispositivo y cuándo. comparten datos o recursos entre 
+ellos.
+
+Problemas asociados:
+✓ Interbloqueo (Deadlock)
+
+Competitivos
+✓ Starvation (Inanición): En sistemas mal diseñados, un 
+
+Son aquellos que compiten por 03
+proceso puede quedar indefinidamente en espera si otros recursos limitados del sistema, 
+
+procesos continúan ocupando los recursos que necesita. como la CPU, la memoria, o 
+dispositivos de entrada/salida 
+
+Soluciones comunes: (E/S).
+
+✓ Planificación de CPU.
+✓ Exclusión mutua.
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un 
+proceso
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Ciclo de vida
+
+El ciclo de vida de un proceso en un SO describe las diferentes fases 
+por las que pasa un proceso desde su creación hasta su terminación. A 
+lo largo de su vida, un proceso cambia de estado según sus 
+interacciones con la CPU, los recursos del sistema y otros procesos. 
+Estas son las fases principales del ciclo de vida de un proceso:
+
+Listo Bloqueado 
+Preparado para No puede continuar 
+ejecutarse su ejecución porque 
+
+está esperando un 
+recurso externo
+
+01 02 03 04 05
+
+Creación 
+El proceso se Ejecución Terminado 
+encuentra en la fase Pasa a este estado El proceso ha 
+de creación cuando el sistema finalizado su 
+
+operativo le asigna ejecución
+tiempo en la CPU
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Ciclo de vida
+
+Creación 
+01 El proceso se 
+
+encuentra en la fase 
+de creación
+
+El proceso se encuentra en la fase de creación. Aquí, el SO está 
+configurando los recursos necesarios para el proceso, como espacio 
+en memoria, tablas de control y otros recursos. Todavía no ha 
+comenzado a ejecutarse.
+
+Acciones:
+
+➢ Asignación de recursos necesarios (memoria, espacio en disco, 
+etc.).
+
+➢ Configuración de las estructuras de datos necesarias, como el 
+bloque de control del proceso (PCB, Process Control Block).
+
+➢ Colocación en la cola de procesos listos.
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Ciclo de vida
+
+El ciclo de vida de un proceso en un SO describe las diferentes fases 
+por las que pasa un proceso desde su creación hasta su terminación. A 
+lo largo de su vida, un proceso cambia de estado según sus 
+interacciones con la CPU, los recursos del sistema y otros procesos. 
+Estas son las fases principales del ciclo de vida de un proceso:
+
+Listo Bloqueado 
+Preparado para No puede continuar 
+ejecutarse su ejecución porque 
+
+está esperando un 
+recurso externo
+
+01 02 03 04 05
+
+Creación 
+El proceso se Ejecución Terminado 
+encuentra en la fase Pasa a este estado El proceso ha 
+de creación cuando el sistema finalizado su 
+
+operativo le asigna ejecución
+tiempo en la CPU
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Listo Ciclo de vida
+
+02 Preparado para 
+ejecutarse
+
+En este estado, el proceso está preparado para ejecutarse y está 
+esperando ser asignado a la CPU. Todos los recursos necesarios están 
+disponibles, excepto la CPU.
+
+Acciones:
+
+➢ El proceso espera que el planificador del SO le asigne la CPU.
+
+➢ Puede haber múltiples procesos en este estado, por lo que el 
+planificador utiliza un algoritmo de planificación para 
+determinar qué proceso recibe la CPU.
+
+➢ Cola de procesos listos: Los procesos en estado de "listo" se 
+encuentran en la cola de procesos listos, esperando que la CPU 
+esté libre.
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Ciclo de vida
+
+El ciclo de vida de un proceso en un SO describe las diferentes fases 
+por las que pasa un proceso desde su creación hasta su terminación. A 
+lo largo de su vida, un proceso cambia de estado según sus 
+interacciones con la CPU, los recursos del sistema y otros procesos. 
+Estas son las fases principales del ciclo de vida de un proceso:
+
+Listo Bloqueado 
+Preparado para No puede continuar 
+ejecutarse su ejecución porque 
+
+está esperando un 
+recurso externo
+
+01 02 03 04 05
+
+Creación 
+El proceso se Ejecución Terminado 
+encuentra en la fase Pasa a este estado El proceso ha 
+de creación cuando el sistema finalizado su 
+
+operativo le asigna ejecución
+tiempo en la CPU
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Ejecución Ciclo de vida
+
+03 Pasa a este estado 
+cuando el sistema 
+operativo le asigna 
+tiempo en la CPU
+
+El proceso pasa a este estado cuando el SO le asigna tiempo en la CPU. 
+Aquí, el proceso está ejecutando sus instrucciones.
+
+Acciones:
+
+➢ La CPU está ejecutando activamente las instrucciones del proceso.
+
+➢ El proceso puede ejecutar llamadas al sistema, hacer cálculos o manejar 
+interrupciones.
+
+Transiciones:
+
+➢ Voluntaria: Si el proceso necesita realizar una operación de E/S o espera 
+otro recurso, puede ceder voluntariamente la CPU y pasar a un estado de 
+espera (bloqueado).
+
+➢ Involuntaria: El proceso puede ser interrumpido por el SO si su cuanto 
+de tiempo se ha agotado o puede ser suspendido si llega un proceso de 
+mayor prioridad.
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Ciclo de vida
+
+El ciclo de vida de un proceso en un SO describe las diferentes fases 
+por las que pasa un proceso desde su creación hasta su terminación. A 
+lo largo de su vida, un proceso cambia de estado según sus 
+interacciones con la CPU, los recursos del sistema y otros procesos. 
+Estas son las fases principales del ciclo de vida de un proceso:
+
+Listo Bloqueado 
+Preparado para No puede continuar 
+ejecutarse su ejecución porque 
+
+está esperando un 
+recurso externo
+
+01 02 03 04 05
+
+Creación 
+El proceso se Ejecución Terminado 
+encuentra en la fase Pasa a este estado El proceso ha 
+de creación cuando el sistema finalizado su 
+
+operativo le asigna ejecución
+tiempo en la CPU
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Bloqueado Ciclo de vida
+
+04 No puede continuar 
+su ejecución porque 
+está esperando un 
+recurso externo
+
+Un proceso entra en estado de bloqueo cuando no puede continuar su 
+ejecución porque está esperando un recurso externo (como la finalización 
+de una operación de entrada/salida o la disponibilidad de otro recurso).
+
+Acciones:
+
+➢ El proceso permanece en este estado hasta que la condición que espera se 
+resuelve, por ejemplo, la finalización de una operación de E/S o la 
+recepción de un mensaje.
+
+Cola de bloqueados: Los procesos en este estado están en una cola de 
+procesos bloqueados, esperando que se complete la operación que los 
+bloquea.
+
+Ejemplo: Un proceso que está esperando la entrada del usuario, como la 
+lectura de un archivo desde un disco duro, se encuentra en este estado
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Ciclo de vida
+
+El ciclo de vida de un proceso en un SO describe las diferentes fases 
+por las que pasa un proceso desde su creación hasta su terminación. A 
+lo largo de su vida, un proceso cambia de estado según sus 
+interacciones con la CPU, los recursos del sistema y otros procesos. 
+Estas son las fases principales del ciclo de vida de un proceso:
+
+Listo Bloqueado 
+Preparado para No puede continuar 
+ejecutarse su ejecución porque 
+
+está esperando un 
+recurso externo
+
+01 02 03 04 05
+
+Creación 
+El proceso se Ejecución Terminado 
+encuentra en la fase Pasa a este estado El proceso ha 
+de creación cuando el sistema finalizado su 
+
+operativo le asigna ejecución
+tiempo en la CPU
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Terminado Ciclo de vida
+
+05 El proceso ha 
+finalizado su 
+ejecución
+
+El proceso ha finalizado su ejecución, ya sea porque ha completado todas 
+sus tareas o porque ha ocurrido un error. El SO libera los recursos que el 
+proceso estaba utilizando y lo elimina de la tabla de procesos
+
+Acciones:
+
+➢ El sistema libera los recursos asignados al proceso, como la memoria, 
+descriptores de archivos y otros.
+
+➢ El proceso deja de estar en la tabla de procesos
+
+Causas de la terminación:
+
+➢ Normal: El proceso ha completado su ejecución de manera exitosa.
+
+➢ Forzada: El proceso ha sido terminado por el sistema o por otro proceso 
+(a través de una señal o interrupción).
+
+➢ Error: El proceso ha encontrado un error fatal (como un intento de acceso 
+a memoria no permitida).
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Ciclo de vida
+
+El ciclo de vida de un proceso en un SO describe las diferentes fases 
+por las que pasa un proceso desde su creación hasta su terminación. A 
+lo largo de su vida, un proceso cambia de estado según sus 
+interacciones con la CPU, los recursos del sistema y otros procesos. 
+Estas son las fases principales del ciclo de vida de un proceso:
+
+Listo Bloqueado 
+Preparado para No puede continuar 
+ejecutarse su ejecución porque 
+
+está esperando un 
+recurso externo
+
+01 02 03 04 05
+
+Creación 
+El proceso se Ejecución Terminado 
+encuentra en la fase Pasa a este estado El proceso ha 
+de creación cuando el sistema finalizado su 
+
+operativo le asigna ejecución
+tiempo en la CPU
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Transiciones
+
+Nuevo En 
+Listo Bloqueado
+
+ejecución
+
+Suspendido
+
+Terminado
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Transiciones
+
+Nuevo
+Suspendido
+
+En 
+Listo
+
+ejecución
+
+Bloqueado Terminado
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estados de un proceso
+Ejemplo práctico
+
+07
+Terminado En Ejecución
+
+Una vez completado, el proceso El proceso vuelve a obtener la CPU y 
+termina, y el sistema operativo libera 06 completa su ejecución
+
+todos los recursos asociados
+
+05
+Listo Bloqueado
+
+Cuando el archivo está disponible, el El proceso necesita leer un archivo, por 
+proceso pasa de nuevo al estado listo 04 lo que queda bloqueado esperando a 
+
+para continuar que el archivo esté disponible
+
+03
+En Ejecución Listo
+
+El proceso obtiene la CPU y empieza a El proceso está listo para ejecutarse, 
+ejecutarse. Realiza cálculos y acciones 02 pero tiene que esperar su turno en la 
+
+cola de procesos listos
+
+01
+Creación
+
+Imagina que ejecutas un programa desde la 
+línea de comandos. El sistema operativo crea 
+
+un proceso para este programa
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un 
+proceso
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Información de procesos
+
+Memoria de usuarios Memoria del kernel
+
+PROCESO 1
+
+PROCESO 2
+
+TABLA DE 
+PROCESOS
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Tabla de procesos
+
+TABLA DE 
+PROCESOS
+
+Es una estructura de datos que almacena información sobre 
+todos los procesos que están siendo gestionados por el 
+sistema operativo en un momento dado
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Tabla de procesos
+
+Es una estructura de datos que almacena información sobre 
+todos los procesos que están siendo gestionados por el 
+sistema operativo en un momento dado
+
+INFO ADICIONAL DE 
+PCB (PROCESS CONTROL BLOCK)
+
+PROCESOS
+INFO ADICIONAL DE 
+
+PCB (PROCESS CONTROL BLOCK)
+PROCESOS
+
+TABLA DE INFO ADICIONAL DE 
+PCB (PROCESS CONTROL BLOCK)
+
+PROCESOS PROCESOS
+INFO ADICIONAL DE 
+
+PCB (PROCESS CONTROL BLOCK)
+PROCESOS
+
+INFO ADICIONAL DE 
+PCB (PROCESS CONTROL BLOCK)
+
+PROCESOS
+
+Estática: sistemas antiguos o simples, como algunos sistemas embebidos
+Dinámica: stemas operativos modernos como Linux, Windows o Unix, la 
+tabla de procesos tiende a ser dinámica, permitiendo la creación y 
+eliminación de procesos de manera eficiente, dependiendo de las 
+demandas del sistema
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Bloque de Control de Proceso
+
+PCB (PROCESS CONTROL BLOCK)
+
+El bloque de control de procesos (PCB) es la estructura 
+de datos del sistema que mantiene toda la información 
+sobre un proceso.
+
+▪ El PCB de cada proceso se crea cuando se crea 
+un proceso y se destruye cuando el proceso 
+termina.
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Campos del PCB
+
+PCB (PROCESS CONTROL BLOCK)
+
+PID (Process ID): Un identificador único que distingue a cada 
+proceso en el sistema.
+
+PPID (Parent Process ID): Identificador del proceso padre que 
+generó este proceso (si existe).
+
+IDENTIFICACION DEL PROCESO
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Campos del PCB
+
+PCB (PROCESS CONTROL BLOCK)
+
+Estado del Proceso: El estado actual en el que se encuentra el 
+proceso (nuevo, listo, en ejecución, en espera, terminado, 
+suspendido, etc.).
+
+IDENTIFICACION DEL PROCESO
+
+ESTADO DEL PROCESO
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Campos del PCB
+
+PCB (PROCESS CONTROL BLOCK)
+
+Contador de Programa (PC): Dirección de la próxima instrucción a 
+ejecutar cuando el proceso vuelva a ser ejecutado.
+
+Registros de la CPU: El valor de los registros generales (como 
+acumulador, punteros, contadores, etc.) en el momento en que se 
+interrumpió el proceso.
+
+…
+
+IDENTIFICACION DEL PROCESO
+
+ESTADO DEL PROCESO
+
+REGISTROS DE LA CPU
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Bloque de Control de Proceso
+
+PCB (PROCESS CONTROL BLOCK)
+
+Prioridad: Nivel de prioridad del proceso en la planificación del CPU.
+
+Cola de Planificación: Puntero a la cola de procesos listos o en espera, 
+dependiendo de la política de planificación utilizada.
+
+Tiempo de CPU usado: Tiempo de CPU que el proceso ha consumido hasta 
+ahora.
+
+Tiempo de espera: Tiempo que el proceso ha pasado en espera de recursos.
+
+…
+
+IDENTIFICACION DEL PROCESO
+
+ESTADO DEL PROCESO
+
+REGISTROS DE LA CPU
+
+INFORMACIÓN DE PLANIFICACIÓN 
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Campos del PCB
+
+PCB (PROCESS CONTROL BLOCK)
+
+Dirección base y límite: Indica el rango de memoria asignado al proceso 
+(segmento base y su tamaño o límite).
+
+Punteros de la tabla de páginas: En sistemas con memoria virtual, se 
+almacenan punteros a las tablas de páginas o segmentos, que contienen las 
+direcciones de la memoria virtual.
+
+…
+
+IDENTIFICACION DEL PROCESO
+
+ESTADO DEL PROCESO
+
+REGISTROS DE LA CPU
+
+INFORMACIÓN DE PLANIFICACIÓN 
+
+GESTIÓN DE MEMORIA
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Campos del PCB
+
+PCB (PROCESS CONTROL BLOCK)
+
+Archivos abiertos: Lista de archivos abiertos por el proceso.
+
+Dispositivos asignados: Información sobre los dispositivos de entrada/salida 
+asignados al proceso (por ejemplo, terminales, discos, etc.).
+
+…
+
+IDENTIFICACION DEL PROCESO
+
+ESTADO DEL PROCESO
+
+REGISTROS DE LA CPU
+
+INFORMACIÓN DE PLANIFICACIÓN 
+
+GESTIÓN DE MEMORIA
+
+INFORMACIÓN DE RECURSOS
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Campos del PCB
+
+PCB (PROCESS CONTROL BLOCK)
+
+Señal pendiente: Indica si hay señales esperando ser entregadas al 
+proceso.
+…
+
+IDENTIFICACION DEL PROCESO
+
+ESTADO DEL PROCESO
+
+REGISTROS DE LA CPU
+
+INFORMACIÓN DE PLANIFICACIÓN 
+
+GESTIÓN DE MEMORIA
+
+INFORMACIÓN DE RECURSOS
+
+INFORMACIÓN DE SEÑALES 
+(EN SISTEMAS UNIX)
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Campos del PCB
+
+PCB (PROCESS CONTROL BLOCK) …
+
+IDENTIFICACION DEL PROCESO
+
+ESTADO DEL PROCESO
+
+REGISTROS DE LA CPU
+
+INFORMACIÓN DE PLANIFICACIÓN 
+
+GESTIÓN DE MEMORIA
+
+INFORMACIÓN DE RECURSOS
+
+INFORMACIÓN DE SEÑALES 
+(EN SISTEMAS UNIX)
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Ejemplo del PCB
+
+PCB (PROCESS CONTROL BLOCK)
+
+Campo Valor Ejemplo Descripción
+PID (Process ID) 1023 Identificador único del proceso.
+
+PPID (Parent PID) 1001 Identificador del proceso padre (el proceso que lo creó).
+
+UID (User ID) 1000 ID del usuario propietario del proceso.
+Estado actual del proceso (Nuevo, Listo, En Ejecución, 
+
+Estado del Proceso Listo (Ready)
+Bloqueado).
+Prioridad del proceso (cuanto menor, mayor es la 
+
+Prioridad 5
+prioridad).
+
+Contador de Programa (PC) 0x0040F123 Dirección de la próxima instrucción a ejecutar.
+Registros de CPU EAX: 0x00000001, EBX: 0x00000005 Estado actual de los registros de la CPU.
+Segmento de Código (Code) 0x00100000 - 0x0010FFFF Direcciones de memoria del segmento de código.
+Segmento de Datos (Data) 0x00200000 - 0x0020FFFF Direcciones de memoria del segmento de datos.
+
+Pila (Stack) SP: 0x0030FF00 Puntero de pila, dirección actual en la pila del proceso.
+
+Dirección del segmento de memoria heap para 
+Heap 0x00400000 - 0x0040AFFF
+
+asignaciones dinámicas.
+Dirección de tabla de páginas: 
+
+Tabla de Páginas Puntero a la tabla de páginas en memoria virtual.
+0xF0002000
+/dev/tty1, 
+
+Archivos Abiertos Lista de archivos abiertos por el proceso.
+/home/usuario/documento.txt
+
+Tiempo de CPU usado 30 ms Tiempo total de CPU consumido hasta ahora.
+
+Dispositivos de E/S Disco Dispositivos de entrada/salida asignados al proceso.
+
+Máscara de Señales 0x00000002 Señales bloqueadas o pendientes (en sistemas UNIX).
+
+Cola de Planificación Listo (Ready Queue) Cola donde se encuentra el proceso para ser planificado.
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Campos del PCB
+
+PCB (PROCESS CONTROL BLOCK) …
+
+IDENTIFICACION DEL PROCESO
+
+ESTADO DEL PROCESO
+
+REGISTROS DE LA CPU
+
+INFORMACIÓN DE PLANIFICACIÓN 
+
+GESTIÓN DE MEMORIA
+
+INFORMACIÓN DE RECURSOS
+
+INFORMACIÓN DE SEÑALES 
+(EN SISTEMAS UNIX)
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Información de procesos
+
+Memoria de usuarios Memoria del kernel
+
+PROCESO 1
+
+PROCESO 2
+
+PCB (PROCESS CONTROL BLOCK)
+
+TABLA DE 
+PROCESOS
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Información de procesos
+
+PROCESO 1
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Información de procesos
+
+PROCESO 1
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Estructura de un proceso
+Información de procesos
+
+Memoria de usuarios Memoria del kernel
+
+PROCESO 1
+
+PROCESO 2
+
+PCB (PROCESS CONTROL BLOCK)
+
+TABLA DE 
+PROCESOS
+
+Conceptos fundamentales
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Implementación de
+Operaciones con procesos Procesos
+Cambio de contexto
+
+Contenidos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Operaciones con procesos
+Creación de procesos Sistemas UNIX
+
+Llamada al sistema para crear un proceso (fork()).
+
+1. Asignación de un PID único para el nuevo proceso.
+
+2. Creación del PCB que almacena información del proceso.
+
+3. Asignación de espacio de memoria para el proceso.
+
+4. Copia del contexto del proceso padre.
+
+5. Inicialización del proceso configurando el contador de 
+programa y la pila.
+
+6. Colocación en la cola de planificación para ser 
+programado.
+
+7. Transición al estado listo para comenzar su ejecución.
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Operaciones con procesos
+Terminación de procesos Sistemas UNIX
+
+Terminación de procesos: exit, kill
+Terminación de procesos: exit, kill
+
+1. Notificación: El SO puede notificar al proceso que va a ser 
+terminado (en el caso de terminación controlada) o puede 
+finalizarlo de inmediato (en el caso de terminación forzada).
+
+2. Liberación de Recursos: El sistema operativo libera todos los 
+recursos asignados al proceso .
+
+3. Actualización del PCB: Para reflejar su estado como 
+terminado. La información de estado, los recursos liberados y 
+otros datos relevantes se registran.
+
+4. Notificación a Procesos Padres 
+
+5. Eliminación del PCB: Finalmente, el PCB del proceso se 
+elimina de la tabla de procesos del sistema operativo, liberando 
+espacio para otros procesos.
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Cambio de contexto
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Cambio de contexto
+Contexto
+
+El contexto de un proceso se refiere a toda la información necesaria que el sistema 
+operativo necesita para gestionar y ejecutar un proceso. Este contexto incluye tanto 
+los datos que describen el estado del proceso en un momento dado como la 
+información necesaria para reanudar su ejecución en el futuro
+
+Memoria de usuarios Memoria del kernel
+
+PROCESO 1
+
+PROCESO 2
+
+PCB (PROCESS CONTROL BLOCK)
+
+TABLA DE 
+PROCESOS
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Cambio de contexto
+Contexto
+
+Datos del PCB y del espacio de direcciones del proceso
+
+PCB (PROCESS CONTROL BLOCK)
+
+PROCESO 1
+
+• Identificación del proceso 
+(PID
+
+• Segmento de código
+• Estado del proceso
+
+• Segmento de datos
+• Contador de programa
+
+• Heap
+• Registros de CPU 
+
+• Pila (Stack)
+• Prioridad
+• Punteros de memoria
+• …
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Cambio de contexto
+Cambio de Contexto
+
+Cambio de contexto de un proceso
+
+Retirar de la CPU el proceso en ejecución y 
+asignarla a un proceso en estado de listo.
+
+• Acciones necesarias
+
+• Salvar el contenido del proceso en 
+ejecución a su PCB
+
+• Restaurar el contexto del nuevo proceso 
+desde su PCB
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Cambio de contexto
+Costo
+
+Costos del Cambio de Contexto
+
+Tiempo: El cambio de contexto no es gratuito. Implica overhead
+debido a la necesidad de guardar y restaurar el contexto, lo que 
+puede consumir tiempo de CPU. El tiempo perdido en cambios 
+de contexto excesivos puede impactar negativamente el 
+rendimiento del sistema.
+
+t t t
+
+P1 P2 P1 P3
+
+Tiempo CPU
+
+T(P1) + T(P2) + T(P3)
+Utilización =
+
+T(P1) + T(P2) + T(P3)  + 3t
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Cambio de contexto
+Motivos
+
+Motivos que provocan el cambio de contexto
+
+03 Existencia de una interrupción
+
+02 Espera de un proceso al realizar una 
+operación de E/S
+
+01 Finalización normal de un proceso en 
+ejecución
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Implementación de procesos
+Colas de procesos
+
+Colas de procesos: Tipo Abstracto de Datos que mantiene los 
+PCB de los procesos en una estructura dinámica de lista.
+
+• Se mantiene una cola de procesos por cada estado de 
+los procesos.
+
+Memoria de usuarios Memoria del kernel
+
+PROCESO 1
+COLAS DE PROCESOS
+
+PROCESO 2
+
+PCB (PROCESS CONTROL BLOCK)
+
+TABLA DE 
+PROCESOS
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Implementación de procesos
+Colas de procesos
+
+COLAS DE PROCESOS
+
+Cola de cabecera pid pid pid
+procesos final
+listos ··· ··· ···
+
+NULL
+
+Cola de cabecera pid pid
+procesos final
+bloqueados ··· ···
+
+NULL
+
+Cola de cabecera pid
+procesos en final
+ejecución ···
+
+NULL
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Implementación de procesos
+Colas de procesos
+
+COLAS DE PROCESOS Cola de cabecera pid pid
+procesos final
+bloqueados ··· ···
+
+NULL
+
+Lista de espera por recursos
+
+Cola de cabecera pid pid pid
+procesos final
+Impresora ··· ··· ···
+
+NULL
+
+Cola de cabecera NULL
+procesos final NULL
+BD
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Implementación de procesos
+Colas de procesos
+
+COLAS DE PROCESOS
+
+Cola de cabecera pid pid pid
+procesos final
+listos ··· ··· ···
+
+NULL
+
+Cola de cabecera pid pid
+procesos final
+bloqueados ··· ···
+
+NULL
+
+Cola de cabecera pid
+procesos en final
+ejecución ···
+
+NULL
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Implementación de procesos
+Colas de procesos
+
+COLAS DE PROCESOS Cola de cabecera pid
+procesos en final
+ejecución ···
+
+Sistemas con varios procesadores
+NULL
+
+Cola de Listos Global:
+•Todos los procesadores/núcleos comparten una única cola global de listos.
+•Los procesadores extraen procesos de esta cola cuando están disponibles 
+para ejecutar.
+•Este enfoque es sencillo, pero puede causar cuellos de botella debido a la 
+contención cuando varios procesadores intentan acceder a la misma cola 
+simultáneamente.
+
+Colas de Listos por Procesador/Núcleo:
+•Cada procesador o núcleo tiene su propia cola de listos local.
+•Los procesos se distribuyen entre las diferentes colas, lo que reduce la 
+contención, pero introduce un desafío para equilibrar la carga entre los diferentes 
+procesadores.
+•Algunos sistemas usan políticas de balanceo de carga (load balancing)
+
+Implementación
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos
+Introducción
+
+Hilos en Python
+Contenidos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Introducción
+Hilos
+
+✓ Un hilo es una unidad de ejecución dentro de un proceso. 
+
+✓ Todos los hilos de un mismo proceso comparten el mismo espacio 
+de direcciones y recursos, pero tienen su propio contador de 
+programa, pila y registros. 
+
+✓ Esto hace que la comunicación entre hilos dentro de un proceso sea 
+más eficiente y sencilla en comparación con la comunicación entre 
+procesos.
+
+Memoria de usuarios Memoria del kernel
+
+HILO 1
+PROCESO 1
+
+HILO 2
+COLAS DE PROCESOS
+
+PROCESO 2
+
+PCB (PROCESS CONTROL BLOCK)
+
+TABLA DE 
+PROCESOS
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Introducción
+Procesos vs Hilos
+
+Características Proceso Hilo
+
+Más costosa en tiempo y 
+Creación Más rápida y eficiente.
+
+recursos.
+
+Comparten espacio de 
+Independiente, tiene su propio 
+
+Administración memoria con otros hilos 
+espacio de memoria.
+
+del mismo proceso.
+
+Cuando un hilo termina, los 
+Cuando un proceso termina, se 
+
+Finalización recursos compartidos 
+liberan todos sus recursos.
+
+permanecen.
+
+Más costoso debido a la Más eficiente, ya que 
+Cambio de contexto separación de espacios de comparten el espacio de 
+
+memoria. memoria.
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Introducción
+Tipos de Hilos
+
+Hilos a nivel de usuario Hilos a nivel de kernel
+
+Los hilos a nivel de usuario son gestionados enteramente En los hilos a nivel de kernel, el sistema operativo es 
+por una biblioteca en el espacio de usuario, sin responsable de la gestión de los hilos. Aquí, el kernel es 
+intervención del kernel del sistema operativo. quien maneja la creación, finalización y cambio de 
+Estos hilos son fáciles de crear y administrar porque no contexto de los hilos
+requieren intervención del sistema operativo, lo que hace Ventajas:
+que la conmutación de hilos sea extremadamente rápida.
+
+• Los hilos del mismo proceso pueden ejecutarse en 
+diferentes núcleos de CPU de forma simultánea, lo 
+
+Desventajas: que mejora el rendimiento en sistemas 
+• Si uno de los hilos realiza una operación bloqueante multiprocesadores.
+
+(como una lectura de disco), todo el proceso se • Si un hilo se bloquea, otros hilos del mismo proceso 
+bloquea. pueden seguir ejecutándose.
+
+• El sistema operativo no sabe de la existencia de estos Desventajas:
+hilos, por lo que no puede optimizar su ejecución en • La gestión de hilos a nivel de kernel es más costosa 
+múltiples CPUs. en términos de recursos del sistema, ya que involucra 
+
+más operaciones y llamadas al sistema.
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos en Python
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos en Python
+Como funciona
+
+✓ El multithreading permite la ejecución de varios hilos dentro de un 
+solo proceso. 
+
+✓ Todos los hilos comparten el mismo espacio de memoria, lo que 
+permite una comunicación eficiente entre ellos. 
+
+✓ Sin embargo, debido al GIL (Global Interpreter Lock) en algunas 
+implementaciones de Python, sólo un hilo puede ejecutar código 
+Python a la vez, lo que limita el rendimiento en tareas intensivas en 
+CPU.
+
+o CPython: Sí tiene GIL.
+o Jython: No tiene GIL.
+o IronPython: No tiene GIL.
+o PyPy: Sí tiene GIL (pero tiene proyectos experimentales para 
+
+eliminarlo).
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos en Python
+Implementación de python
+
+import platform
+
+implementation = platform.python_implementation()
+
+print(f"Estás usando: {implementation}")
+
+if implementation == "CPython":
+print("Esta implementación usa GIL.")
+
+elif implementation == "PyPy":
+print("Esta implementación usa GIL, pero tiene optimizaciones.")
+
+else:
+print("Esta implementación no usa GIL.")
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos en Python
+Paralelismo con GIL
+
+¿Cuándo usar multithreading?
+
+➢ El multithreading es útil cuando la mayor parte del tiempo de ejecución 
+se dedica a operaciones de entrada/salida (I/O), como leer y escribir 
+archivos, realizar solicitudes de red, o interactuar con bases de datos. 
+
+➢ En estas tareas, el GIL se libera mientras se espera la respuesta, 
+permitiendo que otros hilos continúen ejecutándose.
+
+➢ Ejemplos de tareas I/O intensivas:
+
+• Servidores web que manejan múltiples conexiones simultáneas.
+
+• Programas que descargan múltiples archivos de la red.
+
+• Aplicaciones que procesan grandes cantidades de datos de 
+entrada/salida (como logs o consultas a bases de datos).
+
+Menor consumo de memoria: Dado que todos los hilos comparten el mismo 
+espacio de memoria, el uso de memoria es más eficiente en comparación con 
+múltiples procesos, lo que puede ser importante si se ejecutan muchos hilos al 
+mismo tiempo.
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos en Python
+Ejemplo con thread
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos en Python
+Paralelismo con GIL
+
+MULTIPROCESSING
+
+• El multiprocessing crea múltiples procesos independientes, cada 
+uno con su propio espacio de memoria. 
+
+• La gran ventaja es que cada proceso tiene su propio intérprete de 
+Python y no está limitado por el GIL, lo que permite que varios 
+procesos ejecuten código Python simultáneamente en múltiples 
+núcleos de CPU
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos en Python
+Paralelismo con GIL
+
+¿Cuándo usar multiprocessing?
+
+➢ Tareas intensivas en CPU: Si el programa está realizando 
+operaciones que consumen mucha CPU, como cálculos matemáticos 
+complejos, entrenamiento de modelos de IA o procesamiento de 
+grandes volúmenes de datos, multiprocessing es generalmente la 
+mejor opción. 
+
+➢ Cada proceso se ejecuta en su propio núcleo de CPU, lo que permite 
+un verdadero paralelismo.
+
+➢ Ejemplos de tareas CPU intensivas:
+
+• Entrenamiento de redes neuronales profundas.
+
+• Algoritmos de procesamiento de imágenes o videos.
+
+• Simulaciones científicas o financieras.
+
+Escalabilidad en sistemas multicore: Dado que cada proceso puede 
+correr en su propio núcleo de CPU, el multiprocessing permite aprovechar 
+completamente los sistemas multicore, lo que es clave para tareas 
+computacionales intensivas.
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos en Python
+Ejemplo con multiprocessing
+
+Hilos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Hilos en Python
+Paralelismo con GIL
+
+Características Multithreading Multiprocessing
+
+No hay verdadero paralelismo debido al GIL Proporciona verdadero paralelismo; cada 
+Paralelismo (solo un hilo puede ejecutar código Python a proceso puede ejecutarse en su propio 
+
+la vez). núcleo.
+
+Tareas I/O intensivas (operaciones de red, Tareas CPU intensivas (cálculos complejos, 
+Tareas adecuadas
+
+E/S, bases de datos). procesamiento de datos).
+
+Mayor overhead debido a la creación de 
+Menor overhead, ya que los hilos comparten 
+
+Overhead procesos independientes y la duplicación de 
+el mismo espacio de memoria.
+
+memoria.
+
+Más eficiente en cuanto a memoria, ya que 
+Cada proceso tiene su propio espacio de 
+
+Uso de memoria todos los hilos comparten el mismo espacio 
+memoria, lo que consume más recursos.
+
+de memoria.
+
+Compartir datos entre procesos es más 
+Más fácil compartir datos entre hilos 
+
+Facilidad de uso complejo y puede requerir mecanismos de 
+(porque comparten memoria).
+
+IPC (memoria compartida, colas, pipes).
+
+No escala bien en sistemas multicore debido Escala muy bien en sistemas multicore, 
+Escalabilidad
+
+al GIL. aprovechando todos los núcleos de la CPU.
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Planificador CPU
+Introducción
+
+Algoritmos de planificación CPU
+Contenidos
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Introducción
+Planificador CPU
+
+Decidir qué proceso en el sistema en estado listo debe ser asignado a la 
+CPU para su ejecución
+
+Criterios de planificación
+
+Rendimiento Tiempo de Espera
+Cantidad de trabajo que un sistema puede realizar 
+
+Tiempo total que un proceso pasa en la 
+en un tiempo determinado.
+
+cola de listos, esperando a ser ejecutado. 
+Rendimiento = nº procesos terminados/t No incluye el tiempo de ejecución
+
+Utilización de la CPU Tiempo de Retorno Tiempo de Respuesta
+Proporción del tiempo en que la CPU está 
+
+Tiempo total que transcurre 
+activa y ejecutando procesos en comparación Tiempo transcurrido desde que se inicia 
+
+desde que se envía un proceso 
+con el tiempo total disponible. un proceso hasta que el sistema 
+
+hasta que se completa. Incluye el comienza a devolver la salida. Es un 
+Utilización = tCPU_ocupada/tCPU_TOTAL tiempo de espera, el tiempo de criterio crucial para sistemas 
+
+ejecución y el tiempo de I/O interactivos.
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de 
+planificación
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+EXPROPIATIVA NO EXPROPIATIVA
+
+Expropiativa
+
+No expropiativa
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+NO EXPROPIATIVA
+
+Enfoque donde una vez que un proceso ha comenzado a ejecutar en la 
+CPU, debe completarse o entrar en el estado de espera antes de que se 
+le pueda quitar la CPU. 
+Esto significa que un proceso no puede ser interrumpido 
+arbitrariamente por otros procesos.
+
+Ventajas
+• Simplicidad: La planificación no expropiativa es más fácil de 
+
+implementar, ya que no se requiere un sistema de prioridades complejo ni 
+la gestión de interrupciones.
+
+• Menor Sobrecarga: Al no haber cambios de contexto frecuentes, hay 
+menos sobrecarga en la CPU, lo que puede llevar a un mejor rendimiento 
+en ciertas aplicaciones.
+
+Desventajas
+• Ineficiencia: Puede ser ineficiente en entornos donde los procesos de 
+
+mayor prioridad necesitan atención inmediata, ya que un proceso de baja 
+prioridad puede monopolizar la CPU.
+
+• Latencia: Puede aumentar el tiempo de espera de los procesos críticos, lo 
+que afecta la capacidad de respuesta del sistema.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+NO EXPROPIATIVA
+
+01 FIFO (First In First Out)
+Los procesos se ejecutan en el orden en que llegan, sin interrupciones
+
+02 SJF (Shortest Job First) No Expropiativo
+Los procesos más cortos se ejecutan primero, pero una vez que un proceso 
+comienza a ejecutarse, no se puede interrumpir
+
+03 Planificación con Prioridad No Expropiativa
+Los procesos se ejecutan según su prioridad, pero no pueden ser 
+interrumpidos hasta que terminen su ejecución o entren en espera.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+NO EXPROPIATIVA
+
+01 FIFO (First In First Out)
+Los procesos se ejecutan en el orden en que llegan, sin interrupciones
+
+Los procesos se ejecutan en el orden en que llegan a la cola de 
+listos. El primero que llega es el primero que se ejecuta.
+
+Ventajas: Fácil de implementar y entender.
+
+Desventajas: No tiene en cuenta la duración del proceso. Un proceso 
+largo puede hacer que los demás procesos esperen demasiado tiempo 
+(problema del convoy).
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+NO EXPROPIATIVA
+
+01 FIFO (First In First Out)
+Los procesos se ejecutan en el orden en que llegan, sin interrupciones
+
+02 SJF (Shortest Job First) No Expropiativo
+Los procesos más cortos se ejecutan primero, pero una vez que un proceso 
+comienza a ejecutarse, no se puede interrumpir
+
+03 Planificación con Prioridad No Expropiativa
+Los procesos se ejecutan según su prioridad, pero no pueden ser 
+interrumpidos hasta que terminen su ejecución o entren en espera.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+NO EXPROPIATIVA
+
+02 SJF (Shortest Job First) No Expropiativo
+Los procesos más cortos se ejecutan primero, pero una vez que un proceso 
+comienza a ejecutarse, no se puede interrumpir
+
+El proceso con el tiempo de ejecución más corto se ejecuta primero
+
+Ventajas: Minimiza el tiempo promedio de espera.
+
+Desventajas:  Difícil de predecir el tiempo exacto de cada proceso, y 
+puede ocurrir el problema de inanición, donde procesos largos nunca 
+obtienen CPU.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+NO EXPROPIATIVA
+
+01 FIFO (First In First Out)
+Los procesos se ejecutan en el orden en que llegan, sin interrupciones
+
+02 SJF (Shortest Job First) No Expropiativo
+Los procesos más cortos se ejecutan primero, pero una vez que un proceso 
+comienza a ejecutarse, no se puede interrumpir
+
+03 Planificación con Prioridad No Expropiativa
+Los procesos se ejecutan según su prioridad, pero no pueden ser 
+interrumpidos hasta que terminen su ejecución o entren en espera.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+NO EXPROPIATIVA
+
+03 Planificación con Prioridad No Expropiativa
+Los procesos se ejecutan según su prioridad, pero no pueden ser 
+interrumpidos hasta que terminen su ejecución o entren en espera.
+
+Cada proceso tiene una prioridad asignada. Los procesos con 
+prioridad más alta se ejecutan antes que los de menor prioridad. 
+Puede ser estática o dinámica
+
+Ventajas: Permite dar preferencia a procesos más importantes o 
+críticos.
+
+Desventajas:  Puede ocurrir inanición si los procesos de baja 
+prioridad nunca reciben CPU. Para mitigar esto, se puede 
+implementar envejecimiento (aging), donde los procesos que esperan 
+mucho tiempo incrementan su prioridad.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+NO EXPROPIATIVA
+
+01 FIFO (First In First Out)
+Los procesos se ejecutan en el orden en que llegan, sin interrupciones
+
+02 SJF (Shortest Job First) No Expropiativo
+Los procesos más cortos se ejecutan primero, pero una vez que un proceso 
+comienza a ejecutarse, no se puede interrumpir
+
+03 Planificación con Prioridad No Expropiativa
+Los procesos se ejecutan según su prioridad, pero no pueden ser 
+interrumpidos hasta que terminen su ejecución o entren en espera.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+EXPROPIATIVA NO EXPROPIATIVA
+
+Expropiativa
+
+No expropiativa
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+EXPROPIATIVA
+
+Enfoque donde un proceso puede ser interrumpido y despojado de la 
+CPU, incluso si no ha terminado su tiempo asignado. 
+Esto permite que otros procesos, que pueden tener mayor prioridad o 
+que son más críticos, obtengan acceso a la CPU.
+
+Ventajas
+• Mejora la capacidad de respuesta del sistema, especialmente en entornos 
+
+interactivos donde los procesos deben responder rápidamente a las entradas del 
+usuario.
+
+• Permite que el sistema operativo utilice la CPU de manera más eficiente al dar 
+preferencia a los procesos que requieren atención inmediata.
+
+Desventajas
+• Los cambios frecuentes de contexto pueden llevar a una sobrecarga, ya que cada 
+
+cambio de proceso implica guardar y cargar estados.
+• Los procesos de baja prioridad pueden verse continuamente desplazados y no 
+
+recibir tiempo de CPU, lo que puede llevar a situaciones de inanición 
+(Starvation).
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación por Turno Circular (Round Robin, RR)
+Cada proceso recibe un cuanto de tiempo, y después de usarlo, se mueve 01
+
+al final de la cola
+
+Planificación con Prioridad
+Los procesos se ordenan según su prioridad, y el de mayor prioridad es 02
+
+asignado a la CPU, interrumpiendo a los de menor prioridad si es 
+necesario
+
+SJF Expropiativo (Shortest Job First)
+Similar al SJF, pero permite que los procesos más cortos interrumpan a 03
+
+los que están en ejecución si llegan a la cola
+
+Planificación con Colas Multinivel (MLQ)
+Los procesos se clasifican en diferentes colas de acuerdo con ciertas 04
+
+características
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación por Turno Circular (Round Robin, RR)
+Cada proceso recibe un cuanto de tiempo, y después de usarlo, se mueve 01
+
+al final de la cola
+
+• La planificación por turno circular o Round Robin (RR)
+es uno de los algoritmos de planificación más simples y 
+comunes en sistemas multitarea. 
+
+• Está diseñado para entornos multiusuario donde se requiere 
+equidad y buena respuesta en tiempos compartidos
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación por Turno Circular (Round Robin, RR)
+Cada proceso recibe un cuanto de tiempo, y después de usarlo, se mueve 01
+
+al final de la cola
+
+Características
+
+Expropiativo
+Si el tiempo de quantum de un proceso se 03
+
+agota, la CPU se expropia y se le da al 
+siguiente proceso en la cola
+
+Ciclo de Procesos
+
+02 Los procesos se colocan en una cola circular y se 
+ejecutan por turnos. Si un proceso no termina durante 
+su quantum, es interrumpido y colocado al final de la 
+cola, y la CPU se asigna al siguiente proceso
+
+Quantum de Tiempo
+Se asigna un pequeño intervalo de 01
+
+tiempo (llamado "quantum" o "cuanto") 
+a cada proceso
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación por Turno Circular (Round Robin, RR)
+Cada proceso recibe un cuanto de tiempo, y después de usarlo, se mueve 01
+
+al final de la cola
+
+Ventajas 
+
+• Ofrece equidad: Todos los procesos reciben un tiempo de CPU 
+justo, por lo que es adecuado para sistemas interactivos. 
+
+• Buena respuesta en sistemas donde muchos procesos cortos e 
+interactivos están en ejecución
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación por Turno Circular (Round Robin, RR)
+Cada proceso recibe un cuanto de tiempo, y después de usarlo, se mueve 01
+
+al final de la cola
+
+Desventajas 
+
+• Si el quantum es demasiado corto, puede haber un exceso de 
+cambios de contexto, lo que disminuye la eficiencia.
+
+• Si el quantum es demasiado largo, se aproxima a un algoritmo no 
+expropiativo como FIFO.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación por Turno Circular (Round Robin, RR)
+Cada proceso recibe un cuanto de tiempo, y después de usarlo, se mueve 01
+
+al final de la cola
+
+Planificación con Prioridad
+Los procesos se ordenan según su prioridad, y el de mayor prioridad es 02
+
+asignado a la CPU, interrumpiendo a los de menor prioridad si es 
+necesario
+
+SJF Expropiativo (Shortest Job First)
+Similar al SJF, pero permite que los procesos más cortos interrumpan a 03
+
+los que están en ejecución si llegan a la cola
+
+Planificación con Colas Multinivel (MLQ)
+Los procesos se clasifican en diferentes colas de acuerdo con ciertas 04
+
+características
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación con Prioridad
+Los procesos se ordenan según su prioridad, y el de mayor prioridad es 02
+
+asignado a la CPU, interrumpiendo a los de menor prioridad si es 
+necesario
+
+En la planificación con prioridad, a cada proceso se le asigna una 
+prioridad, y la CPU se asigna al proceso con la prioridad más alta. 
+En el caso expropiativo, si un proceso con mayor prioridad llega 
+mientras otro de menor prioridad está ejecutándose, el proceso 
+actual es interrumpido. Las prioridades pueden ser fijas (estáticas) o 
+pueden cambiar durante la ejecución (dinámicas)
+
+Ventajas: Permite dar preferencia a procesos más importantes o 
+críticos.
+
+Desventajas:  Puede ocurrir inanición si los procesos de baja 
+prioridad nunca reciben CPU. Para mitigar esto, se puede 
+implementar envejecimiento (aging), donde los procesos que esperan 
+mucho tiempo incrementan su prioridad.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación por Turno Circular (Round Robin, RR)
+Cada proceso recibe un cuanto de tiempo, y después de usarlo, se mueve 01
+
+al final de la cola
+
+Planificación con Prioridad
+Los procesos se ordenan según su prioridad, y el de mayor prioridad es 02
+
+asignado a la CPU, interrumpiendo a los de menor prioridad si es 
+necesario
+
+SJF Expropiativo (Shortest Job First)
+Similar al SJF, pero permite que los procesos más cortos interrumpan a 03
+
+los que están en ejecución si llegan a la cola
+
+Planificación con Colas Multinivel (MLQ)
+Los procesos se clasifican en diferentes colas de acuerdo con ciertas 04
+
+características
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+SJF Expropiativo (Shortest Job First)
+Similar al SJF, pero permite que los procesos más cortos interrumpan a 03
+
+los que están en ejecución si llegan a la cola
+
+Versión expropiativa del algoritmo SJF (Shortest Job First). Si un 
+proceso con un tiempo restante más corto llega, se interrumpe el 
+proceso actual y el proceso con menor tiempo restante toma la 
+CPU.
+
+Ventajas: Minimiza el tiempo de espera promedio, ya que se da 
+preferencia a los trabajos más cortos
+
+Desventajas:  Similar a SJF, tiene el riesgo de inanición para 
+procesos largos. Puede ser difícil de implementar, ya que requiere 
+conocer o estimar con precisión el tiempo restante de cada proceso.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación por Turno Circular (Round Robin, RR)
+Cada proceso recibe un cuanto de tiempo, y después de usarlo, se mueve 01
+
+al final de la cola
+
+Planificación con Prioridad
+Los procesos se ordenan según su prioridad, y el de mayor prioridad es 02
+
+asignado a la CPU, interrumpiendo a los de menor prioridad si es 
+necesario
+
+SJF Expropiativo (Shortest Job First)
+Similar al SJF, pero permite que los procesos más cortos interrumpan a 03
+
+los que están en ejecución si llegan a la cola
+
+Planificación con Colas Multinivel (MLQ)
+Los procesos se clasifican en diferentes colas de acuerdo con ciertas 04
+
+características
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación con Colas Multinivel (MLQ)
+Los procesos se clasifican en diferentes colas de acuerdo con ciertas 04
+
+características
+
+Características
+
+• Colas de Prioridades: Los procesos de cada cola tienen diferente 
+prioridad. Por ejemplo, los procesos interactivos pueden tener una 
+prioridad más alta que los procesos batch.
+
+• Algoritmos en Cada Cola: Cada cola puede utilizar un algoritmo 
+de planificación diferente. Por ejemplo, la cola de procesos 
+interactivos puede usar Round Robin, mientras que la cola de 
+procesos batch puede usar FIFO.
+
+• Expropiativo entre Colas: Un proceso en una cola de mayor 
+prioridad puede interrumpir a un proceso en una cola de menor 
+prioridad.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación con Colas Multinivel (MLQ)
+Los procesos se clasifican en diferentes colas de acuerdo con ciertas 04
+
+características
+
+Ventajas:
+
+Flexibilidad para manejar diferentes tipos de procesos, ya que cada 
+grupo de procesos puede tener un algoritmo de planificación óptimo.
+
+Desventajas:
+
+Inanición: Los procesos en colas de baja prioridad pueden ser 
+ignorados si los procesos en colas de mayor prioridad ocupan 
+constantemente la CPU.
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Algoritmos expropiativos
+
+EXPROPIATIVA
+
+Planificación por Turno Circular (Round Robin, RR)
+Cada proceso recibe un cuanto de tiempo, y después de usarlo, se mueve 01
+
+al final de la cola
+
+Planificación con Prioridad
+Los procesos se ordenan según su prioridad, y el de mayor prioridad es 02
+
+asignado a la CPU, interrumpiendo a los de menor prioridad si es 
+necesario
+
+SJF Expropiativo (Shortest Job First)
+Similar al SJF, pero permite que los procesos más cortos interrumpan a 03
+
+los que están en ejecución si llegan a la cola
+
+Planificación con Colas Multinivel (MLQ)
+Los procesos se clasifican en diferentes colas de acuerdo con ciertas 04
+
+características
+
+Planificador CPU
+
+
+
+Francisco Maciá Pérez
+
+pmacia@dtic.ua.es
+
+Algoritmos de planificación
+Tipo de planificación
+
+EXPROPIATIVA NO EXPROPIATIVA
+
+Expropiativa
+
+No expropiativa
+
+Planificador CPU
+
+
+
+Tema 1.1 Conceptos básicos
+Contenidos
+
+Introducción
+Definiciones
+
+Conceptos fundamentales
+Procesos
+
+Implementación de procesos
+Operaciones y cambios de contexto
+
+Hilos (Threads)
+Conceptos
+
+Planificador CPU
+Algoritmos
+
+
+
+Sistemas Operativos y 
+Distribuidos
+
+Iren Lorenzo Fonseca
+iren.fonseca@.ua.es
+
+TEMA 1. Sistemas Operativos.
+
+Gestión de procesos
