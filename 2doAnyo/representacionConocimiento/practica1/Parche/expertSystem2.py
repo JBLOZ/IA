@@ -17,7 +17,7 @@ class ExpertSystem:
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = segmento
         self.estado = 1
-        self.previous_linear_velocity = 0.0
+        
 
     @staticmethod
     def straightToPointDistance(p1, p2, p3):
@@ -31,8 +31,8 @@ class ExpertSystem:
 
     def tomarDecision(self, poseRobot):
         # Definición de constantes
-        VMAX = 3.0  # Velocidad lineal máxima
-        WMAX = 1.0  # Velocidad angular máxima
+        VMAX = 3  # Velocidad lineal máxima
+        WMAX = 1  # Velocidad angular máxima
         VACC = 1.0  # Aceleración lineal máxima
         WACC = 0.5  # Aceleración angular máxima
         FPS = 60    # Fotogramas por segundo
@@ -41,7 +41,7 @@ class ExpertSystem:
         inicio = np.array(self.segmentoObjetivo.getInicio())  # Punto inicial del segmento
         fin = np.array(self.segmentoObjetivo.getFin())  # Punto final del segmento
 
-        toleracionFinSegmento_direccion = 0.01  # Tolerancia para considerar que se alcanzó el final del segmento
+        toleracionFinSegmento_direccion = 0.008  # Tolerancia para considerar que se alcanzó el final del segmento
         toleranciaDistanciaSegmento = 0.008  # Tolerancia para considerar que se está en el segmento
         toleracionFinSegmento = 0.5
 
@@ -88,7 +88,7 @@ class ExpertSystem:
                 tiempo_hasta_punto_cercano = float('inf')
 
             # Ajustar la distancia de mirada adelantada para anticipar el giro
-            anticipacion_tiempo = 1.7  # Segundos de anticipación
+            anticipacion_tiempo = 1.6  # Segundos de anticipación
             velocidad_promedio = (self.previous_linear_velocity + VMAX) / 2
             distancia_anticipacion = velocidad_promedio * anticipacion_tiempo
 
@@ -118,15 +118,15 @@ class ExpertSystem:
         k_v = 1.0  # Ganancia proporcional para la velocidad lineal
         k_w = 2.0  # Ganancia proporcional para la velocidad angular
 
-        if self.estado == 2:
-            # En estado 2, mantener velocidad lineal máxima y ajustar orientación
-            desired_linear_velocity = VMAX
-            desired_angular_velocity = k_w * angle_error
-        else:
-            # En estado 1, ajustar suavemente la velocidad angular hacia el punto objetivo
-            max_angle_speed = WMAX
-            desired_angular_velocity = max_angle_speed * math.tanh(k_w * angle_error)
-            desired_linear_velocity = k_v * distance_to_target
+        # if self.estado == 2:
+        #     # En estado 2, mantener velocidad lineal máxima y ajustar orientación
+        #     desired_linear_velocity = VMAX
+        #     desired_angular_velocity = k_w * angle_error
+        # else:
+        #     # En estado 1, ajustar suavemente la velocidad angular hacia el punto objetivo
+        max_angle_speed = WMAX
+        desired_angular_velocity = max_angle_speed * math.tanh(k_w * angle_error)
+        desired_linear_velocity = k_v * distance_to_target
 
         # Limitación de velocidades máximas
         desired_linear_velocity = min(desired_linear_velocity, VMAX)
