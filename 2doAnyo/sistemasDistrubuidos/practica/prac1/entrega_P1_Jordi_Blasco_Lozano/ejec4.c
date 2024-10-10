@@ -35,7 +35,7 @@ int main()
     if (shmid == -1) { perror("Error al crear la memoria compartida"); exit(1); }
 
     // Adjuntar el segmento de memoria compartida
-    nums = (int *)shmat(shmid, NULL, 0);
+    nums = (int *)shmat(shmid, NULL, 0); 
     if (nums == (int *)-1) { perror("Error al adjuntar la memoria compartida"); exit(1); }
 
     // Crear el proceso hijo
@@ -45,7 +45,7 @@ int main()
     if (pid == 0)
     {
         // Proceso hijo: genera los números aleatorios y los escribe en la memoria compartida
-        srand(time(NULL) ^ getpid());
+        srand(time(NULL) ^ getpid()); // Semilla para la generación de números aleatorios
         printf("Soy el hijo (%d): los números generados son: ", getpid());
         for (int i = 0; i < num_count; i++)
         {
