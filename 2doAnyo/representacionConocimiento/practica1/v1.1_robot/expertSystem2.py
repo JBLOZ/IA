@@ -113,7 +113,7 @@ class ExpertSystem:
     #     puntuacion_bruta = score
     #     return (puntuacion_normalizada, puntuacion_bruta, tiempo)
 
-    def actualizarEstado(self, distancia_punto_final, toleracionFinSegmento):
+    def actualizarEstado(self, poseRobot, puntoFin):
         """
         Actualiza el estado del robot basado en la distancia al punto final del segmento.
 
@@ -121,7 +121,13 @@ class ExpertSystem:
             distancia_punto_final (float): Distancia actual al punto final del segmento (m).
             toleracionFinSegmento (float): Tolerancia para considerar que se alcanzó el final del segmento (m).
         """
-        if distancia_punto_final <= toleracionFinSegmento:
+
+        # Obtener puntos inicial y final del segmento objetivo
+
+        # Cálculo de la distancia al punto final del segmento
+        distancia_punto_final = np.linalg.norm(puntoFin - np.array(poseRobot[0:2]))
+
+        if distancia_punto_final <= ExpertSystem.TOLERACION_FIN_SEGMENTO:
             self.estado = 2
 
         if self.estado == 2:
@@ -323,22 +329,16 @@ class ExpertSystem:
         Returns:
             tuple: (velocidad_lineal, velocidad_angular) en (m/s, rad/s).
         """
-        # Obtener puntos inicial y final del segmento objetivo
-        inicio = np.array(self.segmentoObjetivo.getInicio())  # Punto inicial del segmento
-        fin = np.array(self.segmentoObjetivo.getFin())  # Punto final del segmento
 
-        # Cálculo de la distancia al segmento (distancia perpendicular)
+        fin = np.array(self.segmentoObjetivo.getFin())  # Punto final del segmento
+        inicio = np.array(self.segmentoObjetivo.getInicio())  # Punto inicial del segmento
+    
         dist = self.straightToPointDistance(inicio, fin, np.array(poseRobot[0:2]))
 
-        # Cálculo de la distancia al punto final del segmento
-        distancia_punto_final = np.linalg.norm(fin - np.array(poseRobot[0:2]))
-
         # Actualización del estado del robot basado en la distancia al punto final
-        self.actualizarEstado(distancia_punto_final, self.TOLERACION_FIN_SEGMENTO)
+        self.actualizarEstado(poseRobot, fin)
 
-        # Almacenar la posición actual para la puntuación
-        
-
+    
         if self.objetivoAlcanzado: 
             
             print("Objetivo alcanzado.")
@@ -356,8 +356,6 @@ class ExpertSystem:
 
         return velocidad_lineal, velocidad_angular
     
-
-
 
 
     def imprimirPuntuacion(self, dist, velocidad_lineal, velocidad_angular):
