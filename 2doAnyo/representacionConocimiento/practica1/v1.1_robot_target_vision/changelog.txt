@@ -1,0 +1,25 @@
+
+Versión 0.3
+- Changes
+    - La función de cálculo de la puntuación de la trayectoria penaliza más por el tiempo que tarda en hacerse el recorrido
+    - La clase Segmento se comporta ahora como un objetivo que puede ser de tipo segmento o de 
+      tipo triángulo. El nombre de la clase pasa a ser Objetivo. El nombre del fichero se mantiene por compatibilidad. Se han añadido los métodos getMedio, que devuelve el tercer punto en caso de ser un triángulo, y el método getType que nos devuelve 1 si el tipo de obstáculo es un segmento o 2 si es un triángulo.
+
+- Bug fixes
+    - Las posiciones de una trayectoria ahora se inicializan al comenzar un segmento.
+    - La puntuación de segmento ahora se calcula corectamente
+
+Versión 0.2
+- Features
+    - El cálculo de la puntuación de la trayectoria ya está implementado
+    - Las trayectorias pueden estar formadas por varios segmentos
+
+- Bug fixes.
+
+ - Función segment.getFin ahora devuelve el valor correcto
+
+- Changes
+
+    - Las clases robot y segment ya no necesitan la librería pygame. El dibujado del robot y el segmento se realiza desde el fichero principal
+    
+Versión 0.1 Versión Inicial
