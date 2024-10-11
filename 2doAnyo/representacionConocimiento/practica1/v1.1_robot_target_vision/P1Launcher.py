@@ -7,7 +7,6 @@
  ' V 0.3
 '''
 
-
 import pygame
 import time
 import numpy as np
@@ -18,7 +17,6 @@ AppTitle = "RRDC P1 2024"
 
 RADIUS = 8 # Radio de dibujo para los puntos objetivo
 
-
 # pygame setup
 pygame.init()
 sizeY = 720 #Necesario para adaptar las coordenadas del entorno a las de la pantalla de pygame
@@ -26,7 +24,7 @@ screen = pygame.display.set_mode((1280, sizeY))
 clock = pygame.time.Clock()
 running = True
 
-robotIimage = pygame.image.load('robot1.png').convert_alpha();
+robotIimage = pygame.image.load('robot1.png').convert_alpha()
 
 def drawRobot(pose):
     #from Aleksandar haber
@@ -38,8 +36,6 @@ def drawRobot(pose):
     # then we plot the rotated image copy with boundaries specified by
     # the rectangle
     screen.blit(image1, image1_rect)
-
-
 
 def drawSegment(Inic, Fin, activo=True):
     pInicio = (Inic[0]*10.0, sizeY-Inic[1]*10.0)
@@ -135,10 +131,11 @@ while running:
                 experto.setObjetivo(pathSet[numPath])
 
     else:
-        velocidades = experto.tomarDecision(miRobot.getPose())
+        velocidades, target = experto.tomarDecision(miRobot.getPose())
+        # dibujar target del robot 
+        target_x = int(target[0])
+        target_y = sizeY - int(target[1])
+        pygame.draw.circle(screen, (255, 0, 0), (target_x, target_y), 5)
+        pygame.display.flip()
+
         miRobot.setVel(velocidades)
-
-
-# this is important, run this if the pygame window does not want to close
-pygame.quit()
-print(f'Puntuación total: {totalScore}')
