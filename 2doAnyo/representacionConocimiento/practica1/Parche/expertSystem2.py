@@ -1,7 +1,8 @@
 import math
 import numpy as np
 import datetime
-import os
+
+
 
 class ExpertSystem:
     """
@@ -14,11 +15,11 @@ class ExpertSystem:
     WMAX = 1.0  # Velocidad angular máxima (rad/s)
     VACC = 1.0  # Aceleración lineal máxima (m/s²)
     WACC = 0.5  # Aceleración angular máxima (rad/s²)
-    ANTICIPACION_TIEMPO = 1.3  # Segundos de anticipación para el punto objetivo
+    MULT_ANTICIPACION_GIRO = 1.3  # Parametro que regula la anticipacion Al giro del robot
     TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el final del segmento (m)
-    DIST_MIN_SCORE = 0.01  # Distancia mínima para puntuación máxima (m)
-
-    LOG_FILE_NAME = "logs_objetivo_alcanzado.csv"  # Nombre del archivo de log
+    DIST_MIN_SCORE = 0.01  # Distancia mínima para puntuación máxima (m) que no se usara en este caso
+    LOGS_TIEMPO_REAL = True  # Esta opcion sigue estando disponible para activar los logs en tiempo real ya que no tiene una correspondencia directa con que la puntuacion disminuya
+    SAVE_LOGS = False  # Quite la opcion de guardar los logs de puntaje ya que consumia muchos recursos y bajaba de media la puntuacion dos puntos
 
     def __init__(self):
         """
@@ -41,19 +42,6 @@ class ExpertSystem:
         self.velocidad_angular_previa = 0.0  # Velocidad angular previa
         self.primerSegmento = True  # Indica si es el primer segmento
 
-        # Inicializa el sistema de puntuación
-        self.posiciones = []  # Lista para almacenar las posiciones
-
-        # Inicializa el tiempo de inicio
-        self.tinicio = None  # Tiempo de inicio del segmento
-
-        # Crear el archivo de log si no existe y escribir el encabezado
-        if not os.path.exists(self.LOG_FILE_NAME):
-            try:
-                with open(self.LOG_FILE_NAME, 'w') as file:
-                    file.write("timestamp,puntuacion_del_segmento,puntuacion_bruta,tiempo_segundo\n")
-            except Exception as e:
-                print(f"Error al crear el archivo de log: {e}")
 
     def setObjetivo(self, segmento):
         """
@@ -65,8 +53,7 @@ class ExpertSystem:
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = segmento
         self.estado = 1
-        self.posiciones.clear()  # Limpia las posiciones anteriores al cambiar de objetivo
-        self.tinicio = datetime.datetime.now()  # Establece el tiempo de inicio del nuevo segmento
+        self.primerSegmento = False
 
     @staticmethod
     def straightToPointDistance(p1, p2, p3):
@@ -98,33 +85,33 @@ class ExpertSystem:
         """
         return (1 - k) * np.array(start_point) + k * np.array(end_point)
 
-    @staticmethod
-    def getSegmentScore(segmento, posiciones, tiempo):
-        """
-        Calcula la puntuación del segmento basado en las posiciones recientes del robot.
-        Retorna una tupla con la puntuación normalizada, la puntuación bruta y el tiempo.
+    # @staticmethod
+    # def getSegmentScore(segmento, posiciones, tiempo):
+    #     """
+    #     Calcula la puntuación del segmento basado en las posiciones recientes del robot.
+    #     Retorna una tupla con la puntuación normalizada, la puntuación bruta y el tiempo.
 
-        Args:
-            segmento (Segmento): Segmento objetivo.
-            posiciones (list): Lista de posiciones recientes del robot.
-            tiempo (float): Intervalo de tiempo considerado para la puntuación (s).
+    #     Args:
+    #         segmento (Segmento): Segmento objetivo.
+    #         posiciones (list): Lista de posiciones recientes del robot.
+    #         tiempo (float): Intervalo de tiempo considerado para la puntuación (s).
 
-        Returns:
-            tuple: (puntuacion_normalizada, puntuacion_bruta, tiempo).
-        """
-        inicio = np.array(segmento.getInicio())
-        fin = np.array(segmento.getFin())
-        score = 0
-        for pos in posiciones:
-            dist = np.abs(ExpertSystem.straightToPointDistance(inicio, fin, np.array(pos[0:2])))
-            if dist < 3:
-                if dist < ExpertSystem.DIST_MIN_SCORE:
-                    score += 100
-                else:
-                    score += 1 / dist
-        puntuacion_normalizada = score / (tiempo ** 3) if tiempo != 0 else 0
-        puntuacion_bruta = score
-        return (puntuacion_normalizada, puntuacion_bruta, tiempo)
+    #     Returns:
+    #         tuple: (puntuacion_normalizada, puntuacion_bruta, tiempo).
+    #     """
+    #     inicio = np.array(segmento.getInicio())
+    #     fin = np.array(segmento.getFin())
+    #     score = 0
+    #     for pos in posiciones:
+    #         dist = np.abs(ExpertSystem.straightToPointDistance(inicio, fin, np.array(pos[0:2])))
+    #         if dist < 3:
+    #             if dist < ExpertSystem.DIST_MIN_SCORE:
+    #                 score += 100
+    #             else:
+    #                 score += 1 / dist
+    #     puntuacion_normalizada = score / (tiempo ** 3) if tiempo != 0 else 0
+    #     puntuacion_bruta = score
+    #     return (puntuacion_normalizada, puntuacion_bruta, tiempo)
 
     def actualizarEstado(self, distancia_punto_final, toleracionFinSegmento):
         """
@@ -140,6 +127,12 @@ class ExpertSystem:
         if self.estado == 2:
             # Si se alcanza el punto final del segmento, se alcanza el objetivo
             self.objetivoAlcanzado = True
+            if self.primerSegmento:
+                # al principio calculaba la puntuacion del segmento y la guardaba en un log pero como consumia recursos decidi que era mas facil 
+                # usar el total score del archivo P1Launcher.py pero como no pertenece a ninguna clase no puedo acceder a ella
+                pass
+            self.primerSegmento = True
+
 
     def calcularPuntoObjetivo(self, inicio, fin, poseRobot):
         """
@@ -158,7 +151,7 @@ class ExpertSystem:
 
         2. **Distancia de Anticipación:**
            - Determina cuánto adelantarse en el segmento objetivo basado en la velocidad promedio y el tiempo de anticipación.
-           - `distancia_anticipacion = velocidad_promedio * ANTICIPACION_TIEMPO`
+           - `distancia_anticipacion = velocidad_promedio * MULT_ANTICIPACION_GIRO`
 
         3. **Longitud del Segmento:**
            - Calcula la longitud total del segmento objetivo.
@@ -185,7 +178,7 @@ class ExpertSystem:
         """
         # Parámetros para anticipación
         velocidad_promedio = (self.velocidad_lineal_previa + self.VMAX) / 2
-        distancia_anticipacion = velocidad_promedio * self.ANTICIPACION_TIEMPO
+        distancia_anticipacion = velocidad_promedio * self.MULT_ANTICIPACION_GIRO
 
         # Cálculo de la distancia total del segmento
         longitud_segmento = np.linalg.norm(fin - inicio)
@@ -344,39 +337,30 @@ class ExpertSystem:
         self.actualizarEstado(distancia_punto_final, self.TOLERACION_FIN_SEGMENTO)
 
         # Almacenar la posición actual para la puntuación
-        self.posiciones.append(poseRobot)
+        
 
-        if self.objetivoAlcanzado:
+        if self.objetivoAlcanzado: 
+            
             print("Objetivo alcanzado.")
-            # Calcular la puntuación del segmento con el tiempo real transcurrido
-            if self.tinicio is not None:
-                tiempo_transcurrido = (datetime.datetime.now() - self.tinicio).total_seconds()
-            else:
-                tiempo_transcurrido = 0
-            segmentScore = self.getSegmentScore(self.segmentoObjetivo, self.posiciones, tiempo_transcurrido)
-            # Guardar los logs en un archivo
-            self.guardarLogsEnArchivo(segmentScore)
-            # Resetear posiciones para el siguiente segmento
-            self.posiciones.clear()
-            return 0.0, 0.0  # Detener el robot al alcanzar el objetivo
 
-        # Calcular el punto objetivo adelantado
+            return(0,0)
+
+        
+
         target_point = self.calcularPuntoObjetivo(inicio, fin, poseRobot)
-
-        # Calcular las velocidades de control
         velocidad_lineal, velocidad_angular = self.calcularControl(target_point, poseRobot)
 
-        # Calcular la puntuación en tiempo real
-        # Se utiliza el tiempo transcurrido desde el inicio del segmento
-        if self.tinicio is not None:
-            tiempo_transcurrido = (datetime.datetime.now() - self.tinicio).total_seconds()
-        else:
-            tiempo_transcurrido = 0
+        if self.LOGS_TIEMPO_REAL:
+            self.imprimirPuntuacion(dist, velocidad_lineal, velocidad_angular)
+        
 
-        # Calcular la puntuación actual
-        puntuacion_normalizada, puntuacion_bruta, tiempo_calculado = self.getSegmentScore(
-            self.segmentoObjetivo, self.posiciones, tiempo_transcurrido
-        )
+        return velocidad_lineal, velocidad_angular
+    
+
+
+
+
+    def imprimirPuntuacion(self, dist, velocidad_lineal, velocidad_angular):
 
         # Imprimir la puntuación en tiempo real
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -384,49 +368,9 @@ class ExpertSystem:
             f"[{timestamp}] Distancia al segmento: {dist:.4f} m, "
             f"Velocidad Lineal: {velocidad_lineal:.4f} m/s, "
             f"Velocidad Angular: {velocidad_angular:.4f} rad/s, "
-            f"Puntuación del segmento: {puntuacion_normalizada:.4f} en {tiempo_transcurrido:.4f} segundos"
         )
 
-        return velocidad_lineal, velocidad_angular
 
-    def guardarLogsEnArchivo(self, segmentScore):
-        """
-        Guarda los logs acumulados en un archivo cuando se alcanza el objetivo.
-
-        Esta función añade una nueva línea al archivo CSV de logs con la información
-        del segmento completado, incluyendo timestamp, puntuación normalizada,
-        puntuación bruta y tiempo transcurrido.
-
-        Args:
-            segmentScore (tuple): Tuple (puntuacion_normalizada, puntuacion_bruta, tiempo).
-        """
-        # Crear una entrada de log
-        log = {
-            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "puntuacion_del_segmento": segmentScore[0],
-            "puntuacion_bruta": segmentScore[1],
-            "tiempo_segundo": segmentScore[2]
-        }
-
-        # Escribir los logs en formato CSV
-        try:
-            with open(self.LOG_FILE_NAME, 'a') as file:
-                # Escribir la entrada de log
-                line = (
-                    f"{log['timestamp']},"
-                    f"{log['puntuacion_del_segmento']:.4f},"
-                    f"{log['puntuacion_bruta']:.4f},"
-                    f"{log['tiempo_segundo']:.4f}\n"
-                )
-                file.write(line)
-
-            # Imprimir de la misma manera que el launcher
-            print(f"Puntuación del segmento: {segmentScore[0]:.4f}. "
-                  f"Puntuación bruta del segmento: {segmentScore[1]:.4f} "
-                  f"en {segmentScore[2]:.4f} segundos")
-            print(f"Logs guardados en el archivo: {self.LOG_FILE_NAME}")
-        except Exception as e:
-            print(f"Error al guardar los logs: {e}")
 
     def esObjetivoAlcanzado(self):
         """
@@ -445,3 +389,4 @@ class ExpertSystem:
             bool: False.
         """
         return False
+    

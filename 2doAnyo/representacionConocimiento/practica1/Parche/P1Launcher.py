@@ -142,3 +142,5 @@ while running:
 # this is important, run this if the pygame window does not want to close
 pygame.quit()
 print(f'Puntuación total: {totalScore}')
+with open('logsLauncher.csv', "a") as f:
+        f.write(f'{totalScore}\n')
