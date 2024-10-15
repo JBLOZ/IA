@@ -18,7 +18,7 @@ class ExpertSystem:
     MULT_ANTICIPACION_GIRO = 1.3  # Parametro que regula la anticipacion Al giro del robot
     TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el final del segmento (m)
     DIST_MIN_SCORE = 0.01  # Distancia mínima para puntuación máxima (m) que no se usara en este caso
-    LOGS_TIEMPO_REAL = True  # Esta opcion sigue estando disponible para activar los logs en tiempo real ya que no tiene una correspondencia directa con que la puntuacion disminuya
+    LOGS_TIEMPO_REAL = False  # Esta opcion sigue estando disponible para activar los logs en tiempo real ya que no tiene una correspondencia directa con que la puntuacion disminuya
     SAVE_LOGS = False  # Quite la opcion de guardar los logs de puntaje ya que consumia muchos recursos y bajaba de media la puntuacion dos puntos
 
     def __init__(self):
@@ -134,7 +134,7 @@ class ExpertSystem:
             # Si se alcanza el punto final del segmento, se alcanza el objetivo
             self.objetivoAlcanzado = True
             if self.primerSegmento:
-                # al principio calculaba la puntuacion del segmento y la guardaba en un log pero como consumia recursos decidi que era mas facil 
+                # al principio calculaba la puntuacion del segmento y la guardaba en un log pero como consumia recursos decidi que era mas facil
                 # usar el total score del archivo P1Launcher.py pero como no pertenece a ninguna clase no puedo acceder a ella
                 pass
             self.primerSegmento = True
@@ -196,7 +196,7 @@ class ExpertSystem:
         k_inicial = min(max(k_inicial, 0.0), 1.0)  # Asegurar que k_inicial esté entre 0 y 1
 
         # Cálculo de k_lookahead (posición adelantada en el segmento)
-        k_final = k_inicial + (distancia_anticipacion / longitud_segmento) 
+        k_final = k_inicial + (distancia_anticipacion / longitud_segmento)
         k_final = min(max(k_final, 0.0), 1.0)  # Asegurar que k_final esté entre 0 y 1
 
         # Obtener el punto objetivo adelantado
@@ -332,30 +332,30 @@ class ExpertSystem:
 
         fin = np.array(self.segmentoObjetivo.getFin())  # Punto final del segmento
         inicio = np.array(self.segmentoObjetivo.getInicio())  # Punto inicial del segmento
-    
+
         dist = self.straightToPointDistance(inicio, fin, np.array(poseRobot[0:2]))
 
         # Actualización del estado del robot basado en la distancia al punto final
         self.actualizarEstado(poseRobot, fin)
 
-    
-        if self.objetivoAlcanzado: 
-            
+
+        if self.objetivoAlcanzado:
+
             print("Objetivo alcanzado.")
 
             return(0,0)
 
-        
+
 
         target_point = self.calcularPuntoObjetivo(inicio, fin, poseRobot)
         velocidad_lineal, velocidad_angular = self.calcularControl(target_point, poseRobot)
 
         if self.LOGS_TIEMPO_REAL:
             self.imprimirPuntuacion(dist, velocidad_lineal, velocidad_angular)
-        
+
 
         return velocidad_lineal, velocidad_angular
-    
+
 
 
     def imprimirPuntuacion(self, dist, velocidad_lineal, velocidad_angular):
@@ -387,4 +387,3 @@ class ExpertSystem:
             bool: False.
         """
         return False
-    
