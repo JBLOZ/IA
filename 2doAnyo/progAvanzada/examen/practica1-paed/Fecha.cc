@@ -1,7 +1,8 @@
 #include<string>
 #include "Fecha.h"
-using namespace std;
 #include <iostream>
+using namespace std;
+
 
 /*
 Métodos privados
@@ -90,6 +91,35 @@ string Fecha::nombreMes(int m) const
     default:
     return "mes incorrecto";
         
+    }
+}
+string Fecha::nombreDia(int d) const
+{
+    switch (d)
+    {
+        case 0:
+        return "lunes ";
+        break;
+        case 1:
+        return "martes ";
+        break;
+        case 2:
+        return "miércoles ";
+        break;
+        case 3:
+        return "jueves ";
+        break;
+        case 4:
+        return "viernes ";
+        break;
+        case 5:
+        return "sabado ";
+        break;
+        case 6: 
+        return "domingo ";
+        break;
+        default:
+        return "dia incorrecto";
     }
 }
 
@@ -334,31 +364,7 @@ string Fecha::aCadena(bool larga, bool conDia) const
    string cadena, dia_semanal;
    int entero;
    entero = Fecha::obtenerDiaSemana();
-
-   switch (entero)
-   {
-    case 0:
-    dia_semanal = "lunes ";
-    break;
-    case 1:
-    dia_semanal = "martes ";
-    break;
-    case 2:
-    dia_semanal = "miércoles ";
-    break;
-    case 3:
-    dia_semanal = "jueves ";
-    break;
-    case 4:
-    dia_semanal = "viernes ";
-    break;
-    case 5:
-    dia_semanal = "sabado ";
-    break;
-    case 6: 
-    dia_semanal = "domingo ";
-    break;
-   }
+    dia_semanal = Fecha::nombreDia(entero);
 
    if (larga)
    {
