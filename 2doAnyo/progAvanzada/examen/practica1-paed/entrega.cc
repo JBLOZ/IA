@@ -20,7 +20,7 @@ class Fecha{
    No es obligatorio emplearlas, pero pueden facilitar mucho la implementación de los métodos públicos.
    Elimina el comentario del principio de cada una si deseas emplearla.*/
 
-   /* Comprueba si el día, mes y año pasados como parámetros representan una fecha váida */
+   /* Comprueba si el día, mes y año pasados como parámetros representan una fecha váida */ 
    bool esFechaCorrecta(int, int, int) const;
 
    /* Determina si el año pasado como parámetro es bisiesto */
@@ -29,6 +29,8 @@ class Fecha{
    /* Calcula cuántos días tiene el mes del año pasados como parámetro
    (el año se necesita porque el número de días de febrero depende de si el año es bisiesto) */
    int calculaDiasMes(int, int) const;
+   
+   string nombreDia(int d) const;
 
    string nombreMes(int) const;
 
@@ -113,8 +115,9 @@ int main(){
    return 0;
 }
 #include<string>
-using namespace std;
 #include <iostream>
+using namespace std;
+
 
 /*
 Métodos privados
@@ -140,13 +143,9 @@ bool Fecha::esFechaCorrecta(int dia,int mes,int anyo) const
 
 
 
-bool Fecha::esBisiesto(int a) const{
-    if (a%4==0 && (a%100 !=0 || a%400== 0))
-    {
-        
-        return true;
-    }
-    return false;
+bool Fecha::esBisiesto(int a) const
+{
+    return (a%4==0 && (a%100 !=0 || a%400== 0));
 }
 
 
@@ -209,15 +208,46 @@ string Fecha::nombreMes(int m) const
         
     }
 }
+string Fecha::nombreDia(int d) const
+{
+    switch (d)
+    {
+        case 0:
+        return "lunes ";
+        break;
+        case 1:
+        return "martes ";
+        break;
+        case 2:
+        return "miércoles ";
+        break;
+        case 3:
+        return "jueves ";
+        break;
+        case 4:
+        return "viernes ";
+        break;
+        case 5:
+        return "sabado ";
+        break;
+        case 6: 
+        return "domingo ";
+        break;
+        default:
+        return "dia incorrecto";
+    }
+}
 
 
-int Fecha::obtenerDiaSemana() const {
+int Fecha::obtenerDiaSemana() const 
+{
     int d = dia;
     int m = mes;
     int y = anyo;
     int f;
 
-    if (m < 3) {
+    if (m < 3) 
+    {
         m += 12;
         y -= 1;
     }
@@ -281,15 +311,15 @@ Fecha::~Fecha(){
 Fecha& Fecha::operator=(const Fecha &f){
     if (Fecha::esFechaCorrecta(f.dia,f.mes,f.anyo))
     {
-        dia = f.dia;
-        mes = f.mes;
-        anyo = f.anyo;
+        this->dia = f.dia;
+        this->mes = f.mes;
+        this->anyo = f.anyo;
     }
     return *this;
 }
 
-int Fecha::getDia() const{
-
+int Fecha::getDia() const
+{
     return dia;
 }
 
@@ -327,8 +357,8 @@ bool Fecha::setMes(int m){
 bool Fecha::setAnyo(int a){
    if (Fecha::esFechaCorrecta(dia,mes,a))
    {
-    anyo = a;
-    return true;
+        anyo = a;
+        return true;
    }
     return false;
 }
@@ -336,7 +366,7 @@ bool Fecha::setAnyo(int a){
 
 bool Fecha::operator==(const Fecha &f) const
 {
-    if (f.dia == dia && f.mes == mes && f.anyo == anyo)
+    if (f.dia == this->dia && f.mes == this->mes && f.anyo == this->anyo)
     {
         return true;
     }
@@ -347,9 +377,9 @@ bool Fecha::operator==(const Fecha &f) const
 
 }
 
-bool Fecha::operator!=(const Fecha &f) const{
-
-    if (f.dia != dia || f.mes != mes || f.anyo != anyo)
+bool Fecha::operator!=(const Fecha &f) const
+{
+    if (f.dia != this->dia || f.mes != this->mes || f.anyo != this->anyo)
     {
         return true;
     }
@@ -357,7 +387,6 @@ bool Fecha::operator!=(const Fecha &f) const{
     {
         return false;
     }
-    
 }
 
 
@@ -450,37 +479,12 @@ string Fecha::aCadena(bool larga, bool conDia) const
    string cadena, dia_semanal;
    int entero;
    entero = Fecha::obtenerDiaSemana();
-
-   switch (entero)
-   {
-    case 0:
-    dia_semanal = "lunes ";
-    break;
-    case 1:
-    dia_semanal = "martes ";
-    break;
-    case 2:
-    dia_semanal = "miércoles ";
-    break;
-    case 3:
-    dia_semanal = "jueves ";
-    break;
-    case 4:
-    dia_semanal = "viernes ";
-    break;
-    case 5:
-    dia_semanal = "sabado ";
-    break;
-    case 6: 
-    dia_semanal = "domingo ";
-    break;
-   }
+    dia_semanal = Fecha::nombreDia(entero);
 
    if (larga)
    {
         if (conDia)
         {
-           
             return dia_semanal + to_string(dia) + " de " + Fecha::nombreMes(mes) + " de " + to_string(anyo);
         }
         else
