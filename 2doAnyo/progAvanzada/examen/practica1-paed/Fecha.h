@@ -29,6 +29,8 @@ class Fecha{
    /* Calcula cuántos días tiene el mes del año pasados como parámetro
    (el año se necesita porque el número de días de febrero depende de si el año es bisiesto) */
    int calculaDiasMes(int, int) const;
+   
+   string nombreDia(int d) const;
 
    string nombreMes(int) const;
 
