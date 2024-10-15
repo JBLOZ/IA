@@ -94,13 +94,15 @@ string Fecha::nombreMes(int m) const
 }
 
 
-int Fecha::obtenerDiaSemana() const {
+int Fecha::obtenerDiaSemana() const 
+{
     int d = dia;
     int m = mes;
     int y = anyo;
     int f;
 
-    if (m < 3) {
+    if (m < 3) 
+    {
         m += 12;
         y -= 1;
     }
@@ -164,15 +166,15 @@ Fecha::~Fecha(){
 Fecha& Fecha::operator=(const Fecha &f){
     if (Fecha::esFechaCorrecta(f.dia,f.mes,f.anyo))
     {
-        dia = f.dia;
-        mes = f.mes;
-        anyo = f.anyo;
+        this->dia = f.dia;
+        this->mes = f.mes;
+        this->anyo = f.anyo;
     }
     return *this;
 }
 
-int Fecha::getDia() const{
-
+int Fecha::getDia() const
+{
     return dia;
 }
 
@@ -210,8 +212,8 @@ bool Fecha::setMes(int m){
 bool Fecha::setAnyo(int a){
    if (Fecha::esFechaCorrecta(dia,mes,a))
    {
-    anyo = a;
-    return true;
+        anyo = a;
+        return true;
    }
     return false;
 }
@@ -219,7 +221,7 @@ bool Fecha::setAnyo(int a){
 
 bool Fecha::operator==(const Fecha &f) const
 {
-    if (f.dia == dia && f.mes == mes && f.anyo == anyo)
+    if (f.dia == this->dia && f.mes == this->mes && f.anyo == this->anyo)
     {
         return true;
     }
@@ -230,9 +232,9 @@ bool Fecha::operator==(const Fecha &f) const
 
 }
 
-bool Fecha::operator!=(const Fecha &f) const{
-
-    if (f.dia != dia || f.mes != mes || f.anyo != anyo)
+bool Fecha::operator!=(const Fecha &f) const
+{
+    if (f.dia != this->dia || f.mes != this->mes || f.anyo != this->anyo)
     {
         return true;
     }
@@ -240,7 +242,6 @@ bool Fecha::operator!=(const Fecha &f) const{
     {
         return false;
     }
-    
 }
 
 
@@ -363,7 +364,6 @@ string Fecha::aCadena(bool larga, bool conDia) const
    {
         if (conDia)
         {
-           
             return dia_semanal + to_string(dia) + " de " + Fecha::nombreMes(mes) + " de " + to_string(anyo);
         }
         else

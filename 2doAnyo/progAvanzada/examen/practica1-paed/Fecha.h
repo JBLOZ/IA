@@ -20,7 +20,7 @@ class Fecha{
    No es obligatorio emplearlas, pero pueden facilitar mucho la implementación de los métodos públicos.
    Elimina el comentario del principio de cada una si deseas emplearla.*/
 
-   /* Comprueba si el día, mes y año pasados como parámetros representan una fecha váida */
+   /* Comprueba si el día, mes y año pasados como parámetros representan una fecha váida */ 
    bool esFechaCorrecta(int, int, int) const;
 
    /* Determina si el año pasado como parámetro es bisiesto */
