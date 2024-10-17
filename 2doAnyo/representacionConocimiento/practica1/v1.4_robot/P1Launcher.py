@@ -13,7 +13,7 @@ import time
 import numpy as np
 from robot import *
 from segmento import *
-from expertSystem2 import *
+from expertSystem import *
 AppTitle = "RRDC P1 2024"
 
 RADIUS = 8 # Radio de dibujo para los puntos objetivo

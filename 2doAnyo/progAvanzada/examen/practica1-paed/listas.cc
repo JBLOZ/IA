@@ -3,6 +3,8 @@
 #include <list>
 #include <vector>
 #include <deque>
+using namespace std;
+
 
 int main() {
     // 1. Trabajando con std::list
@@ -28,18 +30,18 @@ int main() {
     miLista.emplace_front(2);
 
     // f. splice: Mueve elementos de otra lista
-    std::list<int> otraLista = {50, 60};
+    list<int> otraLista = {50, 60};
     miLista.splice(miLista.end(), otraLista); // Mueve todos los elementos de otraLista al final de miLista
 
     // Mostrar elementos de miLista
-    std::cout << "Contenido de miLista (std::list): ";
+    cout << "Contenido de miLista (std::list): ";
     for(auto num:miLista) {
         std::cout << num << " ";
     }
     std::cout << "\n";
 
     // 2. Trabajando con std::vector
-    std::vector<int> miVector;
+    vector<int> miVector;
 
     // a. push_back: Agrega al final
     miVector.push_back(100);
@@ -59,10 +61,10 @@ int main() {
     for(auto num : miVector) {
         std::cout << num << " ";
     }
-    std::cout << "\n";
+    cout << "\n";
 
     // 3. Trabajando con std::deque
-    std::deque<int> miDeque;
+    deque<int> miDeque;
 
     // a. push_back: Agrega al final
     miDeque.push_back(1000);
@@ -78,12 +80,12 @@ int main() {
     miDeque.emplace_front(100);
 
     // Mostrar elementos de miDeque
-    std::cout << "Contenido de miDeque (std::deque): ";
+    cout << "Contenido de miDeque (std::deque): ";
     int tamañoD = miDeque.size();
     for(int i = 0; i < tamañoD; ++i) {
         std::cout << miDeque[i] << " ";
     }
-    std::cout << "\n";
+    cout << "\n";
 
     // 4. Trabajando con arreglos (arrays)
     const int tamaño = 5;
@@ -93,11 +95,11 @@ int main() {
     miArray[2] = 30; // Cambiar el tercer elemento de 3 a 30
 
     // Mostrar elementos de miArray
-    std::cout << "Contenido de miArray (array): ";
+    cout << "Contenido de miArray (array): ";
     for(int i = 0; i < tamaño; ++i) {
-        std::cout << miArray[i] << " ";
+        cout << miArray[i] << " ";
     }
-    std::cout << "\n";
+    cout << "\n";
 
     return 0;
 }
