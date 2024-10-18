@@ -13,21 +13,23 @@ class ExpertSystem:
     WMAX = 1.0  # Velocidad angular máxima (rad/s)
     VACC = 1.0  # Aceleración lineal máxima (m/s²)
     WACC = 0.5  # Aceleración angular máxima (rad/s²)
-    FACT_ANTICIPACION_GIRO = 1.3  # Parámetro que regula la anticipación al giro del robot
+    FACT_ANTICIPACION_GIRO = 1.5  # Parámetro que regula la anticipación al giro del robot
     TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el final del segmento (m)
     LOGS_TIEMPO_REAL = False  # Esta opción sigue estando disponible para activar los logs en tiempo real
     MAXIMIZACION_DE_ESTE_EJERCICIO = True 
     """
+    MAXIMIZACION_DE_ESTE_EJERCICIO:
+    
     Si esta opcion se encuentra en False se trataran todos los segmentos de triangulos de la 
     misma forma, es decir, se ira del punto A al B y posteriormente al punto final. Tambien
-    si esta desactivado el segmento posterior al triangulo 2 se tratara con una anticipacion 
-    al giro exactamente igual al resto de segmentos. Puntuacion media de 41.
+    si esta desactivado, se trataran todos los segmentos con el mismo factor de anticipacion al giro. 
+    Puntuacion media de 43.
 
     Si esta opcion se encuentra en True en segundo triangulo el robot se dirigira al punto fin 
     directamente incluso pasando por en medio del triangulo ya que sumara mas puntos para ese
     mismo segmento y para el siguiente (ya que tendra una direccion mas optima), tambien se 
-    modificara la inticipacion del segmento posterior al triangulo 2 para un mayor control del
-    derrape. Puntuacion media de 45.
+    modificaran los factores de anticipacion para cada segmento de forma en la que den mas puntos.
+    Puntuacion media de 50.
     """        
 
     def __init__(self):
@@ -49,6 +51,16 @@ class ExpertSystem:
         self.segmentoObjetivo = segmento
         self.medioAlcanzado = False # Al volver a settear el objetivo el medio vuelve a False por si el siguinte triangulo tiene que usarlo
         self.segmento += 0.5 # Aumenta cada vez que se genera un objetivo para usar la MAXIMIZACION_DE_ESTE_EJERCICIO si es necesario
+        if ExpertSystem.MAXIMIZACION_DE_ESTE_EJERCICIO:
+            if self.segmento == 0.5:
+                ExpertSystem.FACT_ANTICIPACION_GIRO = 1.4
+            elif self.segmento == 2.5:
+                ExpertSystem.FACT_ANTICIPACION_GIRO = 1.61
+                
+            elif self.segmento == 1 or self.segmento == 3:
+                ExpertSystem.FACT_ANTICIPACION_GIRO = 1.7
+            else:
+                ExpertSystem.FACT_ANTICIPACION_GIRO = 1.2
 
 
     @staticmethod
@@ -244,9 +256,6 @@ class ExpertSystem:
         velocidad_lineal = self.velocidad_lineal_previa + delta_v
         velocidad_angular = self.velocidad_angular_previa + delta_w
 
-        # Asegurar que la velocidad lineal no exceda VMAX
-        velocidad_lineal = min(velocidad_lineal, self.VMAX)
-
         # Almacenamiento de velocidades anteriores para el siguiente ciclo
         self.velocidad_lineal_previa = velocidad_lineal
         self.velocidad_angular_previa = velocidad_angular
@@ -262,11 +271,6 @@ class ExpertSystem:
         if self.segmentoObjetivo.getType() == 2:
             medio = self.segmentoObjetivo.getMedio()
 
-        if ExpertSystem.MAXIMIZACION_DE_ESTE_EJERCICIO:
-            if self.segmento == 2.5:
-                ExpertSystem.FACT_ANTICIPACION_GIRO = 1.9
-            else:
-                ExpertSystem.FACT_ANTICIPACION_GIRO = 1.3
 
         fin = np.array(self.segmentoObjetivo.getFin())  # Punto final del segmento
 
@@ -281,24 +285,18 @@ class ExpertSystem:
             print("Objetivo alcanzado.")
             return (0, 0)
         
-        if self.segmentoObjetivo.getType() == 2 and self.medioAlcanzado == False: 
-            if ExpertSystem.MAXIMIZACION_DE_ESTE_EJERCICIO:
-                if np.linalg.norm(medio - np.array(poseRobot[0:2])) > 1 and (self.segmento == 1 or self.segmento == 3):
-                    target_point = self.calcularPuntoObjetivo(inicio, medio, poseRobot)
-                else:
-                    self.medioAlcanzado = True
-                    target_point = self.calcularPuntoObjetivo(inicio, fin, poseRobot)
+        if self.segmentoObjetivo.getType() == 2 and not self.medioAlcanzado:
+            dist_a_medio = np.linalg.norm(medio - np.array(poseRobot[:2]))
+
+            if dist_a_medio > 1 and (ExpertSystem.MAXIMIZACION_DE_ESTE_EJERCICIO and not(self.segmento == 2) or not ExpertSystem.MAXIMIZACION_DE_ESTE_EJERCICIO):
+                target_point = self.calcularPuntoObjetivo(inicio, medio, poseRobot)
+
             else:
-
-                if np.linalg.norm(medio - np.array(poseRobot[0:2])) > 1:
-                    target_point = self.calcularPuntoObjetivo(inicio, medio, poseRobot)
-                else:
-                    self.medioAlcanzado = True
-                    target_point = self.calcularPuntoObjetivo(inicio, fin, poseRobot)
-
-                
+                self.medioAlcanzado = True
+                target_point = self.calcularPuntoObjetivo(inicio, fin, poseRobot)
         else:
             target_point = self.calcularPuntoObjetivo(inicio, fin, poseRobot)
+
 
         velocidad_lineal, velocidad_angular = self.calcularControl(target_point, poseRobot)
 
