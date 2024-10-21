@@ -2,7 +2,6 @@
 #define FECHA_H
 
 #include <string>
-
 using namespace std;
 
 class Fecha{
@@ -61,6 +60,12 @@ class Fecha{
    //Operador de comparación
    bool operator!=(const Fecha &) const;
 
+   bool operator<(const Fecha &f) const;
+   bool operator>(const Fecha &f) const;
+   bool operator<=(const Fecha &f) const;
+   bool operator>=(const Fecha &f) const;
+
+
    //Devuelve el día
    int getDia() const;
 
@@ -93,6 +98,8 @@ class Fecha{
 
   //Devuelve una representación como cadena de la fecha
   string aCadena(bool larga, bool conDia) const;
+
+  int diferenciaDias(const Fecha &) const;
 
 };
 
