@@ -394,3 +394,95 @@ string Fecha::aCadena(bool larga, bool conDia) const
    }
 
 }
+
+
+int Fecha::diferenciaDias(const Fecha& f) const
+{
+    
+    auto calcularTotalDias = [](const Fecha &fecha) -> int 
+    {
+        int total = 0;
+
+        for(int y = 1900; y < fecha.getAnyo(); y++) 
+        {
+            if (fecha.esBisiesto(y))
+            {
+                total += 366;
+            }
+            else
+            {
+                total += 365;
+            }
+            
+        }
+
+        for(int m = 1; m < fecha.getMes(); m++) 
+        {
+            total += fecha.calculaDiasMes(m, fecha.getAnyo());
+        }
+        
+        total += fecha.getDia();
+
+        return total;
+    };
+    
+    int dias1 = calcularTotalDias(*this);
+    int dias2 = calcularTotalDias(f);
+    
+    return dias2 - dias1;
+}
+      
+
+
+bool Fecha::operator<(const Fecha &f) const 
+{
+    if (this->anyo < f.getAnyo()) 
+    {
+        return true;
+    } 
+    else if (this->anyo == f.getAnyo()) 
+    {
+        if (this->mes < f.mes) 
+        {
+            return true;
+        } 
+        else if (this->mes == f.mes) 
+        {
+            return this->dia < f.dia;
+        }
+    }
+    return false;
+}
+
+bool Fecha::operator>(const Fecha &f) const 
+{
+    if (this->anyo > f.getAnyo()) 
+    {
+        return true;
+    } 
+    else if (this->anyo == f.getAnyo()) 
+    {
+        if (this->mes > f.mes) 
+        {
+            return true;
+        } 
+        else if (this->mes == f.mes) 
+        {
+            return this->dia > f.dia;
+        }
+    }
+    return false;
+}
+
+
+
+bool Fecha::operator<=(const Fecha &f) const 
+{
+    return (*this < f) || (*this == f);
+}
+
+bool Fecha::operator>=(const Fecha &f) const 
+{
+    return (*this > f) || (*this == f);
+}
+
