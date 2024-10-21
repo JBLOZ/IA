@@ -13,7 +13,7 @@ class ExpertSystem:
     WMAX = 1.0  # Velocidad angular máxima (rad/s)
     VACC = 1.0  # Aceleración lineal máxima (m/s²)
     WACC = 0.5  # Aceleración angular máxima (rad/s²)
-    FACT_ANTICIPACION_GIRO = 1.5  # Parámetro que regula la anticipación al giro del robot
+    FACT_ANTICIPACION_GIRO = 1.4  # Parámetro que regula la anticipación al giro del robot
     TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el final del segmento (m)
     LOGS_TIEMPO_REAL = False  # Esta opción sigue estando disponible para activar los logs en tiempo real
     MAXIMIZACION_DE_ESTE_EJERCICIO = True 
