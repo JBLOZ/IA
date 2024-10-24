@@ -6,6 +6,11 @@
  ' el 16/09/2024
 '''
 
+from fuzzy_expert.variable import FuzzyVariable
+from fuzzy_expert.rule import FuzzyRule
+from fuzzy_expert.inference import DecompositionalInference
+
+
 
 import pygame
 from robot import *
