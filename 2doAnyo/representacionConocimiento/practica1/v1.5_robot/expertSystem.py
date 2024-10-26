@@ -16,7 +16,7 @@ class ExpertSystem:
     FACT_ANTICIPACION_GIRO = 1.4  # Parámetro que regula la anticipación al giro del robot
     TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el final del segmento (m)
     LOGS_TIEMPO_REAL = False  # Esta opción sigue estando disponible para activar los logs en tiempo real
-    MAXIMIZACION_DE_ESTE_EJERCICIO = True 
+    MAXIMIZACION_DE_ESTE_EJERCICIO = False 
     """
     MAXIMIZACION_DE_ESTE_EJERCICIO:
     
