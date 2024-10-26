@@ -27,9 +27,11 @@ Evento::Evento(const Evento& e){
 }
 
 Evento& Evento::operator=(const Evento &e){
-
-    this->fecha = e.fecha;
-    this->descripcion = e.descripcion;
+    if (this != &e)
+    { 
+        this->fecha = e.fecha;
+        this->descripcion = e.descripcion;
+    }
     return *this;
 }
 
@@ -43,7 +45,7 @@ Evento::~Evento(){
 //Operador de comparación
 bool Evento::operator==(const Evento &e) const{
 
-    return(this->fecha == e.fecha and this->descripcion == e.descripcion);
+    return (this->fecha == e.fecha and this->descripcion == e.descripcion);
 
 }
 
