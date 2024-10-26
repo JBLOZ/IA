@@ -1,136 +1,227 @@
+'''
+ Sistema Experto Difuso para el guiado de un robot
+ Esta clase contendrá el código creado por los alumnos de RyRDC para el control 
+ y guiado de un robot móvil sobre un plano cartesiano para recorrer diferentes 
+ objetivos utilizando un esquema de sistema experto difuso.
+ 
+ Para implementar el sistema experto difuso hay que instalar la librería
+ https://jdvelasq.github.io/fuzzy-expert/
+
+ Creado por: [Tu Nombre]
+ el [Fecha]
+ Modificado por: [Tu Nombre]
+
+'''
+
 import numpy as np
 import math
 
 from fuzzy_expert.variable import FuzzyVariable
 from fuzzy_expert.rule import FuzzyRule
 from fuzzy_expert.inference import DecompositionalInference
+from fuzzy_expert.operators import defuzzificate
 
 from segmento import *
 
 class FuzzySystem:
-    def __init__(self):
+    def __init__(self) -> None:
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = None
-        self.velocidad_lineal_previa = 0.0
-        self.velocidad_angular_previa = 0.0
 
-        # Constantes
-        self.VMAX = 3.0  # Velocidad lineal máxima (m/s)
-        self.WMAX = 1.0  # Velocidad angular máxima (rad/s)
-        self.TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el objetivo (m)
+        # Definir variables difusas de entrada: Error Angular (EA) y Distancia (D)
+        self.EA = FuzzyVariable(
+            universe_range=(-180, 180),
+            terms={
+                'NL': [(-180, 1.0), (-150, 1.0), (-120, 0.0)],
+                'NM': [(-150, 0.0), (-90, 1.0), (-30, 0.0)],
+                'NS': [(-90, 0.0), (-30, 1.0), (0, 0.0)],
+                'Z':  [(-30, 0.0), (0, 1.0), (30, 0.0)],
+                'PS': [(0, 0.0), (30, 1.0), (90, 0.0)],
+                'PM': [(30, 0.0), (90, 1.0), (150, 0.0)],
+                'PL': [(120, 0.0), (150, 1.0), (180, 1.0)],
+            },
+            step=1.0
+        )
 
-        # Definir variables y reglas difusas
-        self.definir_variables_difusas()
-        self.definir_reglas_difusas()
+        self.D = FuzzyVariable(
+            universe_range=(0, 10),
+            terms={
+                'C': [(0, 1.0), (1, 1.0), (2, 0.0)],
+                'M': [(1, 0.0), (5, 1.0), (9, 0.0)],
+                'F': [(8, 0.0), (9, 1.0), (10, 1.0)],
+            },
+            step=0.1
+        )
 
-        # Crear el sistema de inferencia
-        self.sistema_inferencia = DecompositionalInference(self.reglas_difusas)
+        # Definir variables difusas de salida: Velocidad Lineal (V) y Velocidad Angular (W)
+        self.V = FuzzyVariable(
+            universe_range=(0, 3.0),
+            terms={
+                'S': [(0, 1.0), (0.75, 1.0), (1.5, 0.0)],
+                'M': [(0.75, 0.0), (1.5, 1.0), (2.25, 0.0)],
+                'F': [(1.5, 0.0), (2.25, 1.0), (3.0, 1.0)],
+            },
+            step=0.1
+        )
 
-    def definir_variables_difusas(self):
-        # Variable de entrada: error angular [-π, π]
-        self.error_angular = FuzzyVariable({
-            'Negativo_Grande': lambda x: 1 if x <= -math.pi/2 else 0,
-            'Negativo_Pequeño': lambda x: (-x) / (math.pi/2) if -math.pi/2 <= x < 0 else 0,
-            'Cero': lambda x: 1 - abs(x) / (math.pi/4) if -math.pi/4 <= x <= math.pi/4 else 0,
-            'Positivo_Pequeño': lambda x: x / (math.pi/2) if 0 < x <= math.pi/2 else 0,
-            'Positivo_Grande': lambda x: 1 if x >= math.pi/2 else 0,
-        })
+        self.W = FuzzyVariable(
+            universe_range=(-1.0, 1.0),
+            terms={
+                'NF': [(-1.0, 1.0), (-0.75, 1.0), (-0.5, 0.0)],
+                'NS': [(-0.75, 0.0), (-0.5, 1.0), (-0.25, 0.0)],
+                'Z':  [(-0.1, 0.0), (0.0, 1.0), (0.1, 0.0)],
+                'PS': [(0.25, 0.0), (0.5, 1.0), (0.75, 0.0)],
+                'PF': [(0.5, 0.0), (0.75, 1.0), (1.0, 1.0)],
+            },
+            step=0.01
+        )
 
-        # Variable de salida: velocidad angular [-WMAX, WMAX]
-        self.velocidad_angular_var = FuzzyVariable({
-            'Negativa_Alta': lambda x: 1 if x <= -self.WMAX/2 else 0,
-            'Negativa_Baja': lambda x: (-x) / (self.WMAX/2) if -self.WMAX/2 <= x < 0 else 0,
-            'Cero': lambda x: 1 - abs(x) / (self.WMAX/4) if -self.WMAX/4 <= x <= self.WMAX/4 else 0,
-            'Positiva_Baja': lambda x: x / (self.WMAX/2) if 0 < x <= self.WMAX/2 else 0,
-            'Positiva_Alta': lambda x: 1 if x >= self.WMAX/2 else 0,
-        })
-
-        # Variable de salida: velocidad lineal [0, VMAX]
-        self.velocidad_lineal_var = FuzzyVariable({
-            'Lento': lambda x: 1 - x / (self.VMAX/2) if x <= self.VMAX/2 else 0,
-            'Rápido': lambda x: (x - self.VMAX/2) / (self.VMAX/2) if x >= self.VMAX/2 else 0,
-        })
-
-    def definir_reglas_difusas(self):
-        self.reglas_difusas = [
+        # Definir reglas difusas (corregidas sin 'AND' en la consecuencia)
+        self.rules = [
             FuzzyRule(
-                antecedent=self.error_angular['Negativo_Grande'],
-                consequent={
-                    self.velocidad_angular_var: 'Negativa_Alta',
-                    self.velocidad_lineal_var: 'Lento'
-                }
+                premise=[("EA", "Z"), ("AND", "D", "F")],
+                consequence=[("V", "F"), ("W", "Z")]
             ),
             FuzzyRule(
-                antecedent=self.error_angular['Negativo_Pequeño'],
-                consequent={
-                    self.velocidad_angular_var: 'Negativa_Baja',
-                    self.velocidad_lineal_var: 'Lento'
-                }
+                premise=[("EA", "Z"), ("AND", "D", "M")],
+                consequence=[("V", "M"), ("W", "Z")]
             ),
             FuzzyRule(
-                antecedent=self.error_angular['Cero'],
-                consequent={
-                    self.velocidad_angular_var: 'Cero',
-                    self.velocidad_lineal_var: 'Rápido'
-                }
+                premise=[("EA", "Z"), ("AND", "D", "C")],
+                consequence=[("V", "S"), ("W", "Z")]
             ),
             FuzzyRule(
-                antecedent=self.error_angular['Positivo_Pequeño'],
-                consequent={
-                    self.velocidad_angular_var: 'Positiva_Baja',
-                    self.velocidad_lineal_var: 'Lento'
-                }
+                premise=[("EA", "NL")],
+                consequence=[("V", "S"), ("W", "NF")]
             ),
             FuzzyRule(
-                antecedent=self.error_angular['Positivo_Grande'],
-                consequent={
-                    self.velocidad_angular_var: 'Positiva_Alta',
-                    self.velocidad_lineal_var: 'Lento'
-                }
-            )
+                premise=[("EA", "NM")],
+                consequence=[("V", "M"), ("W", "NS")]
+            ),
+            FuzzyRule(
+                premise=[("EA", "NS")],
+                consequence=[("V", "F"), ("W", "NS")]
+            ),
+            FuzzyRule(
+                premise=[("EA", "PS")],
+                consequence=[("V", "F"), ("W", "PS")]
+            ),
+            FuzzyRule(
+                premise=[("EA", "PM")],
+                consequence=[("V", "M"), ("W", "PS")]
+            ),
+            FuzzyRule(
+                premise=[("EA", "PL")],
+                consequence=[("V", "S"), ("W", "PF")]
+            ),
+            # Regla por defecto que siempre se activa
+            FuzzyRule(
+                premise=[],
+                consequence=[("V", "S"), ("W", "Z")]
+            ),
         ]
 
+        # Construcción del modelo difuso
+        self.inference_system = DecompositionalInference(
+            and_operator="min",
+            or_operator="max",
+            implication_operator="Rc",
+            composition_operator="max",
+            production_link="max",
+            defuzzification_operator="cog"
+        )
+
+    # función setObjetivo
+    #   Especifica un objetivo que debe ser recorrido por el robot
     def setObjetivo(self, obj):
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = obj
 
-    def esObjetivoAlcanzado(self):
-        return self.objetivoAlcanzado
-
-    def hayParteOptativa(self):
-        return False  # Cambiar a True si implementas la parte optativa
-
     def tomarDecision(self, poseRobot):
-        x, y, theta_deg = poseRobot[0], poseRobot[1], poseRobot[2]
-        theta = math.radians(theta_deg)
+        if self.objetivoAlcanzado:
+            return (0, 0)
 
+        inicio = np.array(self.segmentoObjetivo.getInicio())
         fin = np.array(self.segmentoObjetivo.getFin())
 
-        # Verificar si se ha alcanzado el objetivo
-        distancia_punto_final = np.linalg.norm(fin - np.array([x, y]))
-        if distancia_punto_final <= self.TOLERACION_FIN_SEGMENTO:
+        # Calcular si se ha alcanzado el objetivo
+        robot_pos = np.array(poseRobot[0:2])
+        distancia_punto_final = np.linalg.norm(fin - robot_pos)
+        if distancia_punto_final <= 0.5:
             self.objetivoAlcanzado = True
             return (0, 0)
 
-        # Calcular el error angular
-        delta_x = fin[0] - x
-        delta_y = fin[1] - y
+        # Calcular el punto objetivo en el segmento
+        segment_vector = fin - inicio
+        segment_length = np.linalg.norm(segment_vector)
+        if segment_length == 0:
+            segment_length = 1e-6  # Evitar división por cero
 
-        angulo_deseado = math.atan2(delta_y, delta_x)
-        error_angular = angulo_deseado - theta
-        error_angular = (error_angular + math.pi) % (2 * math.pi) - math.pi  # Normalizar a [-π, π]
+        segment_direction = segment_vector / segment_length
 
-        # Realizar inferencia difusa
-        entradas = {'error_angular': error_angular}
-        resultados = self.sistema_inferencia.infer(entradas)
+        vector_to_robot = robot_pos - inicio
+        t = np.dot(vector_to_robot, segment_direction) / segment_length
+        t = min(max(t, 0.0), 1.0)  # Asegurar que t esté entre 0 y 1
 
-        # Desdifusificar las salidas
-        velocidad_angular = self.velocidad_angular_var.defuzzify(resultados[self.velocidad_angular_var])
-        velocidad_lineal = self.velocidad_lineal_var.defuzzify(resultados[self.velocidad_lineal_var])
+        # Obtener el punto más cercano en el segmento
+        closest_point = inicio + t * segment_vector
 
-        # Limitar las salidas a los máximos permitidos
-        velocidad_lineal = min(max(velocidad_lineal, 0), self.VMAX)
-        velocidad_angular = min(max(velocidad_angular, -self.WMAX), self.WMAX)
+        # Avanzar una distancia de anticipación
+        lookahead_distance = 1.0  # Ajustar según sea necesario
+        target_t = t + lookahead_distance / segment_length
+        target_t = min(max(target_t, 0.0), 1.0)
+        target_point = inicio + target_t * segment_vector
 
-        # Retornar las velocidades calculadas
-        return (velocidad_lineal, velocidad_angular)
+        # Calcular EA y D
+        delta_x = target_point[0] - poseRobot[0]
+        delta_y = target_point[1] - poseRobot[1]
+
+        desired_angle_rad = math.atan2(delta_y, delta_x)
+        desired_angle_deg = math.degrees(desired_angle_rad)
+
+        EA = desired_angle_deg - poseRobot[2]  # poseRobot[2] en grados
+        EA = (EA + 180) % 360 - 180  # Normalizar EA a [-180, 180]
+
+        D = np.linalg.norm(target_point - robot_pos)
+
+        # Asegurarse de que EA y D están dentro de los rangos
+        EA = max(min(EA, 180), -180)
+        D = max(min(D, 10), 0)
+
+        # Construir los hechos
+        facts = {
+            'EA': EA,
+            'D': D
+        }
+
+        # Uso del modelo difuso para obtener V y W
+        result = self.inference_system(
+            variables={
+                'EA': self.EA,
+                'D': self.D,
+                'V': self.V,
+                'W': self.W
+            },
+            rules=self.rules,
+            **facts
+        )
+
+        # Defuzzificación de las salidas
+        V_crisp = defuzzificate(self.V.universe, result['V'], operator=self.inference_system.defuzzification_operator)
+        W_crisp = defuzzificate(self.W.universe, result['W'], operator=self.inference_system.defuzzification_operator)
+
+        return (V_crisp, W_crisp)
+        
+    # función esObjetivoAlcanzado 
+    #   Devuelve True cuando el punto final del objetivo ha sido alcanzado. 
+    #   Es responsabilidad de la alumna o alumno cambiar el valor de la 
+    #   variable objetivoAlcanzado cuando se detecte que el robot ha llegado 
+    #   a su objetivo. Esto se llevará a cabo en el método tomarDecision
+    #   Este método NO debería ser modificado
+    def esObjetivoAlcanzado(self):
+        return self.objetivoAlcanzado
+        
+    # función hayParteOptativa.
+    #   Deberá devolver True si la parte optativa ha sido implementada, es decir, si se consideran objetivos de tipo triángulo
+    def hayParteOptativa(self):
+        return False  # Modificar a True si se implementa la parte optativa
