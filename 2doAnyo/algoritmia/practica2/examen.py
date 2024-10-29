@@ -23,7 +23,7 @@ W = 5
 print(knapsack(w,v,W))
 
 def knapsackPD(peso, valor, PM):
-    n = len(valor)
+    n = len(valor) 
     # Crear una tabla (n+1) x (PM+1) inicializada a 0
     PD = np.zeros((n+1, PM+1), dtype=int)
     
@@ -99,11 +99,13 @@ def distanciaDinamica(s1, s2, mostrar_matriz=False):
     return DP
 
 # Ejemplo de uso
-str1 = 'casa'
+str1 = 'casaaa'
 str2 = 'costa'
 
 # Calcular la distancia y mostrar la matriz DP
 distancia = distanciaDinamica(str1, str2, mostrar_matriz=True)
 print("\nDistancia de edición:", distancia)
 
-    
+
+
+
