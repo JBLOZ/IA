@@ -7,19 +7,17 @@
  Para implementar el sistema experto difuso hay que instalar la librería
  https://jdvelasq.github.io/fuzzy-expert/
 
- Creado por: [Tu Nombre]
- el [Fecha]
- Modificado por: [Tu Nombre]
+ Creado por: Diego Viejo
+ el 24/10/2024
+ Modificado por: Diego Viejo. 
 
 '''
-
 import numpy as np
 import math
 
 from fuzzy_expert.variable import FuzzyVariable
 from fuzzy_expert.rule import FuzzyRule
 from fuzzy_expert.inference import DecompositionalInference
-from fuzzy_expert.operators import defuzzificate
 
 from segmento import *
 
@@ -28,200 +26,326 @@ class FuzzySystem:
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = None
 
-        # Definir variables difusas de entrada: Error Angular (EA) y Distancia (D)
-        self.EA = FuzzyVariable(
+        # Definición de variables difusas de entrada:
+
+        # Variable 'distancia' representa la distancia al punto final del segmento
+        # Universo de discurso: de 0 a 100 metros
+        # Términos difusos:
+        # - 'Cerca': distancia corta al objetivo
+        # - 'Medio': distancia intermedia al objetivo
+        # - 'Lejos': distancia larga al objetivo
+        self.distancia = FuzzyVariable(
+            universe_range=(0, 100),
+            terms={
+                'Cerca': ('zmf', 0, 20),
+                'Medio': ('trimf', 15, 50, 85),
+                'Lejos': ('smf', 50, 100)
+            }
+        )
+
+        # Variable 'orientacion' representa el error angular hacia el objetivo
+        # Universo de discurso: de -180 a 180 grados
+        # Términos difusos:
+        # - 'MuyDesalineadoIzquierda': gran desviación hacia la izquierda
+        # - 'DesalineadoIzquierda': desviación moderada hacia la izquierda
+        # - 'Alineado': orientación correcta hacia el objetivo
+        # - 'DesalineadoDerecha': desviación moderada hacia la derecha
+        # - 'MuyDesalineadoDerecha': gran desviación hacia la derecha
+        self.orientacion = FuzzyVariable(
             universe_range=(-180, 180),
             terms={
-                'NL': [(-180, 1.0), (-150, 1.0), (-120, 0.0)],
-                'NM': [(-150, 0.0), (-90, 1.0), (-30, 0.0)],
-                'NS': [(-90, 0.0), (-30, 1.0), (0, 0.0)],
-                'Z':  [(-30, 0.0), (0, 1.0), (30, 0.0)],
-                'PS': [(0, 0.0), (30, 1.0), (90, 0.0)],
-                'PM': [(30, 0.0), (90, 1.0), (150, 0.0)],
-                'PL': [(120, 0.0), (150, 1.0), (180, 1.0)],
-            },
-            step=1.0
+                'MuyDesalineadoIzquierda': ('zmf', -180, -90),
+                'DesalineadoIzquierda': ('trimf', -135, -45, 0),
+                'Alineado': ('trimf', -10, 0, 10),
+                'DesalineadoDerecha': ('trimf', 0, 45, 135),
+                'MuyDesalineadoDerecha': ('smf', 90, 180)
+            }
         )
 
-        self.D = FuzzyVariable(
+        # Variable 'desviacion' representa la distancia perpendicular a la línea del segmento
+        # Universo de discurso: de 0 a 10 metros
+        # Términos difusos:
+        # - 'EnLinea': robot está sobre la línea
+        # - 'PocoDesviado': robot ligeramente desviado de la línea
+        # - 'MuyDesviado': robot muy desviado de la línea
+        self.desviacion = FuzzyVariable(
             universe_range=(0, 10),
             terms={
-                'C': [(0, 1.0), (1, 1.0), (2, 0.0)],
-                'M': [(1, 0.0), (5, 1.0), (9, 0.0)],
-                'F': [(8, 0.0), (9, 1.0), (10, 1.0)],
-            },
-            step=0.1
+                'EnLinea': ('zmf', 0, 1),
+                'PocoDesviado': ('trimf', 0.5, 2, 3.5),
+                'MuyDesviado': ('smf', 3, 10)
+            }
         )
 
-        # Definir variables difusas de salida: Velocidad Lineal (V) y Velocidad Angular (W)
-        self.V = FuzzyVariable(
-            universe_range=(0, 3.0),
+        # Definición de variables difusas de salida:
+
+        # Variable 'velocidad_lineal' representa la velocidad lineal del robot
+        # Universo de discurso: de 0 a 3 m/s
+        # Términos difusos:
+        # - 'Lento': velocidad baja
+        # - 'Normal': velocidad intermedia
+        # - 'Rapido': velocidad alta
+        self.velocidad_lineal = FuzzyVariable(
+            universe_range=(0, 3),
             terms={
-                'S': [(0, 1.0), (0.75, 1.0), (1.5, 0.0)],
-                'M': [(0.75, 0.0), (1.5, 1.0), (2.25, 0.0)],
-                'F': [(1.5, 0.0), (2.25, 1.0), (3.0, 1.0)],
-            },
-            step=0.1
+                'Lento': ('trimf', 0, 0, 1),
+                'Normal': ('trimf', 0.5, 1.5, 2.5),
+                'Rapido': ('trimf', 2, 3, 3)
+            }
         )
 
-        self.W = FuzzyVariable(
-            universe_range=(-1.0, 1.0),
+        # Variable 'velocidad_angular' representa la velocidad angular del robot
+        # Universo de discurso: de -1 a 1 rad/s
+        # Términos difusos:
+        # - 'GiroFuerteIzquierda': giro pronunciado a la izquierda
+        # - 'GiroLeveIzquierda': giro suave a la izquierda
+        # - 'SinGiro': sin giro
+        # - 'GiroLeveDerecha': giro suave a la derecha
+        # - 'GiroFuerteDerecha': giro pronunciado a la derecha
+        self.velocidad_angular = FuzzyVariable(
+            universe_range=(-1, 1),
             terms={
-                'NF': [(-1.0, 1.0), (-0.75, 1.0), (-0.5, 0.0)],
-                'NS': [(-0.75, 0.0), (-0.5, 1.0), (-0.25, 0.0)],
-                'Z':  [(-0.1, 0.0), (0.0, 1.0), (0.1, 0.0)],
-                'PS': [(0.25, 0.0), (0.5, 1.0), (0.75, 0.0)],
-                'PF': [(0.5, 0.0), (0.75, 1.0), (1.0, 1.0)],
-            },
-            step=0.01
+                'GiroFuerteIzquierda': ('trimf', -1, -1, -0.5),
+                'GiroLeveIzquierda': ('trimf', -0.75, -0.25, 0),
+                'SinGiro': ('trimf', -0.1, 0, 0.1),
+                'GiroLeveDerecha': ('trimf', 0, 0.25, 0.75),
+                'GiroFuerteDerecha': ('trimf', 0.5, 1, 1)
+            }
         )
 
-        # Definir reglas difusas (corregidas sin 'AND' en la consecuencia)
+        # Definición de reglas difusas usando FuzzyRule
+        # Las reglas determinan la velocidad lineal y angular en función de la distancia, orientación y desviación
+
         self.rules = [
+            # Regla 1: Si distancia es Lejos y desviación es EnLinea y orientación es Alineado, entonces velocidad_lineal es Rapido y velocidad_angular es SinGiro
             FuzzyRule(
-                premise=[("EA", "Z"), ("AND", "D", "F")],
-                consequence=[("V", "F"), ("W", "Z")]
+                premise=[
+                    ('distancia', 'Lejos'),
+                    ('AND', 'desviacion', 'EnLinea'),
+                    ('AND', 'orientacion', 'Alineado')
+                ],
+                consequence=[
+                    ('velocidad_lineal', 'Rapido'),
+                    ('velocidad_angular', 'SinGiro')
+                ]
+            ),
+            # Regla 2: Si desviación es MuyDesviado, entonces velocidad_lineal es Lento y velocidad_angular es GiroFuerte (izquierda o derecha según orientación)
+            FuzzyRule(
+                premise=[
+                    ('desviacion', 'MuyDesviado'),
+                    ('AND', 'orientacion', 'MuyDesalineadoIzquierda')
+                ],
+                consequence=[
+                    ('velocidad_lineal', 'Lento'),
+                    ('velocidad_angular', 'GiroFuerteIzquierda')
+                ]
             ),
             FuzzyRule(
-                premise=[("EA", "Z"), ("AND", "D", "M")],
-                consequence=[("V", "M"), ("W", "Z")]
+                premise=[
+                    ('desviacion', 'MuyDesviado'),
+                    ('AND', 'orientacion', 'MuyDesalineadoDerecha')
+                ],
+                consequence=[
+                    ('velocidad_lineal', 'Lento'),
+                    ('velocidad_angular', 'GiroFuerteDerecha')
+                ]
+            ),
+            # Regla 3: Si desviación es PocoDesviado y orientación es Desalineado, entonces velocidad_lineal es Normal y velocidad_angular es GiroLeve
+            FuzzyRule(
+                premise=[
+                    ('desviacion', 'PocoDesviado'),
+                    ('AND', 'orientacion', 'DesalineadoIzquierda')
+                ],
+                consequence=[
+                    ('velocidad_lineal', 'Normal'),
+                    ('velocidad_angular', 'GiroLeveIzquierda')
+                ]
             ),
             FuzzyRule(
-                premise=[("EA", "Z"), ("AND", "D", "C")],
-                consequence=[("V", "S"), ("W", "Z")]
+                premise=[
+                    ('desviacion', 'PocoDesviado'),
+                    ('AND', 'orientacion', 'DesalineadoDerecha')
+                ],
+                consequence=[
+                    ('velocidad_lineal', 'Normal'),
+                    ('velocidad_angular', 'GiroLeveDerecha')
+                ]
+            ),
+            # Regla 4: Si desviación es EnLinea y orientación es Alineado, entonces velocidad_lineal es Rapido y velocidad_angular es SinGiro
+            FuzzyRule(
+                premise=[
+                    ('desviacion', 'EnLinea'),
+                    ('AND', 'orientacion', 'Alineado')
+                ],
+                consequence=[
+                    ('velocidad_lineal', 'Rapido'),
+                    ('velocidad_angular', 'SinGiro')
+                ]
+            ),
+            # Regla 5: Si desviación es EnLinea y orientación es Desalineado, entonces velocidad_lineal es Normal y velocidad_angular es GiroLeve
+            FuzzyRule(
+                premise=[
+                    ('desviacion', 'EnLinea'),
+                    ('AND', 'orientacion', 'DesalineadoIzquierda')
+                ],
+                consequence=[
+                    ('velocidad_lineal', 'Normal'),
+                    ('velocidad_angular', 'GiroLeveIzquierda')
+                ]
             ),
             FuzzyRule(
-                premise=[("EA", "NL")],
-                consequence=[("V", "S"), ("W", "NF")]
+                premise=[
+                    ('desviacion', 'EnLinea'),
+                    ('AND', 'orientacion', 'DesalineadoDerecha')
+                ],
+                consequence=[
+                    ('velocidad_lineal', 'Normal'),
+                    ('velocidad_angular', 'GiroLeveDerecha')
+                ]
+            ),
+            # Regla 6: Si distancia es Cerca, entonces velocidad_lineal es Lento
+            FuzzyRule(
+                premise=[
+                    ('distancia', 'Cerca')
+                ],
+                consequence=[
+                    ('velocidad_lineal', 'Lento')
+                ]
+            ),
+            # Regla 7: Si desviación es MuyDesviado, entonces velocidad_angular es GiroFuerte
+            FuzzyRule(
+                premise=[
+                    ('desviacion', 'MuyDesviado'),
+                    ('AND', 'orientacion', 'DesalineadoIzquierda')
+                ],
+                consequence=[
+                    ('velocidad_angular', 'GiroFuerteIzquierda')
+                ]
             ),
             FuzzyRule(
-                premise=[("EA", "NM")],
-                consequence=[("V", "M"), ("W", "NS")]
+                premise=[
+                    ('desviacion', 'MuyDesviado'),
+                    ('AND', 'orientacion', 'DesalineadoDerecha')
+                ],
+                consequence=[
+                    ('velocidad_angular', 'GiroFuerteDerecha')
+                ]
             ),
-            FuzzyRule(
-                premise=[("EA", "NS")],
-                consequence=[("V", "F"), ("W", "NS")]
-            ),
-            FuzzyRule(
-                premise=[("EA", "PS")],
-                consequence=[("V", "F"), ("W", "PS")]
-            ),
-            FuzzyRule(
-                premise=[("EA", "PM")],
-                consequence=[("V", "M"), ("W", "PS")]
-            ),
-            FuzzyRule(
-                premise=[("EA", "PL")],
-                consequence=[("V", "S"), ("W", "PF")]
-            ),
-            # Regla por defecto que siempre se activa
-            FuzzyRule(
-                premise=[],
-                consequence=[("V", "S"), ("W", "Z")]
-            ),
+            # Se pueden agregar más reglas según sea necesario
         ]
 
-        # Construcción del modelo difuso
-        self.inference_system = DecompositionalInference(
-            and_operator="min",
-            or_operator="max",
-            implication_operator="Rc",
-            composition_operator="max",
-            production_link="max",
-            defuzzification_operator="cog"
+        # Configuración del sistema de inferencia difusa usando DecompositionalInference
+        # Se especifican los operadores: min para AND, max para OR, y 'cog' para defuzzificación
+        self.model = DecompositionalInference(
+            and_operator='min',
+            or_operator='max',
+            implication_operator='Rc',  # Operador de implicación estándar (Mamdani)
+            composition_operator='max-min',
+            production_link='max',
+            defuzzification_operator='cog'  # Centro de gravedad
         )
 
-    # función setObjetivo
-    #   Especifica un objetivo que debe ser recorrido por el robot
+    @staticmethod
+    def straightToPointDistance(p1, p2, p3):
+        """
+        Calcula la distancia perpendicular desde un punto a una línea definida por dos puntos.
+
+        Parámetros:
+            p1: np.array, Coordenadas del primer punto que define el segmento
+            p2: np.array, Coordenadas del segundo punto que define el segmento
+            p3: np.array, Coordenadas del punto (robot) desde el cual se calcula la distancia perpendicular a la línea
+
+        Retorna:
+            float: La distancia perpendicular desde el punto `p3` a la línea definida por `p1` y `p2`
+        """
+        return np.linalg.norm(np.cross(p2 - p1, p1 - p3)) / np.linalg.norm(p2 - p1)
+
     def setObjetivo(self, obj):
+        """
+        Establece un nuevo objetivo que debe ser recorrido por el robot.
+        """
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = obj
 
     def tomarDecision(self, poseRobot):
-        if self.objetivoAlcanzado:
+        """
+        Toma una decisión sobre las velocidades lineal y angular del robot
+        utilizando el modelo de inferencia difusa basado en la posición actual,
+        la orientación, la desviación y el objetivo a alcanzar.
+        """
+        if self.segmentoObjetivo is None:
             return (0, 0)
 
+        x, y, theta_deg = poseRobot[0:3]
+        theta = math.radians(theta_deg)  # Convertir a radianes
+
+        # Obtener el punto inicial y final del segmento objetivo
         inicio = np.array(self.segmentoObjetivo.getInicio())
         fin = np.array(self.segmentoObjetivo.getFin())
 
-        # Calcular si se ha alcanzado el objetivo
-        robot_pos = np.array(poseRobot[0:2])
-        distancia_punto_final = np.linalg.norm(fin - robot_pos)
-        if distancia_punto_final <= 0.5:
+        # Calcular la distancia al punto final del segmento
+        dx = fin[0] - x
+        dy = fin[1] - y
+        distancia = math.hypot(dx, dy)  # Distancia euclidiana
+
+        # Actualizar objetivoAlcanzado si se ha llegado al punto final
+        if distancia <= 0.5:  # Tolerancia definida en el enunciado
             self.objetivoAlcanzado = True
-            return (0, 0)
 
-        # Calcular el punto objetivo en el segmento
-        segment_vector = fin - inicio
-        segment_length = np.linalg.norm(segment_vector)
-        if segment_length == 0:
-            segment_length = 1e-6  # Evitar división por cero
+        # Calcular el ángulo hacia el punto final del segmento
+        angulo_a_target = math.atan2(dy, dx)
+        # Calcular diferencia angular entre orientación actual y ángulo al objetivo
+        error_angular = angulo_a_target - theta
+        # Normalizar el ángulo al rango [-pi, pi]
+        error_angular = (error_angular + math.pi) % (2 * math.pi) - math.pi
+        # Convertir error angular a grados
+        error_angular_deg = math.degrees(error_angular)
 
-        segment_direction = segment_vector / segment_length
+        # Calcular la desviación (distancia perpendicular a la línea del segmento)
+        desviacion = self.straightToPointDistance(inicio, fin, np.array([x, y]))
 
-        vector_to_robot = robot_pos - inicio
-        t = np.dot(vector_to_robot, segment_direction) / segment_length
-        t = min(max(t, 0.0), 1.0)  # Asegurar que t esté entre 0 y 1
+        # Preparar entradas para el sistema de inferencia difusa
+        # Asegurar que las entradas están dentro del rango de las variables difusas
+        distancia_input = max(0, min(distancia, 100))
+        orientacion_input = max(-180, min(error_angular_deg, 180))
+        desviacion_input = max(0, min(desviacion, 10))
 
-        # Obtener el punto más cercano en el segmento
-        closest_point = inicio + t * segment_vector
-
-        # Avanzar una distancia de anticipación
-        lookahead_distance = 1.0  # Ajustar según sea necesario
-        target_t = t + lookahead_distance / segment_length
-        target_t = min(max(target_t, 0.0), 1.0)
-        target_point = inicio + target_t * segment_vector
-
-        # Calcular EA y D
-        delta_x = target_point[0] - poseRobot[0]
-        delta_y = target_point[1] - poseRobot[1]
-
-        desired_angle_rad = math.atan2(delta_y, delta_x)
-        desired_angle_deg = math.degrees(desired_angle_rad)
-
-        EA = desired_angle_deg - poseRobot[2]  # poseRobot[2] en grados
-        EA = (EA + 180) % 360 - 180  # Normalizar EA a [-180, 180]
-
-        D = np.linalg.norm(target_point - robot_pos)
-
-        # Asegurarse de que EA y D están dentro de los rangos
-        EA = max(min(EA, 180), -180)
-        D = max(min(D, 10), 0)
-
-        # Construir los hechos
-        facts = {
-            'EA': EA,
-            'D': D
-        }
-
-        # Uso del modelo difuso para obtener V y W
-        result = self.inference_system(
+        # Ejecutar el modelo de inferencia difusa
+        output, _ = self.model(
             variables={
-                'EA': self.EA,
-                'D': self.D,
-                'V': self.V,
-                'W': self.W
+                'distancia': self.distancia,
+                'orientacion': self.orientacion,
+                'desviacion': self.desviacion,
+                'velocidad_lineal': self.velocidad_lineal,
+                'velocidad_angular': self.velocidad_angular
             },
             rules=self.rules,
-            **facts
+            distancia=distancia_input,
+            orientacion=orientacion_input,
+            desviacion=desviacion_input
         )
 
-        # Defuzzificación de las salidas
-        V_crisp = defuzzificate(self.V.universe, result['V'], operator=self.inference_system.defuzzification_operator)
-        W_crisp = defuzzificate(self.W.universe, result['W'], operator=self.inference_system.defuzzification_operator)
+        # Obtener los valores defuzzificados de las salidas
+        velocidad_lineal = output.get('velocidad_lineal', 0)
+        velocidad_angular = output.get('velocidad_angular', 0)
 
-        return (V_crisp, W_crisp)
-        
-    # función esObjetivoAlcanzado 
-    #   Devuelve True cuando el punto final del objetivo ha sido alcanzado. 
-    #   Es responsabilidad de la alumna o alumno cambiar el valor de la 
-    #   variable objetivoAlcanzado cuando se detecte que el robot ha llegado 
-    #   a su objetivo. Esto se llevará a cabo en el método tomarDecision
-    #   Este método NO debería ser modificado
+        # Limitar las velocidades dentro de los rangos permitidos
+        VMAX = 3.0  # Velocidad lineal máxima
+        WMAX = 1.0  # Velocidad angular máxima
+
+        velocidad_lineal = max(0, min(velocidad_lineal, VMAX))
+        velocidad_angular = max(-WMAX, min(velocidad_angular, WMAX))
+
+        return (velocidad_lineal, velocidad_angular)
+
     def esObjetivoAlcanzado(self):
+        """
+        Devuelve True si el robot ha alcanzado el objetivo.
+        """
         return self.objetivoAlcanzado
-        
-    # función hayParteOptativa.
-    #   Deberá devolver True si la parte optativa ha sido implementada, es decir, si se consideran objetivos de tipo triángulo
+
     def hayParteOptativa(self):
-        return False  # Modificar a True si se implementa la parte optativa
+        """
+        Indica si se ha implementado la parte optativa (objetivos tipo triángulo).
+        """
+        return False  # Cambiar a True si se implementa la parte optativa
