@@ -110,45 +110,6 @@ def viajar(costes: list, volumenes: list, S: int):
 
 
 
-def plantar(mapa):
-
-    filas = len(mapa)
-    columnas = len(mapa[0]) if filas > 0 else 0
-
-    # Caso base: Si el mapa es de tamaño 1x1
-    if filas == 1 and columnas == 1:
-        return 0 if mapa[0][0] == 0 else float('inf')
-
-    pasos = float('inf')  # Inicializar con infinito
-
-    # Movimiento diagonal suroeste (una fila hacia abajo y una columna hacia la izquierda)
-    if filas > 1 and columnas > 1 and mapa[-2][-2] == 0:
-        # Recortar la última fila y la última columna
-        nueva_mapa_diagonal = [fila[:-1] for fila in mapa[:-1]]
-        pasos_diagonal = 1 + plantar(nueva_mapa_diagonal)
-        pasos = min(pasos, pasos_diagonal)
-
-    # Movimiento sur (una fila hacia abajo)
-    if filas > 1 and mapa[-2][-1] == 0:
-        # Recortar la última fila
-        nueva_mapa_sur = mapa[:-1]
-        pasos_sur = 1 + plantar(nueva_mapa_sur)
-        pasos = min(pasos, pasos_sur)
-
-    # Movimiento oeste (una columna hacia la izquierda)
-    if columnas > 1 and mapa[-1][-2] == 0:
-        # Recortar la última columna
-        nueva_mapa_oeste = [fila[:-1] for fila in mapa]
-        pasos_oeste = 1 + plantar(nueva_mapa_oeste)
-        pasos = min(pasos, pasos_oeste)
-
-    return pasos
-
-print(plantar([[0,0,0,0],
-               [0,1,1,1],
-               [0,0,1,0],
-               [0,0,1,0]]))
-
 
 
 
