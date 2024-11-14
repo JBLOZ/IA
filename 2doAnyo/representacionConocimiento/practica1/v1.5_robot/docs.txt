@@ -1,0 +1,467 @@
+Modifiers and operators
+
+fuzzy_expert.operators.apply_modifiers(membership, modifiers)[source]
+Apply a list of modifiers or hedges to a numpy array.
+
+Parameters
+membership – Membership values to be modified.
+modifiers – List of modifiers or hedges.
+>>> from fuzzy_expert.operators import apply_modifiers
+>>> x = [0.0, 0.25, 0.5, 0.75, 1]
+>>> apply_modifiers(x, ('not', 'very'))
+array([1.    , 0.9375, 0.75  , 0.4375, 0.    ])
+fuzzy_expert.operators.bounded_diff(memberships)[source]
+Applies the element-wise function max(0, u - v).
+
+Parameters
+memberships – List of arrays of membership values.
+
+>>> from fuzzy_expert.operators import bounded_diff
+>>> x = [0, 0.25, 0.5, 0.75, 1]
+>>> y = [0, 0.25, 0.5, 0.6, 0.7]
+>>> bounded_diff([x, y])
+array([0.  , 0.  , 0.  , 0.15, 0.3 ])
+fuzzy_expert.operators.bounded_prod(memberships)[source]
+Applies the element-wise function max(0, u + v - 1).
+
+Parameters
+memberships – List of arrays of membership values.
+
+>>> from fuzzy_expert.operators import bounded_prod
+>>> x = [0.1, 0.25, 0.5, 0.75, 1]
+>>> bounded_prod([x, x])
+array([0. , 0. , 0. , 0.5, 1. ])
+fuzzy_expert.operators.bounded_sum(memberships)[source]
+Applies the element-wise function min(1, u + v).
+
+Parameters
+memberships – List of arrays of membership values.
+
+>>> from fuzzy_expert.operators import bounded_sum
+>>> x = [0, 0.25, 0.5, 0.75, 1]
+>>> bounded_sum([x, x, x])
+array([0.  , 0.75, 1.  , 1.  , 1.  ])
+fuzzy_expert.operators.defuzzificate(universe, membership, operator='cog')[source]
+Computes a representative crisp value for the fuzzy set.
+
+Parameters
+universe – Array of values representing the universe of discourse.
+membership – Array of values representing the membership function.
+operator –
+Method used for computing the crisp representative value of the fuzzy set.
+”cog”: Center of gravity.
+”boa”: Bisector of area.
+”mom”: Mean of the values for which the membership function is maximum.
+”lom”: Largest value for which the membership function is maximum.
+”som”: Smallest value for which the membership function is minimum.
+>>> from fuzzy_expert.operators import defuzzificate
+>>> u = [0, 1,   2, 3, 4]
+>>> m = [0, 0, 0.5, 1, 1]
+>>> defuzzificate(u, m, "cog")
+2.9166666666666665
+>>> defuzzificate(u, m, "boa")
+3.0
+>>> defuzzificate(u, m, "mom")
+3.5
+>>> defuzzificate(u, m, "lom")
+4
+>>> defuzzificate(u, m, "som")
+3
+fuzzy_expert.operators.drastic_prod(memberships)[source]
+Applies the element-wise function f(u, v) = u if v == 0 else v if u == 1 else 0.
+
+Parameters
+memberships – List of arrays of membership values.
+
+>>> from fuzzy_expert.operators import drastic_prod
+>>> x = [0, 0.25, 0.5, 0.75, 1]
+>>> y = [1, 0.75, 0.5, 0.25, 0]
+>>> drastic_prod([x, y])
+array([0., 0., 0., 0., 1.])
+fuzzy_expert.operators.drastic_sum(memberships)[source]
+Applies the element-wise function f(u, v) = u if v == 0 else v if u == 0 else 1.
+
+Parameters
+memberships – List of arrays of membership values.
+
+>>> from fuzzy_expert.operators import drastic_sum
+>>> x = [0.1, 0.25, 0.5, 0.75, 0.3]
+>>> y = [0, 0.75, 0.5, 0.25, 0]
+>>> drastic_sum([x, y])
+array([0.1, 1. , 1. , 1. , 0.3])
+fuzzy_expert.operators.extremely(membership)[source]
+Applies the element-wise function fn(u) = u^3.
+
+Parameters
+membership – Membership function to be modified.
+
+>>> from fuzzy_expert.operators import extremely
+>>> extremely([0, 0.25, 0.5, 0.75, 1])
+array([0.      , 0.015625, 0.125   , 0.421875, 1.      ])
+fuzzy_expert.operators.intensify(membership)[source]
+Applies the element-wise function fn(u) = u^2 if u <= 0.5 else 1 - 2 * (1 - u)^2.
+
+Parameters
+membership – Membership function to be modified.
+
+>>> from fuzzy_expert.operators import intensify
+>>> intensify([0, 0.25, 0.5, 0.75, 1])
+array([0.    , 0.0625, 0.25  , 0.875 , 1.    ])
+fuzzy_expert.operators.maximum(memberships)[source]
+Applies the element-wise function f(u, v) = max(u, v).
+
+Parameters
+memberships – List of arrays of membership values.
+
+>>> from fuzzy_expert.operators import maximum
+>>> x = [0.1, 0.25, 0.5, 0.75, 0.3]
+>>> y = [0, 0.75, 0.5, 0.25, 0]
+>>> maximum([x, y])
+array([0.1 , 0.75, 0.5 , 0.75, 0.3 ])
+fuzzy_expert.operators.minimum(memberships)[source]
+Applies the element-wise function f(u, v) = min(u, v).
+
+Parameters
+memberships – List of arrays of membership values.
+
+>>> from fuzzy_expert.operators import minimum
+>>> x = [0.1, 0.25, 0.5, 0.75, 0.3]
+>>> y = [0, 0.75, 0.5, 0.25, 0]
+>>> minimum([x, y])
+array([0.  , 0.25, 0.5 , 0.25, 0.  ])
+fuzzy_expert.operators.more_or_less(membership)[source]
+Applies the element-wise function fn(u) = u^(1/2).
+
+Parameters
+membership – Membership function to be modified.
+
+>>> from fuzzy_expert.operators import more_or_less
+>>> more_or_less([0, 0.25, 0.5, 0.75, 1])
+array([0.        , 0.5       , 0.70710678, 0.8660254 , 1.        ])
+fuzzy_expert.operators.norm(membership)[source]
+Applies the element-wise function fn(u) = u / max(u).
+
+Parameters
+membership – Membership function to be modified.
+
+>>> from fuzzy_expert.operators import norm
+>>> norm([0, 0.25, 0.5])
+array([0. , 0.5, 1. ])
+fuzzy_expert.operators.not_(membership)[source]
+Applies the element-wise function fn(u) = 1 - u.
+
+Parameters
+membership – Membership function to be modified.
+
+>>> from fuzzy_expert.operators import not_
+>>> not_([0, 0.25, 0.5, 0.75, 1])
+array([1.  , 0.75, 0.5 , 0.25, 0.  ])
+fuzzy_expert.operators.plus(membership)[source]
+Applies the element-wise function fn(u) = u^1.25.
+
+Parameters
+membership – Membership function to be modified.
+
+>>> from fuzzy_expert.operators import plus
+>>> plus([0, 0.25, 0.5, 0.75, 1])
+array([0.        , 0.1767767 , 0.42044821, 0.69795364, 1.        ])
+fuzzy_expert.operators.prob_or(memberships)[source]
+Applies the element-wise function fn(u, v) = u + v - u * v. Also known as algebraic-sum.
+
+Parameters
+memberships – List of arrays of membership values.
+
+>>> from fuzzy_expert.operators import prob_or
+>>> x = [0.1, 0.25, 0.5, 0.75, 0.3]
+>>> y = [0, 0.75, 0.5, 0.25, 0]
+>>> prob_or([x, y])
+array([0.1   , 0.8125, 0.75  , 0.8125, 0.3   ])
+fuzzy_expert.operators.product(memberships)[source]
+Applies the element-wise function f(u, v) = u * v.
+
+Parameters
+memberships – List of arrays of membership values.
+
+>>> from fuzzy_expert.operators import product
+>>> x = [0, 0.25, 0.5, 0.75, 1]
+>>> product([x, x, x])
+array([0.      , 0.015625, 0.125   , 0.421875, 1.      ])
+fuzzy_expert.operators.slightly(membership)[source]
+Applies the element-wise function fn(u) = u^(1/2).
+
+Parameters
+membership – Membership function to be modified.
+
+>>> from fuzzy_expert.operators import slightly
+>>> slightly([0, 0.25, 0.5, 0.75, 1])
+array([0.        , 0.16326531, 0.99696182, 1.        , 0.        ])
+fuzzy_expert.operators.somewhat(membership)[source]
+Applies the element-wise function fn(u) = u^(1/3).
+
+Parameters
+membership – Membership function to be modified.
+
+>>> from fuzzy_expert.operators import somewhat
+>>> somewhat([0, 0.25, 0.5, 0.75, 1])
+array([0.        , 0.62996052, 0.79370053, 0.9085603 , 1.        ])
+fuzzy_expert.operators.very(membership)[source]
+Applies the element-wise function fn(u) = u^2.
+
+Parameters
+membership – Membership function to be modified.
+
+>>> from fuzzy_expert.operators import very
+>>> very([0, 0.25, 0.5, 0.75, 1])
+array([0.    , 0.0625, 0.25  , 0.5625, 1.    ])Membership Functions
+
+Functions in this module returns a standard membership function specificaion as a list of points (x_i, u_i).
+
+class fuzzy_expert.mf.MembershipFunction(n_points=9)[source]
+Bases: object
+
+Membership function constructor.
+
+Parameters
+n_points – Number base point for building the approximations.
+
+>>> from fuzzy_expert.mf import MembershipFunction
+>>> mf = MembershipFunction(n_points=3)
+>>> mf(('gaussmf', 5, 1))
+[(2, 0), (3.0, 0.1353352832366127), (3.8, 0.48675225595997157), (4.6, 0.9231163463866356), (5.0, 1.0), (5.4, 0.9231163463866356), (6.2, 0.48675225595997157), (7.0, 0.1353352832366127), (8, 0)]
+gaussmf(center, sigma)[source]
+Gaussian membership function.
+
+Parameters
+center – Defines the center of the membership function.
+sigma – Defines the width of the membership function, where a larger value creates a wider membership function.
+>>> from fuzzy_expert.mf import MembershipFunction
+>>> mf = MembershipFunction(n_points=3)
+>>> mf.gaussmf(center=5, sigma=1)
+[(2, 0), (3.0, 0.1353352832366127), (3.8, 0.48675225595997157), (4.6, 0.9231163463866356), (5.0, 1.0), (5.4, 0.9231163463866356), (6.2, 0.48675225595997157), (7.0, 0.1353352832366127), (8, 0)]
+gbellmf(center, width, shape)[source]
+Generalized bell-shaped membership function.
+
+Parameters
+center – Defines the center of the membership function.
+width – Defines the width of the membership function, where a larger value creates a wider membership function.
+shape – Defines the shape of the curve on either side of the central plateau, where a larger value creates a more steep transition.
+>>> from fuzzy_expert.mf import MembershipFunction
+>>> mf = MembershipFunction(n_points=3)
+>>> mf.gbellmf(center=5, width=1, shape=0.5)
+[(-1, 0), (0.0, 0.16666666666666666), (1.0, 0.2), (2.0, 0.25), (3.0, 0.3333333333333333), (3.8, 0.45454545454545453), (4.0, 0.5), (4.6, 0.7142857142857141), (5.0, 1.0), (5.4, 0.7142857142857141), (6.0, 0.5), (6.2, 0.45454545454545453), (7.0, 0.3333333333333333), (8.0, 0.25), (9.0, 0.2), (10.0, 0.16666666666666666), (11, 0)]
+pimf(left_feet, left_peak, right_peak, right_feet)[source]
+Pi-shaped membership function.
+
+Parameters
+left_feet – Defines the left feet of the membership function.
+left_peak – Defines the left peak of the membership function.
+right_peak – Defines the right peak of the membership function.
+right_feet – Defines the right feet of the membership function.
+>>> from fuzzy_expert.mf import MembershipFunction
+>>> mf = MembershipFunction(n_points=4)
+>>> mf.pimf(left_feet=1, left_peak=2, right_peak=3, right_feet=4)
+[(1.0, 0.0), (1.3333333333333333, 0.22222222222222213), (1.6666666666666665, 0.7777777777777776), (2.0, 1.0), (3.0, 1.0), (3.3333333333333335, 0.7777777777777776), (3.6666666666666665, 0.22222222222222243), (4.0, 0.0)]
+sigmf(center, width)[source]
+Sigmoidal membership function.
+
+Parameters
+center – Defines the center of the membership function.
+width – Defines the width of the membership function.
+>>> from fuzzy_expert.mf import MembershipFunction
+>>> mf = MembershipFunction(n_points=3)
+>>> mf.sigmf(center=5, width=1)
+[(-1, 0), (0.0, 0.0066928509242848554), (2.0, 0.04742587317756678), (4.0, 0.2689414213699951), (5.0, 0.5), (6.0, 0.7310585786300049), (8.0, 0.9525741268224334), (10.0, 0.9933071490757153), (11, 1)]
+smf(foot, shoulder)[source]
+S-shaped membership function.
+
+Parameters
+foot – Defines the foot of the membership function.
+shoulder – Defines the shoulder of the membership function.
+>>> from fuzzy_expert.mf import MembershipFunction
+>>> mf = MembershipFunction(n_points=4)
+>>> mf.smf(foot=1, shoulder=2)
+[(1.0, 0.0), (1.3333333333333333, 0.22222222222222213), (1.6666666666666665, 0.7777777777777776), (2.0, 1.0)]
+trapmf(left_feet, left_peak, right_peak, right_feet)[source]
+Trapezoidal membership function.
+
+Parameters
+left_feet – Defines the left feet of the membership function.
+left_peak – Defines the left peak of the membership function.
+right_peak – Defines the right peak of the membership function.
+right_feet – Defines the right feet of the membership function.
+>>> from fuzzy_expert.mf import MembershipFunction
+>>> mf = MembershipFunction(n_points=4)
+>>> mf.trapmf(left_feet=1, left_peak=2, right_peak=3, right_feet=4)
+[(1.0, 0.0), (2.0, 1.0), (3.0, 1.0), (4.0, 0.0)]
+trimf(left_feet, peak, right_feet)[source]
+Triangular membership function.
+
+Parameters
+left_feet – Defines the left feet of the membership function.
+peak – Defines the peak of the membership function.
+right_feet – Defines the right feet of the membership function.
+>>> from fuzzy_expert.mf import MembershipFunction
+>>> mf = MembershipFunction(n_points=4)
+>>> mf.trimf(left_feet=1, peak=2, right_feet=4)
+[(1.0, 0.0), (2.0, 1.0), (4.0, 0.0)]
+zmf(shoulder, feet)[source]
+Z-shaped membership function.
+
+Parameters
+shoulder – Defines the shoulder of the membership function.
+feet – Defines the feet of the membership function.
+>>> from fuzzy_expert.mf import MembershipFunction
+>>> mf = MembershipFunction(n_points=4)
+>>> mf.zmf(shoulder=1, feet=2)
+[(1.0, 1.0), (1.3333333333333333, 0.7777777777777779), (1.6666666666666665, 0.22222222222222243), (2.0, 0.0)]
+
+Fuzzy Variables
+
+class fuzzy_expert.variable.FuzzyVariable(universe_range, terms=None, step=0.1)[source]
+Bases: object
+
+Creates a fuzzy variable.
+
+Parameters
+unverse_range – Limits of the universe of discourse.
+terms – Dictionary where each term is the key of the dictionary, and the values is the membership function.
+step – Value controling the resolution for the discrete representation of the universe.
+>>> from fuzzy_expert.variable import FuzzyVariable
+>>> v = FuzzyVariable(
+...     universe_range=(150, 200),
+...     terms={
+...         "High": [(175, 0), (180, 0.2), (185, 0.7), (190, 1)],
+...         "Low": [(155, 1), (160, 0.8), (165, 0.5), (170, 0.2), (175, 0)],
+...     },
+... )
+>>> v.plot()
+_images/fuzzyvar.png
+add_points_to_universe(points)[source]
+get_modified_membeship(term, modifiers=None)[source]
+Returns the membership modified values for the term.
+
+Parameters
+term – Name of the fuzzy set.
+modifiers – List of modifiers.
+>>> import matplotlib.pyplot as plt
+>>> from fuzzy_expert.variable import FuzzyVariable
+>>> v = FuzzyVariable(
+...     universe_range=(150, 200),
+...     terms={
+...         "High": [(175, 0), (180, 0.2), (185, 0.7), (190, 1)],
+...         "Low": [(155, 1), (160, 0.8), (165, 0.5), (170, 0.2), (175, 0)],
+...     },
+... )
+>>> y = v.get_modified_membeship('High' ,['extremely'])
+>>> _ = plt.plot(v.universe, v['High'], label='High')
+>>> _ = plt.plot(v.universe, y, label='extremely High')
+>>> _ = plt.legend()
+>>> plt.show()
+_images/hedges.png
+plot(fmt='-', linewidth=3)[source]
+Plots a fuzzy variable.
+
+Parameters
+fmt – Format string passed to Matplotlib.pyplot.
+linewidth – Width of lines.
+plot_input(value, fuzzyset, view_xaxis=True, view_yaxis='left')[source]
+Plots the fuzzy set, and the input.
+
+Parameters
+value – Crisp or fuzzy input value.
+fuzzyset – Term to plot.
+view_xaxis – Draw the x-axis of plot
+view_yaxis – Draw the y-axis of plot at left or right side.
+>>> from fuzzy_expert.variable import FuzzyVariable
+>>> v = FuzzyVariable(
+...     universe_range=(150, 200),
+...     terms={
+...         "High": [(175, 0), (180, 0.2), (185, 0.7), (190, 1)],
+...         "Low": [(155, 1), (160, 0.8), (165, 0.5), (170, 0.2), (175, 0)],
+...     },
+... )
+>>> v.plot_input(value=185, fuzzyset='High', view_xaxis=True, view_yaxis='right')
+_images/plot_crisp_input.png
+
+
+
+Zadeh-Mamdani Rules
+
+class fuzzy_expert.rule.FuzzyRule(premise, consequence, cf=1.0, threshold_cf=0)[source]
+Bases: object
+
+Creates a Zadeh-Mamdani fuzzy rule.
+
+Parameters
+premise – List of propositions in rule premise.
+consequence – List of propositions in rule consequence.
+cf – Certainty factor of the rule.
+threshold_cf – Minimum certainty factor for rule firing.
+>>> from fuzzy_expert.rule import FuzzyRule
+>>> rule = FuzzyRule(
+...     premise=[
+...         ("score", "High"),
+...         ("AND", "ratio", "Goodr"),
+...         ("AND", "credit", "Goodc"),
+...     ],
+...     consequence=[("decision", "Approve")],
+... )
+>>> rule
+IF  score IS High
+    AND ratio IS Goodr
+    AND credit IS Goodc
+THEN
+    decision IS Approve
+CF = 1.00
+Threshold-CF = 0.00
+
+Inference Method
+
+class fuzzy_expert.inference.DecompositionalInference(and_operator, or_operator, implication_operator, composition_operator, production_link, defuzzification_operator)[source]
+Bases: object
+
+Decompositional inference method.
+
+Parameters
+and_operator –
+AND operator method for combining the compositions of propositions in a fuzzy rule premise, specified as one of the following:
+”min”.
+”prod”.
+”bunded_prod”.
+”drastic_prod”.
+or_operator –
+OR operator method for combining the compositions of propositions in a fuzzy rule premise, specified as one of the following:
+”max”.
+”prob_or”.
+”bounded_sum”.
+”drastic_sum”.
+implication_operator –
+method for computing the compositions of propositions in a fuzzy rule premise, specified as one of the following:
+”Ra”.
+”Rm”.
+”Rc”.
+”Rb”.
+”Rs”.
+”Rg”.
+”Rsg”.
+”Rgs”.
+”Rgg”.
+”Rss”.
+production_link –
+method for aggregating the consequences of the fuzzy rules, specified as one of the following:
+”min”.
+”prod”.
+”bunded_prod”.
+”drastic_prod”.
+”max”.
+”prob_or”.
+”bounded_sum”.
+”drastic_sum”.
+defuzzification_operator –
+Method for defuzzificate the resulting membership function, specified as one of the following:
+”cog”: Center of gravity.
+”boa”: Bisector of area.
+”mom”: Mean of the values for which the membership function is maximum.
+”lom”: Largest value for which the membership function is maximum.
+”som”: Smallest value for which the membership function is minimum.
+
