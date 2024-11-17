@@ -1,15 +1,15 @@
-import numpy as np
 import math
+import numpy as np
 
 from fuzzy_expert.variable import FuzzyVariable
 from fuzzy_expert.rule import FuzzyRule
 from fuzzy_expert.inference import DecompositionalInference
 
-from segmento import *
-
 class FuzzySystem:
     """
-    Sistema Experto Difuso para el guiado de un robot.
+    Sistema experto difuso para el control de un robot que navega a través de segmentos.
+    Utiliza lógica difusa para determinar las velocidades de control basadas en la distancia al segmento,
+    el error angular y la distancia al punto final.
     """
 
     # Definición de constantes de clase
@@ -17,151 +17,27 @@ class FuzzySystem:
     WMAX = 1.0  # Velocidad angular máxima (rad/s)
     VACC = 1.0  # Aceleración lineal máxima (m/s²)
     WACC = 0.5  # Aceleración angular máxima (rad/s²)
-    TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el final del segmento (m)
+    TOLERACION_FIN_SEGMENTO = 5.0  # Tolerancia para considerar que se alcanzó el final del segmento (m)
 
     def __init__(self):
-        self.objetivoAlcanzado = False
-        self.segmentoObjetivo = None
-        self.medioAlcanzado = False  # Indica si el robot alcanza el punto medio del segmento triángulo
-        self.segmento = 0  # Indica en qué segmento se ubica
+        """
+        Inicializa el sistema experto difuso, definiendo las variables difusas y las reglas.
+        """
+        self.objetivoAlcanzado = False  
+        self.segmentoObjetivo = None  
+        self.velocidad_lineal_previa = 0.0  
+        self.velocidad_angular_previa = 0.0  
+        self.medioAlcanzado = False 
+        self.segmento = 0  
 
-        # Factor de anticipación al giro
-        self.FACT_ANTICIPACION_GIRO = 1.4
+        # Definir variables difusas
+        self.variables = self.definir_variables()
 
-        # Almacenamiento de velocidades previas
-        self.velocidad_lineal_previa = self.VMAX
-        self.velocidad_angular_previa = 0.0
+        # Definir reglas difusas
+        self.rules = self.definir_reglas()
 
-        # Definición de variables difusas
-        self.error_lateral_var = FuzzyVariable(
-            universe_range=(-2, 2),
-            terms={
-                'NL': [(-2, 1), (-1, 1), (-0.5, 0)],
-                'NS': [(-1, 0), (-0.5, 1), (0, 0)],
-                'Z':  [(-0.1, 0), (0, 1), (0.1, 0)],
-                'PS': [(0, 0), (0.5, 1), (1, 0)],
-                'PL': [(0.5, 0), (1, 1), (2, 1)],
-            },
-        )
-
-        self.error_angular_var = FuzzyVariable(
-            universe_range=(-180, 180),
-            terms={
-                'NL': [(-180, 1), (-90, 1), (-45, 0)],
-                'NS': [(-60, 0), (-30, 1), (0, 0)],
-                'Z':  [(-5, 0), (0, 1), (5, 0)],
-                'PS': [(0, 0), (30, 1), (60, 0)],
-                'PL': [(45, 0), (90, 1), (180, 1)],
-            },
-        )
-
-        # Nueva variable difusa para la distancia a la línea
-        self.distancia_a_linea_var = FuzzyVariable(
-            universe_range=(0, 10),
-            terms={
-                'Cerca': [(0, 1), (2, 1), (4, 0)],
-                'Media': [(2, 0), (4, 1), (6, 0)],
-                'Lejos': [(4, 0), (6, 1), (10, 1)],
-            },
-        )
-
-        self.angular_speed_var = FuzzyVariable(
-            universe_range=(-self.WMAX, self.WMAX),
-            terms={
-                'NH': [(-self.WMAX, 1), (-0.75 * self.WMAX, 1), (-0.5 * self.WMAX, 0)],
-                'NL': [(-0.75 * self.WMAX, 0), (-0.5 * self.WMAX, 1), (0, 0)],
-                'Z':  [(-0.25 * self.WMAX, 0), (0, 1), (0.25 * self.WMAX, 0)],
-                'PL': [(0, 0), (0.5 * self.WMAX, 1), (0.75 * self.WMAX, 0)],
-                'PH': [(0.5 * self.WMAX, 0), (0.75 * self.WMAX, 1), (self.WMAX, 1)],
-            },
-        )
-
-        self.variables = {
-            'error_lateral': self.error_lateral_var,
-            'error_angular': self.error_angular_var,
-            'distancia_a_linea': self.distancia_a_linea_var,
-            'angular_speed': self.angular_speed_var,
-        }
-
-        # Definición de reglas difusas considerando la distancia a la línea
-        self.rules = [
-            # Cuando estamos cerca de la línea, reducimos la influencia del error angular
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Cerca'),
-                    ('AND', 'error_lateral', 'Z'),
-                ],
-                consequence=[('angular_speed', 'Z')],
-            ),
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Cerca'),
-                    ('AND', 'error_lateral', 'NL'),
-                ],
-                consequence=[('angular_speed', 'NL')],
-            ),
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Cerca'),
-                    ('AND', 'error_lateral', 'PL'),
-                ],
-                consequence=[('angular_speed', 'PL')],
-            ),
-            # Cuando estamos lejos de la línea, el error angular es más relevante
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Lejos'),
-                    ('AND', 'error_angular', 'NL'),
-                ],
-                consequence=[('angular_speed', 'NH')],
-            ),
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Lejos'),
-                    ('AND', 'error_angular', 'NS'),
-                ],
-                consequence=[('angular_speed', 'NL')],
-            ),
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Lejos'),
-                    ('AND', 'error_angular', 'PS'),
-                ],
-                consequence=[('angular_speed', 'PL')],
-            ),
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Lejos'),
-                    ('AND', 'error_angular', 'PL'),
-                ],
-                consequence=[('angular_speed', 'PH')],
-            ),
-            # Reglas para distancia media
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Media'),
-                    ('AND', 'error_lateral', 'NL'),
-                ],
-                consequence=[('angular_speed', 'NL')],
-            ),
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Media'),
-                    ('AND', 'error_lateral', 'PL'),
-                ],
-                consequence=[('angular_speed', 'PL')],
-            ),
-            FuzzyRule(
-                premise=[
-                    ('distancia_a_linea', 'Media'),
-                    ('AND', 'error_angular', 'Z'),
-                ],
-                consequence=[('angular_speed', 'Z')],
-            ),
-        ]
-
-        # Creación del modelo de inferencia difusa
-        self.model = DecompositionalInference(
+        # Configurar el modelo de inferencia
+        self.modelo = DecompositionalInference(
             and_operator="min",
             or_operator="max",
             implication_operator="Rc",
@@ -170,35 +46,171 @@ class FuzzySystem:
             defuzzification_operator="cog",
         )
 
-    def setObjetivo(self, obj):
-        self.objetivoAlcanzado = False
-        self.segmentoObjetivo = obj
-        self.medioAlcanzado = False  # Reiniciar para el siguiente segmento
-        self.segmento += 0.5
+    def definir_variables(self):
+        """
+        Define las variables difusas de entrada y salida.
+        """
+        variables = {
+            # Entrada: distancia al segmento
+            "distance_to_segment": FuzzyVariable(
+                universe_range=(0, 20),
+                terms={
+                    "Close": ('trimf', 0, 0, 5),
+                    "Medium": ('trimf', 0, 10, 20),
+                    "Far": ('trimf', 10, 20, 20),
+                },
+            ),
+            # Entrada: error angular
+            "angle_error": FuzzyVariable(
+                universe_range=(-math.pi, math.pi),
+                terms={
+                    "Negative": ('trimf', -math.pi, -math.pi, 0),
+                    "Zero": ('trimf', -math.pi/4, 0, math.pi/4),
+                    "Positive": ('trimf', 0, math.pi, math.pi),
+                },
+            ),
+            # Entrada: distancia al punto final
+            "distance_to_end": FuzzyVariable(
+                universe_range=(0, 20),
+                terms={
+                    "Near": ('trimf', 0, 0, 5),
+                    "Medium": ('trimf', 0, 10, 20),
+                    "Far": ('trimf', 10, 20, 20),
+                },
+            ),
+            # Salida: velocidad lineal
+            "linear_velocity": FuzzyVariable(
+                universe_range=(0, self.VMAX),
+                terms={
+                    "Slow": ('trimf', 0, 0, self.VMAX/2),
+                    "Medium": ('trimf', 0, self.VMAX/2, self.VMAX),
+                    "Fast": ('trimf', self.VMAX/2, self.VMAX, self.VMAX),
+                },
+            ),
+            # Salida: velocidad angular
+            "angular_velocity": FuzzyVariable(
+                universe_range=(-self.WMAX, self.WMAX),
+                terms={
+                    "Left": ('trimf', -self.WMAX, -self.WMAX, 0),
+                    "Straight": ('trimf', -self.WMAX/2, 0, self.WMAX/2),
+                    "Right": ('trimf', 0, self.WMAX, self.WMAX),
+                },
+            ),
+        }
+        return variables
 
-        # Ajuste del factor de anticipación según el segmento (como en tu código original)
-        if self.segmento == 0.5:
-            self.FACT_ANTICIPACION_GIRO = 1.4
-        elif self.segmento == 2.5:
-            self.FACT_ANTICIPACION_GIRO = 1.61
-        elif self.segmento == 1 or self.segmento == 3:
-            self.FACT_ANTICIPACION_GIRO = 1.7
-        else:
-            self.FACT_ANTICIPACION_GIRO = 1.2
+    def definir_reglas(self):
+        """
+        Define las reglas difusas para el sistema.
+        """
+        rules = [
+            # Si está lejos y el error angular es cero, entonces velocidad rápida y angular cero
+            FuzzyRule(
+                premise=[
+                    ("distance_to_segment", "Far"),
+                    ("AND", "angle_error", "Zero"),
+                ],
+                consequence=[
+                    ("linear_velocity", "Fast"),
+                    ("angular_velocity", "Straight"),
+                ],
+            ),
+            # Si está cerca y el error angular es positivo, entonces velocidad lenta y giro a la derecha
+            FuzzyRule(
+                premise=[
+                    ("distance_to_segment", "Close"),
+                    ("AND", "angle_error", "Positive"),
+                ],
+                consequence=[
+                    ("linear_velocity", "Slow"),
+                    ("angular_velocity", "Right"),
+                ],
+            ),
+            # Si está cerca y el error angular es negativo, entonces velocidad lenta y giro a la izquierda
+            FuzzyRule(
+                premise=[
+                    ("distance_to_segment", "Close"),
+                    ("AND", "angle_error", "Negative"),
+                ],
+                consequence=[
+                    ("linear_velocity", "Slow"),
+                    ("angular_velocity", "Left"),
+                ],
+            ),
+            # Si está a una distancia media y el error angular es positivo, entonces velocidad media y giro a la derecha
+            FuzzyRule(
+                premise=[
+                    ("distance_to_segment", "Medium"),
+                    ("AND", "angle_error", "Positive"),
+                ],
+                consequence=[
+                    ("linear_velocity", "Medium"),
+                    ("angular_velocity", "Right"),
+                ],
+            ),
+            # Si está a una distancia media y el error angular es negativo, entonces velocidad media y giro a la izquierda
+            FuzzyRule(
+                premise=[
+                    ("distance_to_segment", "Medium"),
+                    ("AND", "angle_error", "Negative"),
+                ],
+                consequence=[
+                    ("linear_velocity", "Medium"),
+                    ("angular_velocity", "Left"),
+                ],
+            ),
+            # Si está cerca y el error angular es cero, entonces velocidad media y angular cero
+            FuzzyRule(
+                premise=[
+                    ("distance_to_segment", "Close"),
+                    ("AND", "angle_error", "Zero"),
+                ],
+                consequence=[
+                    ("linear_velocity", "Medium"),
+                    ("angular_velocity", "Straight"),
+                ],
+            ),
+            # Si está lejos y el error angular es positivo, entonces velocidad media y giro a la derecha
+            FuzzyRule(
+                premise=[
+                    ("distance_to_segment", "Far"),
+                    ("AND", "angle_error", "Positive"),
+                ],
+                consequence=[
+                    ("linear_velocity", "Medium"),
+                    ("angular_velocity", "Right"),
+                ],
+            ),
+            # Si está lejos y el error angular es negativo, entonces velocidad media y giro a la izquierda
+            FuzzyRule(
+                premise=[
+                    ("distance_to_segment", "Far"),
+                    ("AND", "angle_error", "Negative"),
+                ],
+                consequence=[
+                    ("linear_velocity", "Medium"),
+                    ("angular_velocity", "Left"),
+                ],
+            ),
+            # Regla para aproximarse al punto final
+            FuzzyRule(
+                premise=[
+                    ("distance_to_end", "Near"),
+                ],
+                consequence=[
+                    ("linear_velocity", "Slow"),
+                    ("angular_velocity", "Straight"),
+                ],
+            ),
+        ]
+        return rules
 
     @staticmethod
-    def signedDistanceToLine(p1, p2, p3):
+    def get_point_on_segment(k, start_point, end_point):
         """
-        Calcula la distancia perpendicular firmada desde un punto a una línea definida por dos puntos.
-        Retorna positiva si el punto está a la derecha de la línea, negativa si está a la izquierda.
+        Calcula un punto específico en un segmento definido por dos puntos: inicio y fin
         """
-        # Coeficientes de la línea A*x + B*y + C = 0
-        A = p2[1] - p1[1]
-        B = p1[0] - p2[0]
-        C = p2[0]*p1[1] - p1[0]*p2[1]
-        denom = np.sqrt(A**2 + B**2)
-        distance = (A*p3[0] + B*p3[1] + C) / denom
-        return distance
+        return (1 - k) * np.array(start_point) + k * np.array(end_point)
 
     def actualizarEstado(self, poseRobot, puntoFin):
         """
@@ -208,110 +220,130 @@ class FuzzySystem:
         if distancia_punto_final <= FuzzySystem.TOLERACION_FIN_SEGMENTO:
             self.objetivoAlcanzado = True
 
-    @staticmethod
-    def get_point_on_segment(k, start_point, end_point):
-        """
-        Calcula un punto específico en un segmento definido por dos puntos.
-        """
-        return (1 - k) * np.array(start_point) + k * np.array(end_point)
-
     def calcularPuntoObjetivo(self, inicio, fin, poseRobot):
         """
-        Calcula el punto objetivo adelantado basado en la posición actual del robot y el factor de anticipación.
+        Calcula el punto objetivo para el robot basado en la posición actual y la anticipación.
         """
-        # Parámetros para anticipación
-        velocidad_promedio = self.VMAX
-        distancia_anticipacion = velocidad_promedio * self.FACT_ANTICIPACION_GIRO
+        # Similar a la implementación del sistema no difuso
+        velocidad_promedio = (self.velocidad_lineal_previa + self.VMAX) / 2
+        distancia_anticipacion = velocidad_promedio * 1.4  # Factor de anticipación fijo
 
-        # Cálculo de la distancia total del segmento
         longitud_segmento = np.linalg.norm(fin - inicio)
-
-        # Cálculo de k_closest (proyección de la posición actual sobre el segmento)
         x, y = poseRobot[0], poseRobot[1]
         k_inicial = ((x - inicio[0]) * (fin[0] - inicio[0]) + (y - inicio[1]) * (fin[1] - inicio[1])) / (longitud_segmento ** 2)
-        k_inicial = min(max(k_inicial, 0.0), 1.0)  # Asegurar que k_inicial esté entre 0 y 1
+        k_inicial = min(max(k_inicial, 0.0), 1.0)
 
-        # Cálculo de k_lookahead (posición adelantada en el segmento)
         k_final = k_inicial + (distancia_anticipacion / longitud_segmento)
-        k_final = min(max(k_final, 0.0), 1.0)  # Asegurar que k_final esté entre 0 y 1
+        k_final = min(max(k_final, 0.0), 1.0)
 
-        # Obtener el punto objetivo adelantado
         target_point = self.get_point_on_segment(k_final, inicio, fin)
-
         return target_point
+
+    def calcularControl(self, V, W):
+        """
+        Aplica las restricciones de aceleración y velocidad máxima a las velocidades calculadas por el sistema difuso.
+        """
+        # Limitar aceleración lineal
+        delta_v = V - self.velocidad_lineal_previa
+        delta_v = max(min(delta_v, self.VACC), -self.VACC)
+        velocidad_lineal = self.velocidad_lineal_previa + delta_v
+        velocidad_lineal = min(max(velocidad_lineal, 0), self.VMAX)
+
+        # Limitar aceleración angular
+        delta_w = W - self.velocidad_angular_previa
+        delta_w = max(min(delta_w, self.WACC), -self.WACC)
+        velocidad_angular = self.velocidad_angular_previa + delta_w
+        velocidad_angular = max(min(velocidad_angular, self.WMAX), -self.WMAX)
+
+        # Actualizar velocidades previas
+        self.velocidad_lineal_previa = velocidad_lineal
+        self.velocidad_angular_previa = velocidad_angular
+
+        return velocidad_lineal, velocidad_angular
 
     def tomarDecision(self, poseRobot):
         """
-        Calcula las velocidades lineal y angular utilizando inferencia difusa y limita la aceleración angular.
+        Toma una decisión sobre las velocidades de control basadas en la posición actual del robot.
         """
-        if self.segmentoObjetivo.getType() == 2:
-            medio = self.segmentoObjetivo.getMedio()
+        if self.segmentoObjetivo is None:
+            return (0, 0)
 
-        fin = np.array(self.segmentoObjetivo.getFin())
-        inicio = np.array(self.segmentoObjetivo.getInicio())
+        fin = np.array(self.segmentoObjetivo.getFin())  
+        inicio = np.array(self.segmentoObjetivo.getInicio())  
 
+        # Cálculo de distancia al segmento
+        dist = FuzzySystem.straightToPointDistance(inicio, fin, np.array(poseRobot[0:2]))
         self.actualizarEstado(poseRobot, fin)
 
         if self.objetivoAlcanzado:
             print("Objetivo alcanzado.")
             return (0, 0)
 
-        # Calcular el punto objetivo con anticipación
+        # Calcular el punto objetivo
         target_point = self.calcularPuntoObjetivo(inicio, fin, poseRobot)
 
         # Calcular el error angular
         x, y, theta_deg = poseRobot[0], poseRobot[1], poseRobot[2]
-        theta = theta_deg  # En grados
-
+        theta = math.radians(theta_deg)
         delta_x = target_point[0] - x
         delta_y = target_point[1] - y
-
-        angulo_a_target = math.degrees(math.atan2(delta_y, delta_x))
+        angulo_a_target = math.atan2(delta_y, delta_x)
         error_angular = angulo_a_target - theta
-        error_angular = (error_angular + 180) % 360 - 180  # Normalizar a [-180, 180]
+        error_angular = (error_angular + math.pi) % (2 * math.pi) - math.pi
 
-        # Calcular el error lateral (distancia perpendicular firmada desde el robot a la línea)
-        error_lateral = self.signedDistanceToLine(inicio, fin, np.array([x, y]))
+        # Calcular distancias
+        distancia_to_segment = dist
+        distancia_to_end = np.linalg.norm(fin - np.array([x, y]))
 
-        # Calcular la distancia absoluta a la línea
-        distancia_a_linea = abs(error_lateral)
-
-        # Preparar entradas para el modelo difuso
+        # Preparar entradas difusas
         inputs = {
-            'error_lateral': error_lateral,
-            'error_angular': error_angular,
-            'distancia_a_linea': distancia_a_linea,
+            "distance_to_segment": distancia_to_segment,
+            "angle_error": error_angular,
+            "distance_to_end": distancia_to_end,
         }
 
         # Ejecutar inferencia difusa
-        outputs, cf = self.model(
+        resultado, cf = self.modelo(
             variables=self.variables,
             rules=self.rules,
-            **inputs
+            distance_to_segment=inputs["distance_to_segment"],
+            angle_error=inputs["angle_error"],
+            distance_to_end=inputs["distance_to_end"],
         )
 
-        # La velocidad lineal se mantiene al máximo
-        V = self.VMAX
+        # Obtener valores de salida difusos
+        V_fuzzy = resultado.get("linear_velocity", 0)
+        W_fuzzy = resultado.get("angular_velocity", 0)
 
-        # Salida difusa para velocidad angular
-        W_deseada = outputs['angular_speed']
+        # Aplicar restricciones de aceleración y velocidad
+        velocidad_lineal, velocidad_angular = self.calcularControl(V_fuzzy, W_fuzzy)
 
-        # Limitación de la aceleración angular
-        delta_w = W_deseada - self.velocidad_angular_previa
-        max_delta_w = self.WACC
-        delta_w = max(-max_delta_w, min(delta_w, max_delta_w))
-        W = self.velocidad_angular_previa + delta_w
+        return velocidad_lineal, velocidad_angular
 
-        # Almacenar velocidad angular para el siguiente ciclo
-        self.velocidad_angular_previa = W
+    @staticmethod
+    def straightToPointDistance(p1, p2, p3):
+        """
+        Calcula la distancia perpendicular desde un punto a una línea definida por dos puntos.
+        """
+        return np.linalg.norm(np.cross(p2 - p1, p1 - p3)) / np.linalg.norm(p2 - p1)
 
-        # Asegurar que W esté dentro de los límites
-        W = max(-self.WMAX, min(W, self.WMAX))
-
-        return V, W
+    def setObjetivo(self, segmento):
+        """
+        Establece un nuevo objetivo para el robot.
+        """
+        self.objetivoAlcanzado = False
+        self.segmentoObjetivo = segmento
+        self.medioAlcanzado = False  
+        self.segmento += 0.5 
 
     def esObjetivoAlcanzado(self):
+        """
+        Devuelve si se ha alcanzado el objetivo.
+        """
         return self.objetivoAlcanzado
 
     def hayParteOptativa(self):
-        return False  # Cambiar a True si se implementa la parte optativa
+        """
+        Indica si hay una parte optativa implementada.
+        """
+        return False
