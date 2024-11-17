@@ -10,8 +10,6 @@ from segmento import *
 class FuzzySystem:
     """
     Sistema Experto Difuso para el guiado de un robot.
-    Esta clase contiene el código para el control y guiado de un robot móvil sobre un plano cartesiano,
-    utilizando un sistema experto difuso.
     """
 
     # Definición de constantes de clase
@@ -26,6 +24,13 @@ class FuzzySystem:
         self.segmentoObjetivo = None
         self.medioAlcanzado = False  # Indica si el robot alcanza el punto medio del segmento triángulo
         self.segmento = 0  # Indica en qué segmento se ubica
+
+        # Factor de anticipación al giro
+        self.FACT_ANTICIPACION_GIRO = 1.4
+
+        # Almacenamiento de velocidades previas
+        self.velocidad_lineal_previa = self.VMAX
+        self.velocidad_angular_previa = 0.0
 
         # Definición de variables difusas
         self.error_lateral_var = FuzzyVariable(
@@ -42,11 +47,21 @@ class FuzzySystem:
         self.error_angular_var = FuzzyVariable(
             universe_range=(-180, 180),
             terms={
-                'NL': [(-180, 1), (-90, 1), (-60, 0)],
-                'NS': [(-90, 0), (-60, 1), (-30, 0)],
+                'NL': [(-180, 1), (-90, 1), (-45, 0)],
+                'NS': [(-60, 0), (-30, 1), (0, 0)],
                 'Z':  [(-5, 0), (0, 1), (5, 0)],
-                'PS': [(30, 0), (60, 1), (90, 0)],
-                'PL': [(60, 0), (90, 1), (180, 1)],
+                'PS': [(0, 0), (30, 1), (60, 0)],
+                'PL': [(45, 0), (90, 1), (180, 1)],
+            },
+        )
+
+        # Nueva variable difusa para la distancia a la línea
+        self.distancia_a_linea_var = FuzzyVariable(
+            universe_range=(0, 10),
+            terms={
+                'Cerca': [(0, 1), (2, 1), (4, 0)],
+                'Media': [(2, 0), (4, 1), (6, 0)],
+                'Lejos': [(4, 0), (6, 1), (10, 1)],
             },
         )
 
@@ -64,40 +79,84 @@ class FuzzySystem:
         self.variables = {
             'error_lateral': self.error_lateral_var,
             'error_angular': self.error_angular_var,
+            'distancia_a_linea': self.distancia_a_linea_var,
             'angular_speed': self.angular_speed_var,
         }
 
-        # Definición de reglas difusas
+        # Definición de reglas difusas considerando la distancia a la línea
         self.rules = [
+            # Cuando estamos cerca de la línea, reducimos la influencia del error angular
             FuzzyRule(
-                premise=[('error_lateral', 'Z'), ('AND', 'error_angular', 'Z')],
-                consequence=[
-                    ('angular_speed', 'Z'),
+                premise=[
+                    ('distancia_a_linea', 'Cerca'),
+                    ('AND', 'error_lateral', 'Z'),
                 ],
+                consequence=[('angular_speed', 'Z')],
             ),
             FuzzyRule(
-                premise=[('error_lateral', 'NS'), ('OR', 'error_angular', 'NS')],
-                consequence=[
-                    ('angular_speed', 'NL'),
+                premise=[
+                    ('distancia_a_linea', 'Cerca'),
+                    ('AND', 'error_lateral', 'NL'),
                 ],
+                consequence=[('angular_speed', 'NL')],
             ),
             FuzzyRule(
-                premise=[('error_lateral', 'NL'), ('OR', 'error_angular', 'NL')],
-                consequence=[
-                    ('angular_speed', 'NH'),
+                premise=[
+                    ('distancia_a_linea', 'Cerca'),
+                    ('AND', 'error_lateral', 'PL'),
                 ],
+                consequence=[('angular_speed', 'PL')],
+            ),
+            # Cuando estamos lejos de la línea, el error angular es más relevante
+            FuzzyRule(
+                premise=[
+                    ('distancia_a_linea', 'Lejos'),
+                    ('AND', 'error_angular', 'NL'),
+                ],
+                consequence=[('angular_speed', 'NH')],
             ),
             FuzzyRule(
-                premise=[('error_lateral', 'PS'), ('OR', 'error_angular', 'PS')],
-                consequence=[
-                    ('angular_speed', 'PL'),
+                premise=[
+                    ('distancia_a_linea', 'Lejos'),
+                    ('AND', 'error_angular', 'NS'),
                 ],
+                consequence=[('angular_speed', 'NL')],
             ),
             FuzzyRule(
-                premise=[('error_lateral', 'PL'), ('OR', 'error_angular', 'PL')],
-                consequence=[
-                    ('angular_speed', 'PH'),
+                premise=[
+                    ('distancia_a_linea', 'Lejos'),
+                    ('AND', 'error_angular', 'PS'),
                 ],
+                consequence=[('angular_speed', 'PL')],
+            ),
+            FuzzyRule(
+                premise=[
+                    ('distancia_a_linea', 'Lejos'),
+                    ('AND', 'error_angular', 'PL'),
+                ],
+                consequence=[('angular_speed', 'PH')],
+            ),
+            # Reglas para distancia media
+            FuzzyRule(
+                premise=[
+                    ('distancia_a_linea', 'Media'),
+                    ('AND', 'error_lateral', 'NL'),
+                ],
+                consequence=[('angular_speed', 'NL')],
+            ),
+            FuzzyRule(
+                premise=[
+                    ('distancia_a_linea', 'Media'),
+                    ('AND', 'error_lateral', 'PL'),
+                ],
+                consequence=[('angular_speed', 'PL')],
+            ),
+            FuzzyRule(
+                premise=[
+                    ('distancia_a_linea', 'Media'),
+                    ('AND', 'error_angular', 'Z'),
+                ],
+                consequence=[('angular_speed', 'Z')],
             ),
         ]
 
@@ -111,19 +170,13 @@ class FuzzySystem:
             defuzzification_operator="cog",
         )
 
-        # Almacenamiento de la velocidad angular previa para considerar aceleración
-        self.velocidad_angular_previa = 0.0
-
-        # Factor de anticipación al giro
-        self.FACT_ANTICIPACION_GIRO = 1.4
-
     def setObjetivo(self, obj):
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = obj
         self.medioAlcanzado = False  # Reiniciar para el siguiente segmento
         self.segmento += 0.5
 
-        # Ajustar el factor de anticipación dependiendo del segmento
+        # Ajuste del factor de anticipación según el segmento (como en tu código original)
         if self.segmento == 0.5:
             self.FACT_ANTICIPACION_GIRO = 1.4
         elif self.segmento == 2.5:
@@ -139,7 +192,7 @@ class FuzzySystem:
         Calcula la distancia perpendicular firmada desde un punto a una línea definida por dos puntos.
         Retorna positiva si el punto está a la derecha de la línea, negativa si está a la izquierda.
         """
-        # Line coefficients A*x + B*y + C = 0
+        # Coeficientes de la línea A*x + B*y + C = 0
         A = p2[1] - p1[1]
         B = p1[0] - p2[0]
         C = p2[0]*p1[1] - p1[0]*p2[1]
@@ -168,7 +221,7 @@ class FuzzySystem:
         """
         # Parámetros para anticipación
         velocidad_promedio = self.VMAX
-        distancia_anticipacion = velocidad_promedio * 2  # Uso del factor de anticipación
+        distancia_anticipacion = velocidad_promedio * self.FACT_ANTICIPACION_GIRO
 
         # Cálculo de la distancia total del segmento
         longitud_segmento = np.linalg.norm(fin - inicio)
@@ -189,7 +242,7 @@ class FuzzySystem:
 
     def tomarDecision(self, poseRobot):
         """
-        Calcula las velocidades lineal y angular utilizando inferencia difusa.
+        Calcula las velocidades lineal y angular utilizando inferencia difusa y limita la aceleración angular.
         """
         if self.segmentoObjetivo.getType() == 2:
             medio = self.segmentoObjetivo.getMedio()
@@ -220,10 +273,14 @@ class FuzzySystem:
         # Calcular el error lateral (distancia perpendicular firmada desde el robot a la línea)
         error_lateral = self.signedDistanceToLine(inicio, fin, np.array([x, y]))
 
+        # Calcular la distancia absoluta a la línea
+        distancia_a_linea = abs(error_lateral)
+
         # Preparar entradas para el modelo difuso
         inputs = {
             'error_lateral': error_lateral,
             'error_angular': error_angular,
+            'distancia_a_linea': distancia_a_linea,
         }
 
         # Ejecutar inferencia difusa
@@ -241,7 +298,7 @@ class FuzzySystem:
 
         # Limitación de la aceleración angular
         delta_w = W_deseada - self.velocidad_angular_previa
-        max_delta_w = self.WACC  # Máximo cambio de velocidad angular por unidad de tiempo
+        max_delta_w = self.WACC
         delta_w = max(-max_delta_w, min(delta_w, max_delta_w))
         W = self.velocidad_angular_previa + delta_w
 
