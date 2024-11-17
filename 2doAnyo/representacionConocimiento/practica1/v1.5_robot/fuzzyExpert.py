@@ -9,13 +9,14 @@ class FuzzySystem:
     """
     Sistema experto difuso para el control de un robot que navega a través de segmentos.
     Utiliza lógica difusa para determinar la velocidad angular basada en el error angular.
-    La velocidad lineal se mantiene constante en VMAX, excepto en segmentos triangulares.
+    La velocidad lineal se mantiene constante en VMAX, con ajustes en segmentos triangulares.
     """
 
     # Definición de constantes de clase
     VMAX = 3.0  # Velocidad lineal máxima (m/s)
-    VMAX_TRIANGULO = 2.3  # Velocidad lineal máxima en segmentos triangulares (m/s)
+    VMAX_TRIANGULO = 2.7  # Velocidad lineal máxima en segmentos triangulares (m/s)
     WMAX = 1.0  # Velocidad angular máxima (rad/s)
+    WMAX_TRIANGULO = 1.0  # Velocidad angular máxima en segmentos triangulares (rad/s)
     VACC = 1.0  # Aceleración lineal máxima (m/s²)
     WACC = 0.5  # Aceleración angular máxima (rad/s²)
     TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el final del segmento (m)
@@ -32,7 +33,8 @@ class FuzzySystem:
         self.segmento = 0  
 
         # Definir variables difusas
-        self.variables = self.definir_variables()
+        self.variables_normales = self.definir_variables_normales()
+        self.variables_triangulo = self.definir_variables_triangulo()
 
         # Definir reglas difusas
         self.rules = self.definir_reglas()
@@ -47,9 +49,9 @@ class FuzzySystem:
             defuzzification_operator="cog",
         )
 
-    def definir_variables(self):
+    def definir_variables_normales(self):
         """
-        Define las variables difusas de entrada y salida.
+        Define las variables difusas de entrada y salida para segmentos normales.
         """
         variables = {
             # Entrada: error angular
@@ -72,6 +74,37 @@ class FuzzySystem:
                     "Straight": ('trimf', -self.WMAX/4, 0, self.WMAX/4),
                     "Right": ('trimf', 0, self.WMAX/2, self.WMAX),
                     "StrongRight": ('trimf', self.WMAX/2, self.WMAX, self.WMAX),
+                },
+            ),
+        }
+        return variables
+
+    def definir_variables_triangulo(self):
+        """
+        Define las variables difusas de entrada y salida para segmentos triangulares.
+        Permite giros más bruscos al ajustar las funciones de membresía.
+        """
+        variables = {
+            # Entrada: error angular
+            "angle_error": FuzzyVariable(
+                universe_range=(-math.pi, math.pi),
+                terms={
+                    "NegativeLarge": ('trimf', -math.pi, -math.pi, -math.pi/4),
+                    "NegativeSmall": ('trimf', -math.pi/2, -math.pi/4, 0),
+                    "Zero": ('trimf', -math.pi/8, 0, math.pi/8),
+                    "PositiveSmall": ('trimf', 0, math.pi/4, math.pi/2),
+                    "PositiveLarge": ('trimf', math.pi/4, math.pi, math.pi),
+                },
+            ),
+            # Salida: velocidad angular
+            "angular_velocity": FuzzyVariable(
+                universe_range=(-self.WMAX_TRIANGULO, self.WMAX_TRIANGULO),
+                terms={
+                    "StrongLeft": ('trimf', -self.WMAX_TRIANGULO, -self.WMAX_TRIANGULO, -self.WMAX_TRIANGULO/2),
+                    "Left": ('trimf', -self.WMAX_TRIANGULO, -self.WMAX_TRIANGULO/2, 0),
+                    "Straight": ('trimf', -self.WMAX_TRIANGULO/8, 0, self.WMAX_TRIANGULO/8),
+                    "Right": ('trimf', 0, self.WMAX_TRIANGULO/2, self.WMAX_TRIANGULO),
+                    "StrongRight": ('trimf', self.WMAX_TRIANGULO/2, self.WMAX_TRIANGULO, self.WMAX_TRIANGULO),
                 },
             ),
         }
@@ -234,9 +267,15 @@ class FuzzySystem:
             "angle_error": error_angular,
         }
 
+        # Determinar si estamos en un segmento triangular
+        if self.segmentoObjetivo.getType() == 2:
+            variables = self.variables_triangulo
+        else:
+            variables = self.variables_normales
+
         # Ejecutar inferencia difusa
         resultado, cf = self.modelo(
-            variables=self.variables,
+            variables=variables,
             rules=self.rules,
             angle_error=inputs["angle_error"],
         )
@@ -246,7 +285,7 @@ class FuzzySystem:
 
         # Establecer velocidad lineal
         if self.segmentoObjetivo.getType() == 2:
-            # Reducir velocidad en segmentos triangulares
+            # Usar velocidad máxima para segmentos triangulares
             V = self.VMAX_TRIANGULO
         else:
             V = self.VMAX
