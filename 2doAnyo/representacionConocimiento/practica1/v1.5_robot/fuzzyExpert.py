@@ -14,12 +14,13 @@ class FuzzySystem:
 
     # Definición de constantes de clase
     VMAX = 3.0  # Velocidad lineal máxima (m/s)
-    VMAX_TRIANGULO = 2.7  # Velocidad lineal máxima en segmentos triangulares (m/s)
+    VMAX_TRIANGULO = 2.9  # Velocidad lineal máxima en segmentos triangulares (m/s)
     WMAX = 1.0  # Velocidad angular máxima (rad/s)
     WMAX_TRIANGULO = 1.0  # Velocidad angular máxima en segmentos triangulares (rad/s)
     VACC = 1.0  # Aceleración lineal máxima (m/s²)
     WACC = 0.5  # Aceleración angular máxima (rad/s²)
     TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el final del segmento (m)
+    TOLERANCIA_MEDIO = 3  # Tolerancia para considerar que se alcanzó el punto medio del triángulo (m)
 
     def __init__(self):
         """
@@ -49,31 +50,42 @@ class FuzzySystem:
             defuzzification_operator="cog",
         )
 
+    
+    def setObjetivo(self, segmento):
+        """
+        Establece un nuevo objetivo para el robot.
+        """
+        self.objetivoAlcanzado = False
+        self.segmentoObjetivo = segmento
+        self.medioAlcanzado = False  
+        self.segmento += 0.5 
+
+
     def definir_variables_normales(self):
         """
         Define las variables difusas de entrada y salida para segmentos normales.
         """
         variables = {
             # Entrada: error angular
-            "angle_error": FuzzyVariable(
+            "error_angular": FuzzyVariable(
                 universe_range=(-math.pi, math.pi),
                 terms={
-                    "NegativeLarge": ('trimf', -math.pi, -math.pi, -math.pi/2),
-                    "NegativeSmall": ('trimf', -math.pi, -math.pi/2, 0),
-                    "Zero": ('trimf', -math.pi/4, 0, math.pi/4),
-                    "PositiveSmall": ('trimf', 0, math.pi/2, math.pi),
-                    "PositiveLarge": ('trimf', math.pi/2, math.pi, math.pi),
+                    "NegativoGrande": ('trimf', -math.pi, -math.pi, -math.pi/2),
+                    "NegativoPequeno": ('trimf', -math.pi, -math.pi/2, 0),
+                    "Cero": ('trimf', -math.pi/4, 0, math.pi/4),
+                    "PositivoPequeno": ('trimf', 0, math.pi/2, math.pi),
+                    "PositivoGrande": ('trimf', math.pi/2, math.pi, math.pi),
                 },
             ),
             # Salida: velocidad angular
-            "angular_velocity": FuzzyVariable(
+            "velocidad_angular": FuzzyVariable(
                 universe_range=(-self.WMAX, self.WMAX),
                 terms={
-                    "StrongLeft": ('trimf', -self.WMAX, -self.WMAX, -self.WMAX/2),
-                    "Left": ('trimf', -self.WMAX, -self.WMAX/2, 0),
-                    "Straight": ('trimf', -self.WMAX/4, 0, self.WMAX/4),
-                    "Right": ('trimf', 0, self.WMAX/2, self.WMAX),
-                    "StrongRight": ('trimf', self.WMAX/2, self.WMAX, self.WMAX),
+                    "FuerteIzquierda": ('trimf', -self.WMAX, -self.WMAX, -self.WMAX/2),
+                    "Izquierda": ('trimf', -self.WMAX, -self.WMAX/2, 0),
+                    "Recto": ('trimf', -self.WMAX/4, 0, self.WMAX/4),
+                    "Derecha": ('trimf', 0, self.WMAX/2, self.WMAX),
+                    "FuerteDerecha": ('trimf', self.WMAX/2, self.WMAX, self.WMAX),
                 },
             ),
         }
@@ -86,25 +98,25 @@ class FuzzySystem:
         """
         variables = {
             # Entrada: error angular
-            "angle_error": FuzzyVariable(
+            "error_angular": FuzzyVariable(
                 universe_range=(-math.pi, math.pi),
                 terms={
-                    "NegativeLarge": ('trimf', -math.pi, -math.pi, -math.pi/4),
-                    "NegativeSmall": ('trimf', -math.pi/2, -math.pi/4, 0),
-                    "Zero": ('trimf', -math.pi/8, 0, math.pi/8),
-                    "PositiveSmall": ('trimf', 0, math.pi/4, math.pi/2),
-                    "PositiveLarge": ('trimf', math.pi/4, math.pi, math.pi),
+                    "NegativoGrande": ('trimf', -math.pi, -math.pi, -math.pi/8),
+                    "NegativoPequeno": ('trimf', -math.pi/4, -math.pi/8, 0),
+                    "Cero": ('trimf', -math.pi/16, 0, math.pi/16),
+                    "PositivoPequeno": ('trimf', 0, math.pi/8, math.pi/4),
+                    "PositivoGrande": ('trimf', math.pi/8, math.pi, math.pi),
                 },
             ),
             # Salida: velocidad angular
-            "angular_velocity": FuzzyVariable(
+            "velocidad_angular": FuzzyVariable(
                 universe_range=(-self.WMAX_TRIANGULO, self.WMAX_TRIANGULO),
                 terms={
-                    "StrongLeft": ('trimf', -self.WMAX_TRIANGULO, -self.WMAX_TRIANGULO, -self.WMAX_TRIANGULO/2),
-                    "Left": ('trimf', -self.WMAX_TRIANGULO, -self.WMAX_TRIANGULO/2, 0),
-                    "Straight": ('trimf', -self.WMAX_TRIANGULO/8, 0, self.WMAX_TRIANGULO/8),
-                    "Right": ('trimf', 0, self.WMAX_TRIANGULO/2, self.WMAX_TRIANGULO),
-                    "StrongRight": ('trimf', self.WMAX_TRIANGULO/2, self.WMAX_TRIANGULO, self.WMAX_TRIANGULO),
+                    "FuerteIzquierda": ('trimf', -self.WMAX_TRIANGULO, -self.WMAX_TRIANGULO, -self.WMAX_TRIANGULO/2),
+                    "Izquierda": ('trimf', -self.WMAX_TRIANGULO, -self.WMAX_TRIANGULO/2, 0),
+                    "Recto": ('trimf', -self.WMAX_TRIANGULO/16, 0, self.WMAX_TRIANGULO/16),
+                    "Derecha": ('trimf', 0, self.WMAX_TRIANGULO/2, self.WMAX_TRIANGULO),
+                    "FuerteDerecha": ('trimf', self.WMAX_TRIANGULO/2, self.WMAX_TRIANGULO, self.WMAX_TRIANGULO),
                 },
             ),
         }
@@ -115,53 +127,63 @@ class FuzzySystem:
         Define las reglas difusas para el sistema.
         """
         rules = [
-            # Si el error angular es Zero, entonces angular es Straight
+            # Si el error angular es Cero, entonces angular es Recto
             FuzzyRule(
                 premise=[
-                    ("angle_error", "Zero"),
+                    ("error_angular", "Cero"),
                 ],
                 consequence=[
-                    ("angular_velocity", "Straight"),
+                    ("velocidad_angular", "Recto"),
                 ],
             ),
-            # Si el error angular es PositiveSmall, entonces angular es Right
+            # Si el error angular es PositivoPequeno, entonces angular es Derecha
             FuzzyRule(
                 premise=[
-                    ("angle_error", "PositiveSmall"),
+                    ("error_angular", "PositivoPequeno"),
                 ],
                 consequence=[
-                    ("angular_velocity", "Right"),
+                    ("velocidad_angular", "Derecha"),
                 ],
             ),
-            # Si el error angular es PositiveLarge, entonces angular es StrongRight
+            # Si el error angular es PositivoGrande, entonces angular es FuerteDerecha
             FuzzyRule(
                 premise=[
-                    ("angle_error", "PositiveLarge"),
+                    ("error_angular", "PositivoGrande"),
                 ],
                 consequence=[
-                    ("angular_velocity", "StrongRight"),
+                    ("velocidad_angular", "FuerteDerecha"),
                 ],
             ),
-            # Si el error angular es NegativeSmall, entonces angular es Left
+            # Si el error angular es NegativoPequeno, entonces angular es Izquierda
             FuzzyRule(
                 premise=[
-                    ("angle_error", "NegativeSmall"),
+                    ("error_angular", "NegativoPequeno"),
                 ],
                 consequence=[
-                    ("angular_velocity", "Left"),
+                    ("velocidad_angular", "Izquierda"),
                 ],
             ),
-            # Si el error angular es NegativeLarge, entonces angular es StrongLeft
+            # Si el error angular es NegativoGrande, entonces angular es FuerteIzquierda
             FuzzyRule(
                 premise=[
-                    ("angle_error", "NegativeLarge"),
+                    ("error_angular", "NegativoGrande"),
                 ],
                 consequence=[
-                    ("angular_velocity", "StrongLeft"),
+                    ("velocidad_angular", "FuerteIzquierda"),
                 ],
             ),
         ]
         return rules
+
+
+    @staticmethod
+    def straightToPointDistance(p1, p2, p3):
+        """
+        Calcula la distancia perpendicular desde un punto a una línea definida por dos puntos.
+        """
+        return np.linalg.norm(np.cross(p2 - p1, p1 - p3)) / np.linalg.norm(p2 - p1)
+
+
 
     @staticmethod
     def get_point_on_segment(k, start_point, end_point):
@@ -196,6 +218,23 @@ class FuzzySystem:
         target_point = self.get_point_on_segment(k_final, inicio, fin)
         return target_point
 
+    def calcularPuntoMedioTrianguloExtendido(self, inicio, fin, medio):
+        """
+        Calcula el punto medio extendido del triángulo, desplazando el punto medio original
+        4 unidades en la dirección perpendicular al segmento inicio-fin.
+        """
+        # Vector director del segmento inicio-fin
+        vector_segmento = fin - inicio
+        vector_segmento = vector_segmento / np.linalg.norm(vector_segmento)
+
+        # Vector perpendicular al segmento
+        vector_perpendicular = np.array([-vector_segmento[1], vector_segmento[0]])
+
+        # Extender el punto medio 1 unidad en la dirección del vector perpendicular
+        punto_medio_extendido = medio + 1 * vector_perpendicular
+
+        return punto_medio_extendido
+
     def calcularControl(self, V, W):
         """
         Aplica las restricciones de aceleración y velocidad máxima a las velocidades calculadas.
@@ -210,6 +249,8 @@ class FuzzySystem:
         delta_w = W - self.velocidad_angular_previa
         delta_w = max(min(delta_w, self.WACC), -self.WACC)
         velocidad_angular = self.velocidad_angular_previa + delta_w
+
+        # Asegurar que la velocidad angular no exceda los límites
         velocidad_angular = max(min(velocidad_angular, self.WMAX), -self.WMAX)
 
         # Actualizar velocidades previas
@@ -222,8 +263,6 @@ class FuzzySystem:
         """
         Toma una decisión sobre las velocidades de control basadas en la posición actual del robot.
         """
-        if self.segmentoObjetivo is None:
-            return (0, 0)
 
         fin = np.array(self.segmentoObjetivo.getFin())  
         inicio = np.array(self.segmentoObjetivo.getInicio())  
@@ -234,21 +273,21 @@ class FuzzySystem:
         # Actualizar estado del robot respecto al punto final
         self.actualizarEstado(poseRobot, fin)
 
-        if self.objetivoAlcanzado:
-            print("Objetivo alcanzado.")
-            return (0, 0)
-
         # Implementar lógica para segmentos de tipo 2 (triángulos)
         if self.segmentoObjetivo.getType() == 2 and not self.medioAlcanzado:
             medio = np.array(self.segmentoObjetivo.getMedio())  # Obtener el punto medio del triángulo
-            dist_a_medio = np.linalg.norm(medio - np.array(poseRobot[:2]))
-            if dist_a_medio > 4:
-                # Dirigirse al punto medio
-                target_point = self.calcularPuntoObjetivo(inicio, medio, poseRobot)
+
+            # Calcular el punto medio extendido
+            medio_extendido = self.calcularPuntoMedioTrianguloExtendido(inicio, fin, medio)
+            dist_a_medio = np.linalg.norm(medio_extendido - np.array(poseRobot[:2]))
+
+            if dist_a_medio > self.TOLERANCIA_MEDIO:
+                # Dirigirse al punto medio extendido
+                target_point = self.calcularPuntoObjetivo(inicio, medio_extendido, poseRobot)
             else:
                 # Cambiar objetivo al punto final
                 self.medioAlcanzado = True
-                target_point = self.calcularPuntoObjetivo(medio, fin, poseRobot)
+                target_point = self.calcularPuntoObjetivo(medio_extendido, fin, poseRobot)
         else:
             # Para otros segmentos o si ya se alcanzó el punto medio, dirigirse al final
             target_point = self.calcularPuntoObjetivo(inicio, fin, poseRobot)
@@ -264,52 +303,35 @@ class FuzzySystem:
 
         # Preparar entradas difusas
         inputs = {
-            "angle_error": error_angular,
+            "error_angular": error_angular,
         }
 
         # Determinar si estamos en un segmento triangular
         if self.segmentoObjetivo.getType() == 2:
             variables = self.variables_triangulo
+            V = self.VMAX_TRIANGULO
+
+
         else:
             variables = self.variables_normales
+            V = self.VMAX
 
         # Ejecutar inferencia difusa
         resultado, cf = self.modelo(
             variables=variables,
             rules=self.rules,
-            angle_error=inputs["angle_error"],
+            error_angular=inputs["error_angular"],
         )
 
         # Obtener valor de salida difuso
-        W_fuzzy = resultado.get("angular_velocity", 0)
+        W_fuzzy = resultado.get("velocidad_angular", 0)
 
-        # Establecer velocidad lineal
-        if self.segmentoObjetivo.getType() == 2:
-            # Usar velocidad máxima para segmentos triangulares
-            V = self.VMAX_TRIANGULO
-        else:
-            V = self.VMAX
 
         # Aplicar restricciones de aceleración y velocidad
         velocidad_lineal, velocidad_angular = self.calcularControl(V, W_fuzzy)
 
         return velocidad_lineal, velocidad_angular
 
-    @staticmethod
-    def straightToPointDistance(p1, p2, p3):
-        """
-        Calcula la distancia perpendicular desde un punto a una línea definida por dos puntos.
-        """
-        return np.linalg.norm(np.cross(p2 - p1, p1 - p3)) / np.linalg.norm(p2 - p1)
-
-    def setObjetivo(self, segmento):
-        """
-        Establece un nuevo objetivo para el robot.
-        """
-        self.objetivoAlcanzado = False
-        self.segmentoObjetivo = segmento
-        self.medioAlcanzado = False  
-        self.segmento += 0.5 
 
     def esObjetivoAlcanzado(self):
         """
