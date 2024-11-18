@@ -10,26 +10,25 @@ class ExpertSystem:
 
     # Definición de constantes de clase
     VMAX = 3.0  # Velocidad lineal máxima (m/s)
+    VMAX_TRIANGULO = 2.9
     WMAX = 1.0  # Velocidad angular máxima (rad/s)
     VACC = 1.0  # Aceleración lineal máxima (m/s²)
     WACC = 0.5  # Aceleración angular máxima (rad/s²)
     FACT_ANTICIPACION_GIRO = 1.4  # Parámetro que regula la anticipación al giro del robot
     TOLERACION_FIN_SEGMENTO = 0.5  # Tolerancia para considerar que se alcanzó el final del segmento (m)
-    LOGS_TIEMPO_REAL = False  # Esta opción sigue estando disponible para activar los logs en tiempo real
+    LOGS_TIEMPO_REAL = False  # Activar los logs en tiempo real solamente si se desea corregir algun error, 
+                              # baja una media de 2 puntos el rendimiento
     MAXIMIZACION_DE_ESTE_EJERCICIO = True 
     """
     MAXIMIZACION_DE_ESTE_EJERCICIO:
     
-    Si esta opcion se encuentra en False se trataran todos los segmentos de triangulos de la 
-    misma forma, es decir, se ira del punto A al B y posteriormente al punto final. Tambien
-    si esta desactivado, se trataran todos los segmentos con el mismo factor de anticipacion al giro. 
-    Puntuacion media de 43.
+    Si esta opcion se encuentra en False se trataran todos los segmentos de la 
+    misma forma y todos los segmentos usaran el mismo factor de anticipacion al giro. 
+    Puntuacion media de 41.
 
-    Si esta opcion se encuentra en True en segundo triangulo el robot se dirigira al punto fin 
-    directamente incluso pasando por en medio del triangulo ya que sumara mas puntos para ese
-    mismo segmento y para el siguiente (ya que tendra una direccion mas optima), tambien se 
-    modificaran los factores de anticipacion para cada segmento de forma en la que den mas puntos.
-    Puntuacion media de 50.
+    Si esta opcion se encuentra en True  se  modificaran los factores de anticipacion para 
+    cada segmento de forma en la que den mas puntos.
+    Puntuacion media de 44.
     """        
 
     def __init__(self):
@@ -51,6 +50,7 @@ class ExpertSystem:
         self.segmentoObjetivo = segmento
         self.medioAlcanzado = False # Al volver a settear el objetivo el medio vuelve a False por si el siguinte triangulo tiene que usarlo
         self.segmento += 0.5 # Aumenta cada vez que se genera un objetivo para usar la MAXIMIZACION_DE_ESTE_EJERCICIO si es necesario
+        
         if ExpertSystem.MAXIMIZACION_DE_ESTE_EJERCICIO:
             if self.segmento == 0.5:
                 ExpertSystem.FACT_ANTICIPACION_GIRO = 1.4
@@ -170,6 +170,8 @@ class ExpertSystem:
 
         return target_point
 
+
+
     def calcularControl(self, target_point, poseRobot):
         """
         Calcula las velocidades lineal y angular necesarias para dirigir el robot hacia el punto objetivo 
@@ -240,7 +242,10 @@ class ExpertSystem:
 
         # Velocidades deseadas
         velocidad_angular_deseada = self.WMAX * math.tanh(k_w * error_angular)
-        velocidad_lineal_deseada = self.VMAX  # Mantener la velocidad máxima siempre
+        if self.segmentoObjetivo.getType() == 2:
+            velocidad_lineal_deseada = self.VMAX_TRIANGULO
+        else:
+            velocidad_lineal_deseada = self.VMAX  # Mantener la velocidad máxima siempre
 
         # Limitación de velocidades máximas para angular
         velocidad_angular_deseada = max(min(velocidad_angular_deseada, self.WMAX), -self.WMAX)
@@ -279,11 +284,12 @@ class ExpertSystem:
         dist = self.straightToPointDistance(inicio, fin, np.array(poseRobot[0:2]))
 
         # Actualización del estado del robot basado en la distancia al punto final
+        if self.segmentoObjetivo is None:
+            return (0, 0)
+        
+
         self.actualizarEstado(poseRobot, fin)
 
-        if self.objetivoAlcanzado:
-            print("Objetivo alcanzado.")
-            return (0, 0)
         
         if self.segmentoObjetivo.getType() == 2 and not self.medioAlcanzado:
             dist_a_medio = np.linalg.norm(medio - np.array(poseRobot[:2]))
@@ -305,9 +311,10 @@ class ExpertSystem:
 
         return velocidad_lineal, velocidad_angular
 
+
     def imprimirPuntuacion(self, dist, velocidad_lineal, velocidad_angular):
         """
-        Imprime la puntuación en tiempo real.
+        Imprime la distancia a la que esta el robot del segmento, anteriormente tambien imprimia la puntuacion a tiempo real
         """
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(
