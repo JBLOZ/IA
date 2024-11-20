@@ -297,3 +297,16 @@ string Calendario::aCadena() const {
     return resultado;
 }
 
+
+void Calendario::iterar() {
+
+    NodoCalendario* actual = head;
+    while (actual != nullptr) {
+
+
+
+        actual = actual->getSiguiente();
+    }
+
+}
+

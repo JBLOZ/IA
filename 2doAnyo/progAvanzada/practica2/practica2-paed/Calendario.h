@@ -85,6 +85,7 @@ public:
     void importarEventos(const Calendario&);
     // Devuelve una cadena con el contenido completo del calendario
     string aCadena() const;
+    void iterar();
 };
 
 #endif
