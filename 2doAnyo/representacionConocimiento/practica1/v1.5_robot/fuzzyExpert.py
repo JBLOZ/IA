@@ -15,7 +15,7 @@ class FuzzySystem:
 
     # Definición de constantes de clase
     VMAX = 3.0  # Velocidad lineal máxima (m/s)
-    VMAX_TRIANGULO = 2.8  # Velocidad lineal máxima en segmentos triangulares (m/s)
+    VMAX_TRIANGULO = 3  # Velocidad lineal máxima en segmentos triangulares (m/s)
     WMAX = 1.0  # Velocidad angular máxima (rad/s)
     VACC = 1.0  # Aceleración lineal máxima (m/s²)
     WACC = 0.5  # Aceleración angular máxima (rad/s²)
@@ -23,6 +23,7 @@ class FuzzySystem:
     TOLERANCIA_MEDIO = 3  # Tolerancia para considerar que se alcanzó el punto medio del triángulo (m)
     LOGS_TIEMPO_REAL = False # Activar los logs en tiempo real solamente si se desea corregir algun error, 
                             # baja una media de 2 puntos el rendimiento
+    MAXIMIZACION_DE_ESTE_EJERCICIO = True 
 
     def __init__(self):
         """
@@ -34,6 +35,7 @@ class FuzzySystem:
         self.velocidad_lineal_previa = 0.0  
         self.velocidad_angular_previa = 0.0  
         self.medioAlcanzado = False # Indica si el robot alcanza el punto medio del segmento triangulo
+        self.segmento = 0 # Indica en que segmento se hubica, 0,5 ; 1,5 y 2,5 segmentos lineales -- 1;2;3 triangulos
 
 
         # Variables difusas
@@ -61,6 +63,7 @@ class FuzzySystem:
         self.objetivoAlcanzado = False
         self.segmentoObjetivo = segmento
         self.medioAlcanzado = False  
+        self.segmento += 0.5 # Aumenta cada vez que se genera un objetivo para usar la MAXIMIZACION_DE_ESTE_EJERCICIO si es necesario
 
 
 
@@ -83,7 +86,7 @@ class FuzzySystem:
                 terms={
                     "NegativoGrande": ('trimf', -math.pi, -math.pi, -math.pi/2),
                     "NegativoPequeno": ('trimf', -math.pi, -math.pi/2, 0),
-                    "Cero": ('trimf', -math.pi/4, 0, math.pi/4),
+                    "Cero": ('trimf', -math.pi/10, 0, math.pi/10),
                     "PositivoPequeno": ('trimf', 0, math.pi/2, math.pi),
                     "PositivoGrande": ('trimf', math.pi/2, math.pi, math.pi),
                 },
@@ -94,7 +97,7 @@ class FuzzySystem:
                 terms={
                     "FuerteIzquierda": ('trimf', -self.WMAX, -self.WMAX, -self.WMAX/2),
                     "Izquierda": ('trimf', -self.WMAX, -self.WMAX/2, 0),
-                    "Recto": ('trimf', -self.WMAX/4, 0, self.WMAX/4),
+                    "Recto": ('trimf', -self.WMAX/10, 0, self.WMAX/10),
                     "Derecha": ('trimf', 0, self.WMAX/2, self.WMAX),
                     "FuerteDerecha": ('trimf', self.WMAX/2, self.WMAX, self.WMAX),
                 },
@@ -120,11 +123,11 @@ class FuzzySystem:
             "error_angular": FuzzyVariable(
                 universe_range=(-math.pi, math.pi),
                 terms={
-                    "NegativoGrande": ('trimf', -math.pi, -math.pi, -math.pi/8),
+                    "NegativoGrande": ('trimf', -math.pi, -math.pi, -math.pi/11),
                     "NegativoPequeno": ('trimf', -math.pi/4, -math.pi/8, 0),
-                    "Cero": ('trimf', -math.pi/16, 0, math.pi/16),
+                    "Cero": ('trimf', -math.pi/4 if self.segmento == 1 else -math.pi/5, 0, math.pi/4 if self.segmento == 1 else math.pi/5), # en el segmento triangulo (1) el mantenerse recto obtendrá mas peso en el sistema
                     "PositivoPequeno": ('trimf', 0, math.pi/8, math.pi/4),
-                    "PositivoGrande": ('trimf', math.pi/8, math.pi, math.pi),
+                    "PositivoGrande": ('trimf', math.pi/11, math.pi, math.pi),
                 },
             ),
             # Salida: velocidad angular
@@ -133,7 +136,7 @@ class FuzzySystem:
                 terms={
                     "FuerteIzquierda": ('trimf', -self.WMAX, -self.WMAX, -self.WMAX/2),
                     "Izquierda": ('trimf', -self.WMAX, -self.WMAX/2, 0),
-                    "Recto": ('trimf', -self.WMAX/16, 0, self.WMAX/16),
+                    "Recto": ('trimf', -self.WMAX/4 if self.segmento == 1 else -self.WMAX/5, 0, self.WMAX/4 if self.segmento == 1 else self.WMAX/5), # en el segmento triangulo (1) el mantenerse recto obtendrá mas peso en el sistema
                     "Derecha": ('trimf', 0, self.WMAX/2, self.WMAX),
                     "FuerteDerecha": ('trimf', self.WMAX/2, self.WMAX, self.WMAX),
                 },
@@ -289,7 +292,7 @@ class FuzzySystem:
 
             """
         # Aumentar la distancia de anticipación para empezar a girar antes
-        distancia_anticipacion = self.VMAX * 2 # Factor de anticipación aumentado
+        distancia_anticipacion = self.VMAX * ((2.2 if (self.segmento == 2 or self.segmento == 2.5 or self.segmento == 1) else 1.4) if self.MAXIMIZACION_DE_ESTE_EJERCICIO else 2) # si esta activado se trataran el segmento 2 y el 2.5 con un target mas extendido
         longitud_segmento = np.linalg.norm(fin - inicio)
 
         x, y = poseRobot[0], poseRobot[1]
@@ -307,19 +310,36 @@ class FuzzySystem:
     def calcularPuntoMedioTrianguloExtendido(self, inicio, fin, medio):
         """
         Calcula el punto medio extendido del triángulo, desplazando el punto medio original
-        1 unidad en la dirección perpendicular al segmento inicio-fin.
+        'x' unidades en la dirección perpendicular al segmento inicio-fin y 'y' unidades en la 
+        direccion paralela al segmento inicio-fin
         """
         # Vector director del segmento inicio-fin
         vector_segmento = fin - inicio
-        vector_segmento = vector_segmento / np.linalg.norm(vector_segmento)
+        norm_segmento = np.linalg.norm(vector_segmento)
 
-        # Vector perpendicular al segmento
-        vector_perpendicular = np.array([-vector_segmento[1], vector_segmento[0]])
+        vector_segmento_unitario = vector_segmento / norm_segmento
 
-        # Extender el punto medio 1 unidad en la dirección del vector perpendicular
-        punto_medio_extendido = medio + 1 * vector_perpendicular
+        # Vector perpendicular al segmento (rotación de 90 grados)
+        vector_perpendicular = np.array([-vector_segmento_unitario[1], vector_segmento_unitario[0]])
 
-        return punto_medio_extendido
+        extension_perpendicular = (2.3 if self.segmento == 1 else 1.9 if self.segmento == 2 else 0.8)
+
+        # Extender el punto medio x unidades en la dirección del vector perpendicular
+        extension_perpendicular = (2.3 if self.segmento == 1 else 1.9 if self.segmento == 2 else 0.8)
+        punto_medio_extendido_perpendicular = medio + extension_perpendicular * vector_perpendicular
+
+        # Vector dirección desde el medio hacia el inicio
+        direccion_hacia_inicio = inicio - medio
+        norm_direccion = np.linalg.norm(direccion_hacia_inicio)
+
+        direccion_hacia_inicio_unitario = direccion_hacia_inicio / norm_direccion
+
+    
+        # Extender el punto medio x unidades en la dirección del inicio
+        extension_paralela = (2.4 if self.segmento == 1 else 3 if self.segmento == 2 else 1.5)
+        punto_medio_final = punto_medio_extendido_perpendicular +  extension_paralela * direccion_hacia_inicio_unitario
+
+        return punto_medio_final
 
     def calcularControl(self, W):
         """
