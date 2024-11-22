@@ -30,7 +30,9 @@ int main(int argc, char *argv[]) {
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
-    if (inet_pton(AF_INET, argv[1], &server_addr.sin_addr) <= 0) {
+
+
+    if (inet_pton(AF_INET, [1]argv, &server_addr.sin_addr) <= 0) {
         perror("inet_pton");
         close(sock_fd);
         exit(1);
@@ -49,7 +51,6 @@ int main(int argc, char *argv[]) {
     while ((bytes = recv(sock_fd, buffer, BUFFER_SIZE, 0)) > 0) {
         fwrite(buffer, 1, bytes, stdout);
     }
-
 
     printf("\nArchivo recibido correctamente.\n");
 
