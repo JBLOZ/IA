@@ -216,6 +216,7 @@ public:
     void importarEventos(const Calendario&);
     // Devuelve una cadena con el contenido completo del calendario
     string aCadena() const;
+    void iterar();
 };
 
 #endif
@@ -1087,5 +1088,18 @@ string Calendario::aCadena() const {
         actual = actual->getSiguiente();
     }
     return resultado;
+}
+
+
+void Calendario::iterar() {
+
+    NodoCalendario* actual = head;
+    while (actual != nullptr) {
+
+
+
+        actual = actual->getSiguiente();
+    }
+
 }
 
