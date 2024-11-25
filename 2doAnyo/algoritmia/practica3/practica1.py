@@ -1,25 +1,18 @@
-def fontanero_diligente(tiempos):
-    # Ordenar las reparaciones por tiempo creciente
-    secuencia_optima = sorted(tiempos)
-    
-    tiempos_espera = []
-    espera_acumulada = 0
-    E_total = 0
-    
-    for t in secuencia_optima:
-        espera_acumulada += t
-        tiempos_espera.append(espera_acumulada)
-        E_total += espera_acumulada
-    
-    tiempo_medio_espera = E_total / len(tiempos)
-    
-    print("Secuencia óptima de reparaciones:", secuencia_optima)
-    print("Tiempos de espera individuales:", tiempos_espera)
-    print("Tiempo total de espera (E):", E_total)
-    print("Tiempo medio de espera:", tiempo_medio_espera)
-    
-    return secuencia_optima, E_total
+def cambio_monedas(C, M):
+    C = sorted(C, reverse=True)  # Ordenar las monedas de mayor a menor
+    monedas_usadas = []
+    cantidad_restante = M
 
-# Ejemplo de uso
-tiempos_reparacion = [2, 5, 1]
-print(fontanero_diligente(tiempos_reparacion))
+    for moneda in C:
+        if cantidad_restante == 0:
+            break  # Ya hemos completado la cantidad
+        num_monedas = cantidad_restante // moneda  # Número máximo de monedas de este tipo
+        if num_monedas > 0:
+            monedas_usadas.extend([moneda] * num_monedas)
+            cantidad_restante -= moneda * num_monedas
+
+    if cantidad_restante == 0:
+        return len(monedas_usadas), monedas_usadas
+    else:
+        print("No es posible formar la cantidad con las monedas disponibles.")
+        return None
