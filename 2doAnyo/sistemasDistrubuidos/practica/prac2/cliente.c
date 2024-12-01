@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     server_addr.sin_port = htons(PORT);
 
 
-    if (inet_pton(AF_INET, [1]argv, &server_addr.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, argv[1], &server_addr.sin_addr) <= 0) {
         perror("inet_pton");
         close(sock_fd);
         exit(1);
