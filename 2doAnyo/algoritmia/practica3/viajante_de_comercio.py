@@ -7,7 +7,7 @@ class Viajante:
         self.mejor_camino = []
         self.count = 0  # Contador de llamadas recursivas
 
-    def tsp_backtracking(self, ciudad_actual, contador, costo_actual, visitadas, camino_actual):
+    def tsp_backtracking(self, ciudad_actual, i, costo_actual, visitadas, camino_actual):
         self.count += 1
 
         # Poda: si el costo actual es mayor o igual al mejor costo encontrado, no continuar
@@ -15,7 +15,7 @@ class Viajante:
             return False
 
         # Caso base: si hemos visitado todas las ciudades y hay un camino de regreso al origen
-        if contador == self.N and self.grafo[ciudad_actual][0] != -1:
+        if i == self.N and self.grafo[ciudad_actual][0] != -1:
 
             costo_total = costo_actual + self.grafo[ciudad_actual][0]
 
@@ -33,7 +33,7 @@ class Viajante:
                 visitadas[ciudad] = True
                 camino_actual.append(ciudad)
 
-                if self.tsp_backtracking(ciudad, contador + 1, costo_actual + self.grafo[ciudad_actual][ciudad],
+                if self.tsp_backtracking(ciudad, i + 1, costo_actual + self.grafo[ciudad_actual][ciudad],
                                          visitadas, camino_actual):
                     pass  
 
@@ -54,7 +54,7 @@ class Viajante:
         if self.mejor_costo == float('inf'):
             print("No es posible encontrar una ruta que visite todas las ciudades y regrese al origen.")
         else:
-            print("Costo mínimo:", self.mejor_costo)
+            print("Costo minimo:", self.mejor_costo)
             print("Mejor camino:", self.mejor_camino + [0])  # Añadimos el regreso al origen
             print("Llamadas recursivas:", self.count)
 
