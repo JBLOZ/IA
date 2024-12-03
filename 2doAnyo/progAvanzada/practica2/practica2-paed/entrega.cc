@@ -221,6 +221,9 @@ public:
     void importarEventos(const Calendario&);
     // Devuelve una cadena con el contenido completo del calendario
     string aCadena() const;
+<<<<<<< HEAD
+    void iterar();
+=======
   // Método para contar el número total de eventos en el calendario
 
 
@@ -310,6 +313,7 @@ public:
     bool actualizarFechaEvento(const std::string& descripcion, const Fecha& nuevaFecha);
 
 
+>>>>>>> c4d7134dad55b1937b88bfd2311b0b9118f75bc7
 };
 
 #endif // CALENDARIO_H
@@ -1793,5 +1797,18 @@ bool Calendario::actualizarFechaEvento(const std::string& descripcion, const Fec
     }
 
     return false; // Evento no encontrado
+}
+
+
+void Calendario::iterar() {
+
+    NodoCalendario* actual = head;
+    while (actual != nullptr) {
+
+
+
+        actual = actual->getSiguiente();
+    }
+
 }
 

@@ -1,0 +1,347 @@
+Estado	Finalizado
+Comenzado	domingo, 24 de noviembre de 2024, 13:42
+Completado	domingo, 24 de noviembre de 2024, 14:14
+Duración	31 minutos 17 segundos
+Puntos	6,00/7,00
+Calificación	8,57 de 10,00 (85,71%)
+Pregunta 1
+Correcta
+Se puntúa 1,00 sobre 1,00
+Marcar pregunta
+Enunciado de la pregunta
+Dame un intervalo de confianza al 92
+%  para la media de la siguiente muestra aleatoria simple de una Variable Aleatoria Normal de varianza σ^2=(85)^2
+.
+
+Muestra=[4.74,1.51,3.93,3.06,0.47,0.21,1.77,0.6,0.63,4.2,1.13,0.02,2.23,1.18,2.9,2.05]
+
+IC92=[a,b]
+ 
+
+a= 
+1.2141005
+
+Tu respuesta fue interpretado como: 1.2141005
+
+ 
+b=
+2.614649
+
+Tu respuesta fue interpretado como: 2.614649
+
+  
+Retroalimentación
+ Respuesta correcta, bien hecho.
+
+Perfecto
+
+ Respuesta correcta, bien hecho.
+
+Observa que se trata de un ejercicio para calcular el intervalo de confianza de una v.a. normal de varianza conocida.
+
+Encontrarás el intervalo en las transparencias relativas a los intervalos de confianza. 
+
+The answer 1.2141005715
+, which can be typed as 1.2141005715, would be correct.
+
+The answer 2.6146494285
+, which can be typed as 2.6146494285, would be correct.
+
+Pregunta 2
+Correcta
+Se puntúa 1,00 sobre 1,00
+Marcar pregunta
+Enunciado de la pregunta
+Calcula un intervalo de confianza al 97
+%  para la varianza de una v.a. Normal a partir de la siguiente muestra aleatoria simple:
+
+Muestra=[4.25,0.09,1.22,2.27,3.35,3.42,0.04,4.06,0.34,4.75,0.57,3.52,0.37,2.02,3.45]
+
+IC97=[a,b]
+ 
+
+a= 
+1.4312343
+
+Tu respuesta fue interpretado como: 1.4312343
+
+ 
+b=
+7.87517094
+
+Tu respuesta fue interpretado como: 7.87517094
+
+  
+Retroalimentación
+ Respuesta correcta, bien hecho.
+
+El valor menor del intervalo está bien calculado.
+
+ Respuesta correcta, bien hecho.
+
+El segundo está bien calculado.
+
+Observa que se trata de un ejercicio para calcular el intervalo de confianza de la varianza de una v.a. normal.
+
+Encontrarás el intervalo en las transparencias relativas a los intervalos de confianza. 
+
+The answer 1.43123438554
+, which can be typed as 1.43123438554, would be correct.
+
+The answer 7.87517094199
+, which can be typed as 7.87517094199, would be correct.
+
+Pregunta 3
+Correcta
+Se puntúa 1,00 sobre 1,00
+Marcar pregunta
+Enunciado de la pregunta
+Dame un intervalo de confianza al 91
+%  para la media de la siguiente muestra aleatoria simple de una Variable Aleatoria Normal de varianza desconocida .
+
+Muestra=[4.98,1.91,2.36,3.99,1.6,1.21,0.84,2.16,2.53,0.51,0.46,1.28,3.78,3.52]
+
+IC91=[a,b]
+ 
+
+a= 
+1.54058971017
+
+Tu respuesta fue interpretado como: 1.54058971017
+
+ 
+b=
+2.90655314
+
+Tu respuesta fue interpretado como: 2.90655314
+
+  
+Retroalimentación
+ Respuesta correcta, bien hecho.
+
+Perfecto
+
+ Respuesta correcta, bien hecho.
+
+Observa que se trata de un ejercicio para calcular el intervalo de confianza de una v.a. normal de varianza conocida.
+
+Encontrarás el intervalo en las transparencias relativas a los intervalos de confianza. 
+
+The answer 1.54058975345
+, which can be typed as 1.54058975345, would be correct.
+
+The answer 2.90655310369
+, which can be typed as 2.90655310369, would be correct.
+
+Pregunta 4
+Correcta
+Se puntúa 1,00 sobre 1,00
+Marcar pregunta
+Enunciado de la pregunta
+Calcula un intervalo de confianza al 99
+%  para la diferencia de medias dos V. A. Normales independientes de varianza común cuyas dos muestras aleatorias simples son:
+
+Muestra1=[0.82,0.22,2.65,3.72,0.84,4.18,4.74,2.82,1.07,1.26,1.56,4.88,4.11,0.7,4.27,0.12,1.54,3.59]
+
+Muestra2=[3.17,3.06,4.4,1.48,2.54,3.68,0.7,4.84,1.77,3.29,0.11,1.07,0.75,1.46]
+
+IC99=[a,b]
+ 
+
+a= 
+-1.34298947
+
+Tu respuesta fue interpretado como: −1.34298947
+
+ 
+b=
+1.51362439
+
+Tu respuesta fue interpretado como: 1.51362439
+
+  
+Retroalimentación
+ Respuesta correcta, bien hecho.
+
+Perfecto
+
+ Respuesta correcta, bien hecho.
+
+Observa que se trata de un ejercicio para calcular el intervalo de confianza de la diferencia entre dos poblaciones normales de varianza desconocida.
+
+Encontrarás el intervalo en las transparencias relativas a los intervalos de confianza. 
+
+The answer −1.34298947862
+, which can be typed as -1.34298947862, would be correct.
+
+The answer 1.51362439926
+, which can be typed as 1.51362439926, would be correct.
+
+Pregunta 5
+Incorrecta
+Se puntúa 0,00 sobre 1,00
+Marcar pregunta
+Enunciado de la pregunta
+Calcula un intervalo de confianza al 98
+%  para la diferencia de medias dos V. A. Normales independientes de varianza común cuyas dos muestras aleatorias simples son:
+
+Muestra1=[0.23,4.83,3.49,3.4,0.83,3.14,0.37,4.94,1.56,2.1,0.7,2.52,0.23]
+
+Muestra2=[4.91,3.79,3.24,1.15,4.7,1.1,4.73,1.79,4.85,4.62,0.23,0.16,2.8,0.65,2.12]
+
+IC98=[a,b]
+ 
+
+a= 
+-2.1809587
+
+Tu respuesta fue interpretado como: −2.1809587
+
+ 
+b=
+1.09562541
+
+Tu respuesta fue interpretado como: 1.09562541
+
+  
+Retroalimentación
+ Respuesta incorrecta.
+
+El valor inferior del intervalo parece haber fallado.
+
+Para plantear el correspondiente intervalo, primero deberemos calcular el centro:
+X¯1=2.18
+
+X¯2=2.72266666667
+
+El centro del intervalo viene dado por X¯1−X¯2
+. Ahora obtendremos la Quasi-varianza muestral. Observa que  S2=1n−1∑ni=1(xi−X¯)2
+
+S21=2.84721666667S22=3.26270666667
+ 
+
+Para obtener la amplitud del intervalo, necesitaremos :
+
+ST2=3.07094205128
+
+Por tanto ST=1.75241035471
+. Finalmente, obtenemos el valor crítico de la t-student:
+
+tα2,n1+n2−2=2.47862973255
+
+Y ya podríamos plantear la amplitud como Amplitud=1.64592171751
+.
+
+El intervalo buscado sería:
+
+(−2.18858838418,1.10325505084)
+
+ Respuesta incorrecta.
+
+El valor superior del intervalo ha fallado.
+
+Para plantear el correspondiente intervalo, primero deberemos calcular el centro:
+X¯1=2.18
+
+X¯2=2.72266666667
+
+El centro del intervalo viene dado por X¯1−X¯2
+. Ahora obtendremos la Quasi-varianza muestral. Observa que  S2=1n−1∑ni=1(xi−X¯)2
+
+S21=2.84721666667S22=3.26270666667
+ 
+
+Para obtener la amplitud del intervalo, necesitaremos :
+
+ST2=3.07094205128
+
+Por tanto ST=1.75241035471
+. Finalmente, obtenemos el valor crítico de la t-student:
+
+tα2,n1+n2−2=2.47862973255
+
+Y ya podríamos plantear la amplitud como Amplitud=1.64592171751
+.
+
+El intervalo buscado sería:
+
+(−2.18858838418,1.10325505084)
+
+Observa que se trata de un ejercicio para calcular el intervalo de confianza de la diferencia entre dos poblaciones normales de varianza desconocida.
+
+Encontrarás el intervalo en las transparencias relativas a los intervalos de confianza. 
+
+The answer −2.18858838418
+, which can be typed as -2.18858838418, would be correct.
+
+The answer 1.10325505084
+, which can be typed as 1.10325505084, would be correct.
+
+Pregunta 6
+Correcta
+Se puntúa 1,00 sobre 1,00
+Marcar pregunta
+Enunciado de la pregunta
+Obtén un intervalo de confianza al 93
+%  para la proporción de trilingues en el alumnado de la UA sabiendo que hemos encontrado 155
+ en una muestra de tamaño 171
+: 
+
+IC93=[a,b]
+ 
+
+a= 
+0.86608043
+
+Tu respuesta fue interpretado como: 0.86608043
+
+ 
+b=
+0.94678506
+
+Tu respuesta fue interpretado como: 0.94678506
+
+  
+Retroalimentación
+ Respuesta correcta, bien hecho.
+
+Muy bien con el valor inferior del intervalo.
+
+ Respuesta correcta, bien hecho.
+
+...y el valor superior del intervalo está bien calculado.
+
+Observa que se trata de un ejercicio para calcular el intervalo de confianza de una v.a. normal de varianza conocida.
+
+Encontrarás el intervalo en las transparencias relativas a los intervalos de confianza. 
+
+The answer 0.866080433269
+, which can be typed as 0.866080433269, would be correct.
+
+The answer 0.946785063807
+, which can be typed as 0.946785063807, would be correct.
+
+Pregunta 7
+Correcta
+Se puntúa 1,00 sobre 1,00
+Marcar pregunta
+Enunciado de la pregunta
+Se pretende tomar una muestra para identificar la proporción de ordenadores infectados por un nuevo virus. Si pretendemos dar un intervalo de confianza al 94
+% que tenga una radio 0.111
+, ¿Qué tamaño debería tener dicha muestra?
+
+n= 
+72
+
+Tu respuesta fue interpretado como: 72
+
+ 
+Retroalimentación
+ Respuesta correcta, bien hecho.
+
+Bien calculado.
+
+]
+
+The answer 72
+, which can be typed as 72, would be correct.
