@@ -8,6 +8,9 @@
 **/*.dSYM/
 __pycache__/
 *.py[cod]
+~$*
+*.tmp
+
 
 # Logs
 logs
