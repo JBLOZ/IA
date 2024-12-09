@@ -1,0 +1,3 @@
+/workdir/build/CMakeFiles/rebuild_cache.dir
+/workdir/build/CMakeFiles/edit_cache.dir
+/workdir/build/CMakeFiles/visor3D.dir
