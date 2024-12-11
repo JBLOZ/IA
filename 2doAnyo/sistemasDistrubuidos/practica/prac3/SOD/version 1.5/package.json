@@ -1,0 +1,33 @@
+{
+  "name": "practica3",
+  "version": "1.0.0",
+  "description": "\u0016api para clases de SOD",
+  "main": "hola.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JBLOZ/SOD.git"
+  },
+  "keywords": [
+    "CRUD",
+    "REST",
+    "node",
+    "express",
+    "mongo"
+  ],
+  "author": "Jordi Blasco",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JBLOZ/SOD/issues"
+  },
+  "homepage": "https://github.com/JBLOZ/SOD#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "4.21.1",
+    "mongodb": "6.11.0",
+    "mongoose": "8.8.3",
+    "practica3": "file:"
+  }
+}
