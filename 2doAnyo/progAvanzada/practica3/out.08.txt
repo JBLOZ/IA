@@ -112,4 +112,3 @@ domingo 13 de octubre de 2030:Evento 0[deporte]:Descripción del evento 0
 viernes 16 de enero de 2032:Evento 0[reuniones]:Descripción del evento 0
 domingo 20 de junio de 2032:Evento 0[docencia]:Descripción del evento 0
 jueves 2 de septiembre de 2032:Evento 0[deporte]:Descripción del evento 0
-0.008661
