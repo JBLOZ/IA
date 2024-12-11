@@ -1,5 +1,7 @@
 import json
 
+
+
 def calcular_tiempos_conversacion(archivo_json):
     try:
         # Cargar el archivo JSON
