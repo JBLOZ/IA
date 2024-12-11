@@ -10,7 +10,7 @@ __pycache__/
 *.py[cod]
 ~$*
 *.tmp
-
+/2doAnyo/ChatGPTwrapped/.gitignore
 
 # Logs
 logs
