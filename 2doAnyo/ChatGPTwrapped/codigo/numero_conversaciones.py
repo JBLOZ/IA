@@ -26,6 +26,6 @@ def contar_conversaciones_por_ano(archivo_json, ano):
         print("Error al leer el archivo JSON. Asegúrate de que el archivo tiene un formato JSON válido.")
 
 # Uso del script
-archivo_json = r'C:\Users\jordi\Documents\IA\IA\2doAnyo\chatGPTWrapped\conversations.json'
-ano = 2024  # Cambia este valor por el año que quieras analizar
+archivo_json = r'C:\Users\jordi\Documents\IA\IA\2doAnyo\ChatGPTwrapped\datos\conversations02.json'
+ano = 2023  # Cambia este valor por el año que quieras analizar
 contar_conversaciones_por_ano(archivo_json, ano)
