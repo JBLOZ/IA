@@ -1,19 +1,20 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
+
 
 def contar_conversaciones_por_ano(archivo_json, ano):
     try:
         # Cargar el archivo JSON
         with open(archivo_json, 'r', encoding='utf-8') as archivo:
             datos = json.load(archivo)
-        
+
         # Filtrar las conversaciones por el año especificado
         numero_conversaciones = 0
         for conversacion in datos:
             create_time = conversacion.get("create_time")
             if create_time:
                 # Convertir create_time a año
-                anio_conversacion = datetime.utcfromtimestamp(create_time).year
+                anio_conversacion = datetime.fromtimestamp(create_time, tz=timezone.utc).year
                 if anio_conversacion == ano:
                     numero_conversaciones += 1
 
@@ -26,6 +27,6 @@ def contar_conversaciones_por_ano(archivo_json, ano):
         print("Error al leer el archivo JSON. Asegúrate de que el archivo tiene un formato JSON válido.")
 
 # Uso del script
-archivo_json = r'C:\Users\jordi\Documents\IA\IA\2doAnyo\ChatGPTwrapped\datos\conversations02.json'
-ano = 2023  # Cambia este valor por el año que quieras analizar
+archivo_json = './datos/conversations01.json'
+ano = 2024  # Cambia este valor por el año que quieras analizar
 contar_conversaciones_por_ano(archivo_json, ano)
