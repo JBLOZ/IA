@@ -27,14 +27,15 @@ def calcular_tiempos_conversacion(archivo_json, anio=None):
                 tiempo_total += fin_conversacion - inicio_conversacion
 
         # Convertir tiempo total a minutos
-        minutos_totales = tiempo_total // 60
+        minutos_totales = int(tiempo_total // 60)
+        segundos_totales = round(tiempo_total % 60,1)
 
         if anio:
-            print(f"Tiempo total de conversacion abierta en {anio}: {minutos_totales} minutos")
+            print(f"Tiempo total de conversacion abierta en {anio}: {minutos_totales} minutos, {segundos_totales} segundos")
         else:
             print(f"Tiempo total de conversacion abierta: {minutos_totales} minutos")
 
-        return minutos_totales
+        return minutos_totales,segundos_totales
 
     except FileNotFoundError:
         print("Archivo no encontrado. Por favor, verifica la ruta del archivo.")
@@ -42,6 +43,6 @@ def calcular_tiempos_conversacion(archivo_json, anio=None):
         print("Error al leer el archivo JSON. Asegúrate de que el archivo tiene un formato JSON válido.")
 
 # Uso del script
-archivo_json = r'C:\Users\jordi\Documents\IA\IA\2doAnyo\ChatGPTwrapped\datos\conversations01.json'
+archivo_json = './datos/conversations02.json'
 anio_deseado = 2024
 calcular_tiempos_conversacion(archivo_json, anio_deseado)
