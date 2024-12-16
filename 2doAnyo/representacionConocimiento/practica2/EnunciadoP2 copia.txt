@@ -1,0 +1,242 @@
+Objetivo:
+Implementar y analizar dos métodos de almacenamiento de datos métricos (rejilla de ocupación y Oc-Tree) para datos 3D obtenidos de sensores montados en robots móviles. Además, documentar detalladamente el trabajo realizado. Como tarea optativa, desarrollar un visualizador 3D en Python utilizando la estructura Oc-Tree.
+
+Instrucciones Detalladas:
+
+Datos de Entrada:
+
+Utiliza archivos .pcd que contienen datos en formato de nube de puntos 3D.
+Los archivos incluyen una cabecera que especifica su estructura (e.g., FIELDS, SIZE, TYPE).
+Para la práctica, trabaja únicamente con las coordenadas x, y, z y omite los valores RGB.
+Tareas a Implementar:
+
+A. Métodos de Almacenamiento:
+
+Rejilla de Ocupación:
+Divide el espacio en celdas de tamaño definido.
+Almacena en cada celda:
+El número de puntos que caen en esa celda.
+La media de las coordenadas de los puntos.
+Si una celda está vacía, asigna un valor de 0 puntos.
+Estructura Oc-Tree:
+Implementa una estructura jerárquica para subdividir el espacio.
+Almacena la misma información que en la rejilla: número de puntos y media de coordenadas.
+B. Comparativa Analítica:
+
+Realiza un análisis comparativo de los métodos implementados.
+Compara parámetros como:
+Número total de celdas utilizadas.
+Memoria empleada por cada método.
+Número de celdas vacías vs. ocupadas.
+Media de puntos en las celdas ocupadas.
+Realiza pruebas variando el tamaño mínimo de las celdas para analizar el impacto en los resultados.
+C. Parte Optativa:
+
+Crea un visualizador de datos 3D en Python.
+Utiliza la estructura Oc-Tree para mejorar la eficiencia en la visualización.
+Puedes emplear cualquier librería de visualización que no implemente internamente Oc-Tree.
+Documentación Obligatoria:
+
+Documenta todo el trabajo realizado de forma detallada.
+
+La documentación debe incluir:
+Explicación del proceso de implementación.
+Resultados del análisis comparativo de los métodos.
+Pruebas realizadas y sus resultados.
+Nota: La falta de documentación será considerada como una omisión del trabajo correspondiente.
+Entrega de la Práctica:
+
+
+Notas Adicionales:
+
+1. Formato de Visualización de Datos:
+
+Cada archivo .pcd contiene una cabecera y líneas con datos numéricos que representan coordenadas en un sistema 3D.
+Ejemplo de línea:
+
+Copiar código
+-19.738 -0.231 -1.273 0 0 0  
+En este caso, solo se utilizarán los tres primeros valores (x, y, z).
+
+2. Requerimientos Específicos del Visualizador:
+
+Asegúrate de que el visualizador utiliza la estructura Oc-Tree para representar los datos eficientemente.
+No está permitido emplear bibliotecas que implementen Oc-Tree directamente.
+
+
+Estructura de Entrega Sugerida:
+Utiliza secciones claras y delimitadores para estructurar tu código y documentación. Por ejemplo:
+
+### Métodos Implementados  
+1. Implementación de rejilla de ocupación.  
+2. Implementación de estructura Oc-Tree.  
+
+### Análisis Comparativo  
+- Tabla de resultados con parámetros comparados.  
+- Gráficas opcionales para visualizar los resultados.  
+
+### Visualizador Optativo  
+- Explicación del diseño del visualizador.  
+- Código utilizado y librerías empleadas.  
+
+
+Enunciado de la practica:
+
+Práctica Mapas métricos
+
+Descripción general
+
+En esta práctica vamos a implementar algunas de las estructuras de datos que se utilizan 
+habitualmente para almacenar la información de mapas de entorno métricos en robótica móvil. 
+
+Python
+
+Para el desarrollo de la práctica se utilizará Python como lenguaje de programación. No se va a 
+proporcionar ningún código adicional. El alumno deberá crear todos los ficheros de código que 
+necesite.
+
+Sin embargo, sí que se proporcionarán ficheros con datos reales obtenidos mediante sensores de 
+rango 3D montados sobre robots móviles en diferentes experimentos. Estos ficheros de datos 
+estarán codificados en texto plano para facilitar la compresión de su formato. El formato escogido 
+es el de de datos 3D de la librería Point Cloud Library (PCL). Podemos ver un ejemplo de cabecera 
+de un fichero .pcd en la Tabla 1.
+
+# .PCD v0.7 - Point Cloud Data file format
+VERSION 0.7
+FIELDS x y z r g b
+SIZE 4 4 4 1 1 1
+TYPE F F F I I I
+COUNT 1 1 1 1 1 1
+WIDTH 58826
+HEIGHT 1
+VIEWPOINT 0 0 0 1 0 0 0
+POINTS 58826
+DATA ascii
+
+Table 1: Ejemplo de cabecera en formato PCD
+
+Como se puede observar, el número de puntos que contiene el fichero aparece tras los campos 
+WIDTH Y DATA. El campo FIELDS nos indica la información que contiene el fichero, en este 
+caso, las coordenadas (x, y, z) del punto y los valores de color RGB. Relacionados con este campo 
+tenemos el campo SYZE y el campo TYPE que nos dicen el número de bytes que se dedica a cada 
+elemento de FIELDS y el tipo. En este ejemplo, los datos de coordenadas son float de 4 bytes y los 
+datos de color son enteros de 1 byte.
+
+
+
+Tras la cabecera encontraremos los datos 3D obtenidos por el sensor tendremos las líneas formadas 
+por los datos en sí. Siguiendo la información de la cabecera, normalmente encontraremos 6 valores 
+por cada punto, tres números reales y tres números enteros. Los primeros se corresponderán con las 
+coordenadas (x, y, z) del punto en un sistema de coordenadas centrado en el sensor. Los segundos 
+suelen ser información de color, que no vamos a necesitar para la práctica.
+
+  Ejercicio 1. Almacenar los datos
+En el primer ejercicio de la práctica tendremos que implementar dos métodos para almacenar los 
+datos métricos del entorno del robot. El objetivo es poder realizar una comparación analítica entre 
+ambos métodos. Los métodos a implementar son una rejilla de ocupación y una estructura de datos 
+tipo Oc-Tree, como la que se ha visto en clase de teoría.
+
+En ambos casos, la información que tenemos que almacenar en las celdas será el número de puntos 
+que caen dentro de la celda y la media de esos puntos. En caso de que la celda esté vacía, el número 
+de puntos será 0. También, para los dos métodos estableceremos a priori el tamaño mínimo de 
+celda.
+
+Finalmente, una vez que los métodos estén implementados correctamente, se debe realizar un 
+análisis de su funcionamiento. Para ello compararemos parámetros como el número total de celdas 
+que utiliza cada método, la memoria utilizada, el número de celdas vacías, el número de celdas 
+ocupadas, la media de puntos en las celdas ocupadas. Esta comparativa se puede hacer para 
+diferentes tamaños mínimos de celda y así comprobar la respuesta de cada método para distintos 
+tamaños de celda.
+
+  Ejercicio 1. Parte optativa
+Crear un visualizador de datos 3D en python que utilice la estructura de Oc-Tree para la 
+visualización eficiente de los datos. Se podrá utilizar cualquier librería de visualización en python 
+siempre que no implemente internamente la estructura Oc-Tree.
+
+Ejercicio 1. Documentación
+Es obligatorio documentar todo el trabajo realizado. Si alguna parte del trabajo realizado no se 
+documenta se considerará como que no se ha hecho, lo que puede llevar a suspender la práctica. La 
+documentación debe incluir una comparación detallada de los métodos implementados y su 
+rendimiento, así como de las pruebas que se hayan realizado para comprobar su correcto 
+funcionamiento. 
+
+  Ejercicio 1. Evaluación
+El ejercicio 1 se puntuará de 0 a 10 puntos. La parte optativa supondrá hasta un 20% más de nota.
+
+
+
+  Entrega de la práctica
+Se deberá entregar un fichero comprimido que contenga el o los ficheros con el código fuente en python y el fichero con la 
+documentación en formato PDF. 
+
+
+ ¡¡¡IMPORTANTE!!! El código fuente de los algoritmos a implementar en esta práctica se 
+pueden encontrar fácilmente en Internet. No obstante, se espera una implementación original 
+por  parte  de  los  alumnos.
+
+
+## Datos a tener en cuenta ##
+
+Mi estructura de archivos es la siguiente:
+
+datos--|
+	ciencias000.pcd
+	ciencias001.pcd
+	museo000.pcd
+	pli000.pcd
+	poli001.pcd
+	Visor--|
+		CMakeList.txt
+		README.txt
+		visor3D.cpp
+		build--|
+			cmake_install.cmake
+			CMakeCache.txt
+			Makefile
+			CMakefiles--|
+				cmake.check_cache
+				CMakeDirectoryInformation.cmake
+				CMakeOutput.log
+				Makefile.cmake
+				Makefile2
+				progress.marks
+				TargetDirectories.txt
+				3.18.4--|...
+				CMakeTmp--|...
+				visor3D.dir--|
+
+			
+*Todos los archivos .pcd tienen una estructura como la siguiente:
+
+# .PCD v0.7 - Point Cloud Data file format
+VERSION 0.7
+FIELDS x y z r g b
+SIZE 4 4 4 1 1 1
+TYPE F F F I I I
+COUNT 1 1 1 1 1 1
+WIDTH 58826
+HEIGHT 1
+VIEWPOINT 0 0 0 1 0 0 0
+POINTS 58826
+DATA ascii
+-19.738 -0.231 -1.273 0 0 0 
+-20.118 -0.203 -2.016 0 0 0 
+-21.894 -0.157 -2.781 0 0 0 
+-28.557 0.302 -7.512 0 0 0 
+-46.283 0.772 -9.174 0 0 0 
+-46.283 2.363 -8.898 0 0 0 
+-46.362 2.523 -8.87 0 0 0 
+-46.283 1.655 -8.63 0 0 0 
+-46.329 2.433 -8.017 0 0 0 
+-46.352 2.482 -8.443 0 0 0 
+-46.437 2.509 -8.014 0 0 0 
+-46.283 1.198 -8.705 0 0 0 
+-46.328 2.555 -9.291 0 0 0 
+-46.475 2.788 -10.14 0 0 0 
+-46.485 2.878 -10.117 0 0 0 
+-46.485 2.966 -10.092 0 0 0 
+
+
+
+
+
