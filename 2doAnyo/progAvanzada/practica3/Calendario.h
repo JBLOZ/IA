@@ -62,6 +62,10 @@ public:
    int diaMasFrecuente() const;
    int mesMasFrecuente() const;
    int anyoMasFrecuente() const;
+
+   vector<Evento> buscarEventosPorPalabraClave(const string& palabraClave) const;
+   vector<Evento> buscarEventosPorTituloExacto(const string& tituloExacto) const;
+
 };
 
 #endif
