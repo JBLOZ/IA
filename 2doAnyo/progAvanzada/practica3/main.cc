@@ -61,6 +61,26 @@ void procesarConsultaFrecuencia(Calendario& cal, const string& tipo) {
     else if (tipo == "anyoMasFrecuente") cout << cal.anyoMasFrecuente() << '\n';
 }
 
+// Ejemplo de nuevo método en el examen
+void procesarMetodoNuevo(Calendario& cal, const vector<string>& categorias) {
+    // Este método se deberá implementar en función de lo que pidan en el examen
+    // Aquí puedes leer parámetros específicos del nuevo método y llamar a la lógica correspondiente
+    string t;
+    cin >> t;
+    for (auto& c : t) if (c == '_') c = ' ';
+    vector<Evento> resultados = cal.buscarEventosPorPalabraClave(t);
+    // Implementar la lógica para interactuar con cal
+    if (!resultados.empty()) {
+        for (const auto& e : resultados) {
+            cout << e.aCadena(categorias) << '\n';
+        }
+    }
+    else {
+        cout << "No hay eventos con la palabra clave " << t << '\n';
+    }
+    
+}
+
 void procesarComando(Calendario& cal, const string& comando, const vector<string>& categorias) {
     if (comando == "insertarEvento") {
         procesarInsertarEvento(cal);
@@ -80,6 +100,8 @@ void procesarComando(Calendario& cal, const string& comando, const vector<string
         cal.deshacerInsercion();
     } else if (comando == "deshacerBorrado") {
         cal.deshacerBorrado();
+    } else if (comando == "metodoNuevo") { // Comando para el examen
+        procesarMetodoNuevo(cal, categorias);
     }
 }
 
