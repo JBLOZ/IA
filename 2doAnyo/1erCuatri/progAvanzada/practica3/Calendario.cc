@@ -1,7 +1,10 @@
 #include "Calendario.h"
 #include <algorithm>
 #include <cctype>
+<<<<<<< HEAD:2doAnyo/1erCuatri/progAvanzada/practica3/Calendario.cc
 
+=======
+>>>>>>> 917539cc (prog):2doAnyo/progAvanzada/practica3/Calendario.cc
 
 Calendario::Calendario(){}
 
@@ -191,6 +194,11 @@ int Calendario::anyoMasFrecuente() const {
 }
 
 
+<<<<<<< HEAD:2doAnyo/1erCuatri/progAvanzada/practica3/Calendario.cc
+=======
+
+
+>>>>>>> 917539cc (prog):2doAnyo/progAvanzada/practica3/Calendario.cc
 vector<Evento> Calendario::buscarEventosPorPalabraClave(const string& palabraClave) const {
 
     vector<Evento> resultados;
@@ -233,4 +241,8 @@ vector<Evento> Calendario::buscarEventosPorTituloExacto(const string& tituloExac
     }
 
     return resultados;
+<<<<<<< HEAD:2doAnyo/1erCuatri/progAvanzada/practica3/Calendario.cc
 }
+=======
+}
+>>>>>>> 917539cc (prog):2doAnyo/progAvanzada/practica3/Calendario.cc
