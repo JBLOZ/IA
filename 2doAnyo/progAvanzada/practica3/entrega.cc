@@ -160,6 +160,10 @@ public:
    int diaMasFrecuente() const;
    int mesMasFrecuente() const;
    int anyoMasFrecuente() const;
+
+   vector<Evento> buscarEventosPorPalabraClave(const string& palabraClave) const;
+   vector<Evento> buscarEventosPorTituloExacto(const string& tituloExacto) const;
+
 };
 
 #endif
@@ -226,6 +230,26 @@ void procesarConsultaFrecuencia(Calendario& cal, const string& tipo) {
     else if (tipo == "anyoMasFrecuente") cout << cal.anyoMasFrecuente() << '\n';
 }
 
+// Ejemplo de nuevo método en el examen
+void procesarMetodoNuevo(Calendario& cal, const vector<string>& categorias) {
+    // Este método se deberá implementar en función de lo que pidan en el examen
+    // Aquí puedes leer parámetros específicos del nuevo método y llamar a la lógica correspondiente
+    string t;
+    cin >> t;
+    for (auto& c : t) if (c == '_') c = ' ';
+    vector<Evento> resultados = cal.buscarEventosPorPalabraClave(t);
+    // Implementar la lógica para interactuar con cal
+    if (!resultados.empty()) {
+        for (const auto& e : resultados) {
+            cout << e.aCadena(categorias) << '\n';
+        }
+    }
+    else {
+        cout << "No hay eventos con la palabra clave " << t << '\n';
+    }
+    
+}
+
 void procesarComando(Calendario& cal, const string& comando, const vector<string>& categorias) {
     if (comando == "insertarEvento") {
         procesarInsertarEvento(cal);
@@ -245,6 +269,8 @@ void procesarComando(Calendario& cal, const string& comando, const vector<string
         cal.deshacerInsercion();
     } else if (comando == "deshacerBorrado") {
         cal.deshacerBorrado();
+    } else if (comando == "metodoNuevo") { // Comando para el examen
+        procesarMetodoNuevo(cal, categorias);
     }
 }
 
@@ -566,6 +592,9 @@ string Evento::aCadena(const vector<string>& categorias) const {
     return f+":"+titulo+"["+catStr+"]:"+descripcion;
 }
 
+#include <algorithm>
+#include <cctype>
+
 
 Calendario::Calendario(){}
 
@@ -752,4 +781,49 @@ int Calendario::mesMasFrecuente() const {
 }
 int Calendario::anyoMasFrecuente() const {
     return masFrecuente(freqAny,-2);
+}
+
+
+vector<Evento> Calendario::buscarEventosPorPalabraClave(const string& palabraClave) const {
+
+    vector<Evento> resultados;
+    string clave = palabraClave;
+
+    transform(clave.begin(), clave.end(), clave.begin(), ::tolower);
+
+    
+    for (const auto& par : eventos) {
+        const Evento& evento = par.second;
+
+        
+        string titulo = evento.getTitulo();
+        string descripcion = evento.getDescripcion();
+
+        transform(titulo.begin(), titulo.end(), titulo.begin(), ::tolower);
+        transform(descripcion.begin(), descripcion.end(), descripcion.begin(), ::tolower);
+
+        
+        if (titulo.find(clave) != string::npos || descripcion.find(clave) != string::npos) {
+            resultados.push_back(evento);
+        }
+    }
+
+    return resultados;
+}
+
+
+vector<Evento> Calendario::buscarEventosPorTituloExacto(const string& tituloExacto) const {
+    vector<Evento> resultados;
+
+    // Iterar sobre todos los eventos en el mapa
+    for (const auto& par : eventos) {
+        const Evento& evento = par.second;
+
+        // Comprobar coincidencia exacta del título
+        if (evento.getTitulo() == tituloExacto) {
+            resultados.push_back(evento); // Añadir a resultados
+        }
+    }
+
+    return resultados;
 }
