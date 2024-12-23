@@ -104,7 +104,7 @@ Tras probar ambos códigos en numerosas ocasiones, se concluyó que el modelo fu
 ![Captura 1](Captura%20de%20pantalla%202024-11-17%20233856.png)
 
 - **Captura 2: Modelo fuzzy (67 puntos)**
-![Captura 2](Captura%de%pantalla%2024-11-19%235607.png)
+![Captura 2](Captura%20de%20pantalla%202024-11-19%20235607.png)
 
 
 
