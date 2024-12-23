@@ -10,7 +10,8 @@ __pycache__/
 *.py[cod]
 ~$*
 *.tmp
-
+Currículum-EN-SAR.docx
+Currículum-EN-SAR.pdf
 
 # Logs
 logs
