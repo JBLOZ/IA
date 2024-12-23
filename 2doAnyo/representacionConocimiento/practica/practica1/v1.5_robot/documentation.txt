@@ -1,0 +1,74 @@
+---
+lang: en
+title: "Fuzzy-Expert: Mamdani Fuzzy Inference Systems in Python ---
+  Fuzzy-Expert: A Package for building Mamdani fuzzy inference systems
+  in Python 0.1.0 documentation"
+viewport: width=device-width, initial-scale=1.0
+---
+
+::::::::: {.document role="main" itemscope="itemscope" itemtype="http://schema.org/Article"}
+:::::::: {itemprop="articleBody"}
+:::::: {#fuzzy-expert-mamdani-fuzzy-inference-systems-in-python .section}
+# Fuzzy-Expert: Mamdani Fuzzy Inference Systems in Python[¶](#fuzzy-expert-mamdani-fuzzy-inference-systems-in-python "Permalink to this headline"){.headerlink}
+
+**Author**
+
+::: line
+Prof. Juan David Velásquez-Henao, MSc, PhD
+:::
+
+::: line
+Universidad Nacional de Colombia, Sede Medellín.
+:::
+
+::: line
+[jdvelasq@unal.edu.co](mailto:jdvelasq%40unal.edu.co){.reference
+.external}
+:::
+::::::
+
+**What is it?**
+
+**Fuzzy-Expert** is a Python package for building Mamdani Fuzzy
+Inference Systems. **Fuzzy-Expert** admits a mix of fuzzy and crisp
+values and associated certainty values. The inference system returns
+crisp values and certainty factors for the conclusions of the rules.
+
+**Main Features**
+
+-   Specification of membership functions using standard functions or as
+    a list of points.
+
+-   Different functions for specifying T-norms and Conorms.
+
+-   Different implication operators.
+
+-   Composition using max-min or max-prod rules.
+
+-   Most common functions for production aggregation.
+
+-   Different operators to defuzzificate fuzzy sets.
+
+**Release Information**
+
+-   Date: June 24, 2021 **Version**: 0.1.0
+
+-   Binary Installers:
+    [https://pypi.org/project/fuzzy_expert](https://pypi.org/project/fuzzy_expert){.reference
+    .external}
+
+-   Source Repository:
+    [https://github.com/jdvelasq/fuzzy-expert](https://github.com/jdvelasq/fuzzy-expert){.reference
+    .external}
+
+-   Documentation:
+    [https://jdvelasq.github.io/fuzzy-expert/](https://jdvelasq.github.io/fuzzy-expert/){.reference
+    .external}
+
+::: {.toctree-wrapper .compound}
+-   [Installation](installation.html){.reference .internal}
+-   [Tutorials](tutorials.html){.reference .internal}
+-   [Library reference](reference.html){.reference .internal}
+:::
+::::::::
+:::::::::
