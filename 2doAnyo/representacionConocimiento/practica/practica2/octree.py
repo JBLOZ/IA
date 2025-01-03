@@ -99,10 +99,9 @@ class Octree:
         puntos_totales = sum(n.count for n in hojas)
         ocupadas = sum(1 for n in hojas if n.count > 0)
         vacias = total_hojas - ocupadas
-        if ocupadas > 0:
-            media_puntos_ocupadas = np.mean([n.count for n in hojas if n.count > 0])
-        else:
-            media_puntos_ocupadas = 0
+        
+        media_puntos_ocupadas = np.mean([n.count for n in hojas if n.count > 0])
+        
 
         return {
             "total_nodos": total_nodos,

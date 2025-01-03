@@ -4,9 +4,9 @@ from occupancy_grid import RejillaOcupacion
 from octree import Octree
 
 # Parámetros por defecto
-CELL_SIZE = 2
+CELL_SIZE = 3
 MIN_CELL_OCTREE = 1
-MAX_POINTS = 200
+MAX_POINTS = 300
 
 
 def analisis(fichero, cell_size=CELL_SIZE, min_cell_octree=MIN_CELL_OCTREE, max_points=MAX_POINTS):
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # Ejemplo de uso
     # Ajustar el fichero pcd segun la disponibilidad.
 
-    ficheros = ["ciencias000","ciencias001","museo000","poli000","poli001"]
+    ficheros = ["ciencias000","ciencias001","scan000","museo000","poli000","poli001"]
 
     for fichero in ficheros:
         print(f"Analizando: {fichero}")
