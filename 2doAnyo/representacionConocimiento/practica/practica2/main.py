@@ -1,84 +1,57 @@
-import numpy as np
-import open3d as o3d
+# analisis.py
+from pcd_loader import leer_pcd
+from occupancy_grid import RejillaOcupacion
+from octree import Octree
+
+# Parámetros por defecto
+CELL_SIZE = 3
+MIN_CELL_OCTREE = 1
+MAX_POINTS = 300
 
 
+def analisis(fichero, cell_size=CELL_SIZE, min_cell_octree=MIN_CELL_OCTREE, max_points=MAX_POINTS):
+    # Leer puntos
+    points = leer_pcd(fichero)
+
+    # Construir rejilla
+    rejilla = RejillaOcupacion(cell_size=cell_size)
+    rejilla.construir_rejilla(points)
+    stats_rejilla = rejilla.obtener_estadisticas()
+
+    # Construir octree
+    octree = Octree(min_cell_size=min_cell_octree, max_points=max_points)
+    octree.construir_octree(points)
+    stats_octree = octree.obtener_estadisticas()
+
+    # Imprimir resultados
+    print("Analisis Comparativo")
+    print("-------------------")
+    print(f"Archivo: {fichero}")
+    print("Rejilla de Ocupacion:")
+    print(f"  Total de Celdas: {stats_rejilla['total_celdas']}")
+    print(f"  Celdas Ocupadas: {stats_rejilla['ocupadas']}")
+    print(f"  Celdas Vacias: {stats_rejilla['vacias']}")
+    print(f"  Media de puntos en celdas ocupadas: {stats_rejilla['media_puntos_ocupadas']:.2f}")
+
+    print("Oc-Tree:")
+    print(f"  Total de Nodos: {stats_octree['total_nodos']}")
+    print(f"  Hojas: {stats_octree['hojas']}")
+    print(f"  Nodos Internos: {stats_octree['internas']}")
+    print(f"  Celdas (Hojas) Ocupadas: {stats_octree['ocupadas']}")
+    print(f"  Celdas (Hojas) Vacias: {stats_octree['vacias']}")
+    print(f"  Media de puntos en hojas ocupadas: {stats_octree['media_puntos_ocupadas']:.2f}")
 
 
+if __name__ == "__main__":
+    # Ejemplo de uso
+    # Ajustar el fichero pcd segun la disponibilidad.
 
+    ficheros = ["ciencias000","ciencias001","scan000","museo000","poli000","poli001"]
 
-def load_pcd(file_path):
-    with open(file_path, 'r') as f:
-        lines = f.readlines()
+    for fichero in ficheros:
+        print(f"Analizando: {fichero}")
+        analisis(f'./Datos/{fichero}.pcd')
+        print("-------------------")
+        print("-------------------")
 
-    data_start = False
-    points = []
-    for line in lines:
-        line = line.strip()
-        if line == '<data>':
-            data_start = True
-            continue
-        if data_start:
-            if line == '</data>':
-                break
-            try:
-                x, y, z, *rest = map(float, line.split())
-                points.append([x, y, z])
-            except ValueError:
-                continue
-    return np.array(points)
-
-def compute_occupancy_grid(points, grid_size=1.0):
-    min_point = points.min(axis=0)
-    max_point = points.max(axis=0)
-    grid_dimensions = ((max_point - min_point) // grid_size).astype(int) + 1
-
-    grid = np.zeros(tuple(grid_dimensions))
-
-    indices = ((points - min_point) // grid_size).astype(int)
-    for idx in indices:
-        grid[tuple(idx)] += 1
-
-    return grid
-
-class OcTreeNode:
-    def __init__(self, center, size, points, min_size):
-        self.center = center
-        self.size = size
-        self.points = points
-        self.children = []
-        self.is_leaf = True
-        self.divide(min_size)
-
-    def divide(self, min_size):
-        if len(self.points) <= 1 or self.size / 2 < min_size:
-            return
-        self.is_leaf = False
-        offsets = np.array([[dx, dy, dz] for dx in (-1,1) for dy in (-1,1) for dz in (-1,1)])
-        half_size = self.size / 2
-        for offset in offsets:
-            child_center = self.center + offset * half_size / 2
-            mask = np.all(np.abs(self.points - child_center) <= half_size / 2, axis=1)
-            child_points = self.points[mask]
-            if len(child_points) > 0:
-                child = OcTreeNode(child_center, half_size, child_points, min_size)
-                self.children.append(child)
-
-def build_octree(points, min_size=0.1):
-    min_point = points.min(axis=0)
-    max_point = points.max(axis=0)
-    center = (max_point + min_point) / 2
-    size = np.max(max_point - min_point)
-    return OcTreeNode(center, size, points, min_size)
-
-
-
-
-# Cargar datos
-points = load_pcd('Datos/poli001.pcd')
-
-# Crear un objeto PointCloud de Open3D
-pcd = o3d.geometry.PointCloud()
-pcd.points = o3d.utility.Vector3dVector(points)
-
-# Visualizar los puntos
-o3d.visualization.draw_geometries([pcd])
+    
