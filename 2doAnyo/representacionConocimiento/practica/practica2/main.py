@@ -14,7 +14,7 @@ def analisis(fichero, cell_size=CELL_SIZE, min_cell_octree=MIN_CELL_OCTREE, max_
     points = leer_pcd(fichero)
 
     # Construir rejilla
-    rejilla = RejillaOcupacion(cell_size=cell_size)
+    rejilla = RejillaOcupacion(cell_size=cell_size) 
     rejilla.construir_rejilla(points)
     stats_rejilla = rejilla.obtener_estadisticas()
 
