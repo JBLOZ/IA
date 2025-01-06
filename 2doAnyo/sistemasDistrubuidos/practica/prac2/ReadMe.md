@@ -1,4 +1,4 @@
-# Practica 1. Sistenas operativos
+# Practica 2. Sistenas operativos
 
 **Cod: 33662**
 **Jordi Blasco Lozano**
@@ -13,8 +13,6 @@
 **Sistemas operativos y distribuidos**
 **Grado en Inteligencia Artificial**
 **Fecha: 21/11/2024**
-
-# Practica 1. Sistenas operativos
 
 ## Indice
 
