@@ -1,107 +1,153 @@
 import numpy as np
 
-class OctreeNode:
-    def __init__(self, min_coord, max_coord, points):
-        self.min_coord = min_coord
-        self.max_coord = max_coord
-        self.points = points
-        self.children = []
-        self.count = 0
-        self.mean = None
-        self.is_leaf = True
+class NodoOctree:
+    """
+    Clase que representa un nodo de un Octree.
+    """
+    def __init__(self, coordenadas_minimas, coordenadas_maximas, puntos_en_region):
+        """
+        Inicializa un nodo del Octree:
+        - coordenadas_minimas y coordenadas_maximas definen el espacio tridimensional del nodo.
+        - puntos_en_region es el conjunto de puntos que caen dentro de esas coordenadas.
+        """
+        self.coordenadas_minimas = coordenadas_minimas
+        self.coordenadas_maximas = coordenadas_maximas
+        self.puntos_en_region = puntos_en_region
+        self.nodos_hijos = []
+        self.es_nodo_hoja = True
+        self.cantidad_puntos = len(puntos_en_region)
+
+    @property
+    def es_hoja(self):
+        """Verifica si el nodo se considera una hoja (no tiene subdivisiones)."""
+        return self.es_nodo_hoja
+
 
 class Octree:
+    """
+    Clase que construye un Octree a partir de una nube de puntos.
+    """
     def __init__(self, min_cell_size=1.0, max_points=100):
         """
         Constructor del Octree.
-        min_cell_size (float): tamaño mínimo de la celda.
-        max_points (int): número máximo de puntos antes de subdividir.
+        min_cell_size: Tamaño mínimo de la celda.
+        max_points: Número máximo de puntos antes de subdividir.
         """
         self.min_cell_size = min_cell_size
         self.max_points = max_points
-        self.root = None
+        self.nodo_raiz = None
 
     def construir_octree(self, points):
-        arr = np.array(points)
-        min_c = arr.min(axis=0)
-        max_c = arr.max(axis=0)
-        self.root = OctreeNode(min_c, max_c, arr)
-        self._subdivide(self.root)
+        """
+        Construimos el Octree a partir de los puntos dados.
+        points: Lista de puntos [x, y, z].
+        """
+        arreglo_puntos = np.array(points)
+        min_global = np.min(arreglo_puntos, axis=0)
+        max_global = np.max(arreglo_puntos, axis=0)
+        self.nodo_raiz = NodoOctree(min_global, max_global, arreglo_puntos)
+        self._subdividir(self.nodo_raiz, nivel_actual=0)
 
-    def _subdivide(self, node):
+    def _subdividir(self, nodo_actual, nivel_actual):
+        """
+        Subdividimos recursivamente un nodo en 8 subnodos siempre que:
+        - El tamaño máximo de la celda sea mayor al mínimo permitido.
+        - El número de puntos supere el máximo permitido.
+        
+        Se subdividen los puntos en 8 octantes que son los espacios que se generan al dividir el espacio tal y como se explica en la memoria.
+
+        Despues verificamos que puntos caen en cada octante
+        """
         # Calcular el tamaño actual del nodo
-        size = node.max_coord - node.min_coord
-        max_dim = max(size)
+        size = nodo_actual.coordenadas_maximas - nodo_actual.coordenadas_minimas
+        max_dim = np.max(size)
 
-        if (max_dim <= self.min_cell_size) or (len(node.points) <= self.max_points):
+        if (max_dim <= self.min_cell_size) or (nodo_actual.cantidad_puntos <= self.max_points):
             # Nodo hoja
-            node.is_leaf = True
-            node.count = len(node.points)
-            if node.count > 0:
-                node.mean = node.points.mean(axis=0)
-            else:
-                node.mean = np.array([0.0, 0.0, 0.0])
+            nodo_actual.es_nodo_hoja = True
             return
 
         # Si no es hoja, subdividir
-        node.is_leaf = False
-        mid = (node.min_coord + node.max_coord) / 2.0
+        nodo_actual.es_nodo_hoja = False
+        punto_medio = (nodo_actual.coordenadas_minimas + nodo_actual.coordenadas_maximas) / 2.0
 
-        # Crear 8 hijos
-        coords = []
-        for i in range(8):
-            xm = mid[0]
-            ym = mid[1]
-            zm = mid[2]
-            xmin = node.min_coord[0] if (i & 1) == 0 else xm
-            xmax = xm if (i & 1) == 0 else node.max_coord[0]
+        # Creamos 8 octantes y cogemos el _min y _max que corresponda en cada octante, tal y como se explica en la memoria
+        # De esta forma podemos dividir el espacio 3D en 8 partes iguales en tamaño pero contiguas entre sí.
+        for indice_octante in range(8):
+            cx, cy, cz = punto_medio[0], punto_medio[1], punto_medio[2]
 
-            ymin = node.min_coord[1] if (i & 2) == 0 else ym
-            ymax = ym if (i & 2) == 0 else node.max_coord[1]
+            x_min = nodo_actual.coordenadas_minimas[0] if (indice_octante & 1) == 0 else cx
+            x_max = cx if (indice_octante & 1) == 0 else nodo_actual.coordenadas_maximas[0]
 
-            zmin = node.min_coord[2] if (i & 4) == 0 else zm
-            zmax = zm if (i & 4) == 0 else node.max_coord[2]
+            y_min = nodo_actual.coordenadas_minimas[1] if (indice_octante & 2) == 0 else cy
+            y_max = cy if (indice_octante & 2) == 0 else nodo_actual.coordenadas_maximas[1]
 
-            coords.append((np.array([xmin, ymin, zmin]), np.array([xmax, ymax, zmax])))
+            z_min = nodo_actual.coordenadas_minimas[2] if (indice_octante & 4) == 0 else cz
+            z_max = cz if (indice_octante & 4) == 0 else nodo_actual.coordenadas_maximas[2]
 
-        for cmin, cmax in coords:
-            mask = ((node.points[:, 0] >= cmin[0]) & (node.points[:, 0] < cmax[0]) &
-                    (node.points[:, 1] >= cmin[1]) & (node.points[:, 1] < cmax[1]) &
-                    (node.points[:, 2] >= cmin[2]) & (node.points[:, 2] < cmax[2]))
-            child_points = node.points[mask]
-            child_node = OctreeNode(cmin, cmax, child_points)
-            node.children.append(child_node)
-            self._subdivide(child_node)
+            # Filtramos los puntos que caen dentro del octante actual
+            mascara_octante = (
+                (nodo_actual.puntos_en_region[:, 0] >= x_min) &
+                (nodo_actual.puntos_en_region[:, 0] < x_max) &
+                (nodo_actual.puntos_en_region[:, 1] >= y_min) &
+                (nodo_actual.puntos_en_region[:, 1] < y_max) &
+                (nodo_actual.puntos_en_region[:, 2] >= z_min) &
+                (nodo_actual.puntos_en_region[:, 2] < z_max)
+            )
+            puntos_en_octante = nodo_actual.puntos_en_region[mascara_octante]
 
-        # Liberar memoria de puntos en el nodo ya que ahora se almacena en los hijos
-        node.points = None
+            # Por cada octante, creamos un nuevo nodo hijo y finalmente llamamos a la misma función de forma recursiva para que vuelva a hacer lo mismo con los octantes de dentro del nodo padre
+            nodo_hijo = NodoOctree(
+                np.array([x_min, y_min, z_min]),
+                np.array([x_max, y_max, z_max]),
+                puntos_en_octante
+            )
+            nodo_actual.nodos_hijos.append(nodo_hijo)
+
+            # subdividimos recursivamente
+            self._subdividir(nodo_hijo, nivel_actual + 1)
+
+        # Liberamos memoria de puntos en el nodo actual ya que se almacenan en los hijos
+        nodo_actual.puntos_en_region = None
+
+    def _recorrer(self, nodo_actual, lista_nodos):
+        """
+        Recorre el árbol de manera recursiva, recopilando todos los nodos en lista_nodos.
+        """
+        if nodo_actual is None:
+            return
+        lista_nodos.append(nodo_actual)
+        for hijo_actual in nodo_actual.nodos_hijos:
+            self._recorrer(hijo_actual, lista_nodos)
 
     def obtener_estadisticas(self):
         """
-        Recorre el árbol y obtiene estadísticas:
-        - Número total de nodos
-        - Número de nodos hoja
-        - Número de nodos internos
-        - Número total de puntos (debería ser igual al de entrada)
-        - Celdas vacías (hojas con count=0)
-        - Celdas ocupadas (hojas con count>0)
-        - Media de puntos en celdas ocupadas
+        Retorna un diccionario con información resumida sobre el árbol:
+        - total_nodos: Número total de nodos en el Octree.
+        - hojas: Número de nodos que son hojas.
+        - internas: Número de nodos internos (que han sido subdivididos).
+        - puntos_totales: Suma de puntos en todas las hojas.
+        - ocupadas: Cuántas hojas tienen al menos un punto.
+        - vacias: Cuántas hojas no tienen puntos.
+        - media_puntos_ocupadas: Promedio de puntos en las hojas con puntos.
         """
-        nodos = []
-        self._recorrer(self.root, nodos)
-        total_nodos = len(nodos)
-        hojas = [n for n in nodos if n.is_leaf]
-        internas = [n for n in nodos if not n.is_leaf]
+        nodos_colectados = []
+        self._recorrer(self.nodo_raiz, nodos_colectados)
+
+        total_nodos = len(nodos_colectados)
+        hojas = [n for n in nodos_colectados if n.es_hoja]
+        internas = [n for n in nodos_colectados if not n.es_hoja]
 
         total_hojas = len(hojas)
         total_internas = len(internas)
-
-        puntos_totales = sum(n.count for n in hojas)
-        ocupadas = sum(1 for n in hojas if n.count > 0)
+        puntos_totales = sum(h.cantidad_puntos for h in hojas)
+        ocupadas = sum(1 for h in hojas if h.cantidad_puntos > 0)
         vacias = total_hojas - ocupadas
-        
-        media_puntos_ocupadas = np.mean([n.count for n in hojas if n.count > 0])
-        
+
+        if ocupadas > 0:
+            media_puntos_ocupadas = np.mean([h.cantidad_puntos for h in hojas if h.cantidad_puntos > 0])
+        else:
+            media_puntos_ocupadas = 0.0
 
         return {
             "total_nodos": total_nodos,
@@ -113,33 +159,38 @@ class Octree:
             "media_puntos_ocupadas": media_puntos_ocupadas
         }
 
-    def _recorrer(self, node, lista):
-        if node is None:
-            return
-        lista.append(node)
-        for c in node.children:
-            self._recorrer(c, lista)
-
     def exportar_a_pyvista(self):
         """
-        Exporta los nodos del Octree a objetos PyVista para visualización.
-        Devuelve una lista de cubos (nodos) para PyVista.
+        Genera una lista de cubos para PyVista, donde cada cubo describe:
+        - center (centro del cubo [x, y, z])
+        - length (dimensiones en x, y, z).
+        Solo vamos a exportar los nodos hoja que contienen puntos, los nodos vacios no los voy a exportar, ya que al hacerlo se generarian demasiadas cajas y no aportaria nada a la visualización.
         """
-        cubos = []
+        lista_cubos = []
 
-        def agregar_cubos(node):
-            if node.is_leaf and node.count > 0:
-                xmin, ymin, zmin = node.min_coord
-                xmax, ymax, zmax = node.max_coord
-                center = [(xmin + xmax) / 2, (ymin + ymax) / 2, (zmin + zmax) / 2]
-                length = [xmax - xmin, ymax - ymin, zmax - zmin]
-                cubo = {
-                    "center": center,
-                    "length": length
-                }
-                cubos.append(cubo)
-            for child in node.children:
-                agregar_cubos(child)
+        def agregar_cubo(nodo_actual):
+            if nodo_actual.es_hoja and nodo_actual.cantidad_puntos > 0:
+                x_min, y_min, z_min = nodo_actual.coordenadas_minimas
+                x_max, y_max, z_max = nodo_actual.coordenadas_maximas
 
-        agregar_cubos(self.root)
-        return cubos
+                centro_cubo = [
+                    (x_min + x_max) / 2,
+                    (y_min + y_max) / 2,
+                    (z_min + z_max) / 2
+                ]
+                dimensiones_cubo = [
+                    x_max - x_min,
+                    y_max - y_min,
+                    z_max - z_min
+                ]
+
+                lista_cubos.append({
+                    "center": centro_cubo,
+                    "length": dimensiones_cubo
+                })
+
+            for hijo_actual in nodo_actual.nodos_hijos:
+                agregar_cubo(hijo_actual)
+
+        agregar_cubo(self.nodo_raiz)
+        return lista_cubos

@@ -3,27 +3,36 @@ from pcd_loader import leer_pcd
 from occupancy_grid import RejillaOcupacion
 from octree import Octree
 
-# Parámetros por defecto
-CELL_SIZE = 3
+"""
+Parámetros por defecto
+"""
+CELL_SIZE = 1
 MIN_CELL_OCTREE = 1
-MAX_POINTS = 300
+
+MAX_POINTS = 100
 
 
 def analisis(fichero, cell_size=CELL_SIZE, min_cell_octree=MIN_CELL_OCTREE, max_points=MAX_POINTS):
-    # Leer puntos
+    """ 
+    - Leemos un archivo .pcd
+    - Construimos una rejilla de ocupación y un octree
+    - Imprimimos estadísticas para comparar ambos métodos.
+    
+    """
+    # Leemos el archivo .pcd
     points = leer_pcd(fichero)
 
-    # Construir rejilla
+    # construimos la rejilla de ocupación
     rejilla = RejillaOcupacion(cell_size=cell_size) 
     rejilla.construir_rejilla(points)
     stats_rejilla = rejilla.obtener_estadisticas()
 
-    # Construir octree
+    # construimos el octree
     octree = Octree(min_cell_size=min_cell_octree, max_points=max_points)
     octree.construir_octree(points)
     stats_octree = octree.obtener_estadisticas()
 
-    # Imprimir resultados
+    # Imprimimos estadísticas
     print("Analisis Comparativo")
     print("-------------------")
     print(f"Archivo: {fichero}")
@@ -43,8 +52,6 @@ def analisis(fichero, cell_size=CELL_SIZE, min_cell_octree=MIN_CELL_OCTREE, max_
 
 
 if __name__ == "__main__":
-    # Ejemplo de uso
-    # Ajustar el fichero pcd segun la disponibilidad.
 
     ficheros = ["ciencias000","ciencias001","scan000","museo000","poli000","poli001"]
 
