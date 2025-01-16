@@ -6,9 +6,11 @@ import pyvista as pv
 from pcd_loader import leer_pcd
 from octree import Octree
 
-# Parámetros por defecto
+"""
+parámetros por defecto
+"""
 MIN_CELL_SIZE = 1
-MAX_POINTS = 500
+MAX_POINTS = 100
 
 
 
@@ -52,9 +54,10 @@ if __name__ == "__main__":
     for fichero in ficheros:
         nuevo_max_points = MAX_POINTS
         '''
-        para ejecutar el visualizador con el runCode de vscode, como no deja escribir por consola poner el False la siguiente linea, si se ejecuta desde la terminal poner True
+        IMPORTANTE:
+        para ejecutar el visualizador con el runCode (el boton de play) de vscode, como no deja escribir por consola poner el False la siguiente linea, si se ejecuta desde la terminal poner True
         '''
-        if False:
+        if True:
             if fichero == "scan000" and MAX_POINTS < 500:
                 print(f"El archivo {fichero} tiene muchos puntos, se recomienda aumentar el valor de MAX_POINTS")
                 M_P = input("Introduce un nuevo valor de MAX_POINTS o presiona enter para continuar con el valor actual: ")
