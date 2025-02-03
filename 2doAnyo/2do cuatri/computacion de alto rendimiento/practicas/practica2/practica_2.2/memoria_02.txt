@@ -1,0 +1,120 @@
+# Informe: Conceptos Fundamentales de Paralelismo
+
+## Introducción
+
+La computación paralela es un paradigma esencial en la actualidad, ya que permite procesar grandes volúmenes de datos de manera eficiente. A medida que el crecimiento en la velocidad de los procesadores ha comenzado a estancarse, el paralelismo ha surgido como la solución para mejorar el rendimiento y reducir los tiempos de ejecución en diversas aplicaciones. Desde inteligencia artificial hasta simulaciones científicas, la capacidad de dividir una tarea en múltiples subprocesos ha revolucionado el procesamiento de datos y el diseño de software.
+
+En este informe, se explorarán los fundamentos de la computación paralela, sus tipos y aplicaciones, así como las limitaciones y desafíos que enfrenta. Además, se presentará una comparación entre la computación secuencial y la computación paralela, analizando sus ventajas y desventajas.
+
+## Desarrollo
+
+### Computación Secuencial vs. Computación Paralela
+
+En la computación secuencial, un solo procesador ejecuta una serie de instrucciones de manera ordenada, sin posibilidad de ejecución simultánea. Este enfoque, aunque más simple, tiene un rendimiento limitado cuando se requiere procesar grandes volúmenes de datos. Por otro lado, la computación paralela permite la ejecución simultánea de múltiples instrucciones, utilizando varias unidades de procesamiento para reducir el tiempo total de ejecución.
+
+**Ventajas y desventajas:**
+
+- **Computación Secuencial:**
+  - Más sencilla de implementar y depurar.
+  - Consume menos energía en sistemas pequeños.
+  - Presenta limitaciones en tareas altamente demandantes.
+
+- **Computación Paralela:**
+  - Mejora el rendimiento en aplicaciones intensivas.
+  - Requiere un diseño más complejo y eficiente.
+  - Puede aumentar el consumo energético en sistemas mal optimizados.
+
+### Ejercicio 1: Comparación de la Ley de Amdahl y la Ley de Gustafson
+
+#### Ley de Amdahl
+
+La aceleración teórica según la Ley de Amdahl se calcula con la fórmula:
+
+\[ S(N) = \frac{1}{(1 - P) + \frac{P}{N}} \]
+
+Donde:
+- \( P = 0.7 \) (fracción paralelizable del código)
+- \( N = 16 \) (número de procesadores)
+
+Sustituyendo los valores:
+
+\[ S(16) = \frac{1}{(1 - 0.7) + \frac{0.7}{16}} \]
+\[ S(16) = \frac{1}{0.3 + 0.04375} \]
+\[ S(16) = \frac{1}{0.34375} \approx 2.91 \]
+
+#### Ley de Gustafson
+
+La aceleración según la Ley de Gustafson se calcula con la fórmula:
+
+\[ S(N) = N - \alpha (N - 1) \]
+
+Donde:
+- \( \alpha = 0.3 \) (fracción secuencial del código)
+- \( N = 16 \) (número de procesadores)
+
+Sustituyendo los valores:
+
+\[ S(16) = 16 - 0.3 (16 - 1) \]
+\[ S(16) = 16 - 4.5 \]
+\[ S(16) = 11.5 \]
+
+#### Comparación y conclusiones
+
+Los resultados muestran que la Ley de Amdahl es más restrictiva, limitando la aceleración máxima debido a la parte secuencial del código. En cambio, la Ley de Gustafson permite mayor escalabilidad cuando el tamaño del problema aumenta. Para aplicaciones donde el problema puede crecer, la Ley de Gustafson es más favorable.
+
+Para mejorar la eficiencia del programa, se recomienda reducir la fracción secuencial del código mediante optimización de algoritmos y el uso de estrategias de paralelismo más avanzadas.
+
+### Ejercicio 2: Optimización de un Proceso Industrial mediante Paralelización
+
+#### Identificación de oportunidades de paralelización
+
+Analizando el proceso de ensamblaje de baterías:
+1. **Montaje de las celdas de batería:** Puede dividirse entre varias estaciones de trabajo simultáneas.
+2. **Verificación de calidad:** Puede realizarse en paralelo mediante varios robots o sensores.
+3. **Ensamblaje de celdas en módulos:** Puede optimizarse dividiendo la tarea en subprocesos independientes.
+4. **Inspección final y pruebas de carga:** Puede dividirse en distintas estaciones según el tipo de prueba.
+
+#### Modelo de paralelismo adecuado
+
+El mejor enfoque es el paralelismo a nivel de tareas, donde distintos equipos trabajan simultáneamente en diferentes partes del proceso. Adicionalmente, el paralelismo a nivel de datos puede implementarse en la verificación de calidad usando múltiples sensores.
+
+#### Cálculo de aceleración con Ley de Amdahl
+
+Si el 60% del proceso puede paralelizarse (\( P = 0.6 \)) y se invierten en 8 robots (\( N = 8 \)):
+
+\[ S(8) = \frac{1}{(1 - 0.6) + \frac{0.6}{8}} \]
+\[ S(8) = \frac{1}{0.4 + 0.075} \]
+\[ S(8) = \frac{1}{0.475} \approx 2.11 \]
+
+#### Cálculo de aceleración con Ley de Gustafson
+
+\[ S(8) = 8 - 0.4 (8 - 1) \]
+\[ S(8) = 8 - 2.8 \]
+\[ S(8) = 5.2 \]
+
+#### Diseño de solución paralela
+
+- **Distribución de tareas:**
+  - Implementar estaciones de trabajo independientes para ensamblaje y pruebas.
+  - Automatizar la inspección con múltiples robots.
+  - Paralelizar las pruebas de carga en distintas secciones.
+
+- **Retos:**
+  - Sincronización de robots y estaciones.
+  - Comunicación eficiente entre las distintas etapas del proceso.
+  - Equilibrio en la carga de trabajo entre las diferentes estaciones.
+
+#### Optimización adicional
+
+- Uso de robots colaborativos con aprendizaje automático para mejorar la eficiencia.
+- Implementación de simulaciones para detectar cuellos de botella y mejorar la distribución de tareas.
+- Algoritmos de optimización que reduzcan tiempos muertos entre procesos.
+
+## Conclusiones
+
+La computación paralela permite mejorar la eficiencia en múltiples áreas, desde la optimización de código en software hasta la automatización en procesos industriales. Mediante el uso de las Leyes de Amdahl y Gustafson, se pueden evaluar los beneficios del paralelismo y definir estrategias para maximizar la aceleración.
+
+En el caso del procesamiento de datos, la Ley de Gustafson es más favorable en entornos escalables, mientras que la Ley de Amdahl es útil para evaluar mejoras en sistemas de tamaño fijo. En el ámbito industrial, la paralelización de tareas permite reducir tiempos de producción y aumentar la capacidad de respuesta ante una mayor demanda.
+
+El futuro del paralelismo dependerá de avances en hardware y algoritmos que optimicen la distribución de cargas, permitiendo desarrollar sistemas aún más eficientes y escalables.
+
