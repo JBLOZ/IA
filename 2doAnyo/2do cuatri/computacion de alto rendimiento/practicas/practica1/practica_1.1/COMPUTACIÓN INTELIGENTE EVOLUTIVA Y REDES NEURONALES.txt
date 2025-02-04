@@ -1,0 +1,277 @@
+﻿REFLEXIÓN SOBRE LA COMPUTACIÓN EVOLUTIVA Y SU APLICACIÓN EN REDES 
+
+SOCIALES 
+
+En computación evolutiva, el concepto de paralelismo en poblaciones permite aplicar algoritmos inspirados en 
+
+la evolución natural, como los algoritmos genéticos, de forma más eficiente. Este enfoque es útil para resolver 
+
+problemas complejos, ya que aprovecha la naturaleza independiente de cada solución (o individuo) dentro de 
+
+una población, facilitando el procesamiento en paralelo. Vamos a profundizar en cómo se aplica este 
+
+paralelismo y por qué resulta beneficioso. 
+
+ 
+
+1. POBLACIONES EN COMPUTACIÓN EVOLUTIVA 
+
+ En los algoritmos evolutivos, la solución a un problema se representa como una población de individuos. 
+
+Cada individuo es una posible solución al problema y se caracteriza por ciertos atributos o "genes" que 
+
+determinan sus cualidades. 
+
+ Estos individuos pasan por varias operaciones inspiradas en la evolución biológica, como la selección, 
+
+el cruce (combinación de genes entre individuos) y la mutación (cambios aleatorios en los genes). 
+
+2. PROCESAMIENTO PARALELO DE INDIVIDUOS 
+
+ En el contexto de la computación paralela, cada individuo puede ser procesado independientemente 
+
+de los demás. Esto se debe a que la evaluación de la calidad de cada solución (fitness) no depende 
+
+del estado de otros individuos en la población. 
+
+ Por ejemplo, en un algoritmo genético, cada individuo es evaluado para determinar su aptitud en 
+
+resolver el problema. Al hacer esto en paralelo, varios procesadores pueden evaluar distintos individuos 
+
+simultáneamente. 
+
+EJEMPLO PRÁCTICO 
+
+ Supongamos un problema de optimización en el que se desea encontrar la mejor ruta de entrega para 
+
+una empresa de logística. Cada individuo en la población representa una posible ruta. La calidad de 
+
+cada ruta se evalúa en función de la distancia total, tiempo de entrega, costo, etc. 
+
+ En un entorno paralelo, múltiples rutas (individuos) pueden ser evaluadas al mismo tiempo por diferentes 
+
+procesadores, lo que permite encontrar rutas óptimas en menor tiempo. 
+
+  
+
+Computación de alto rendimiento 
+Ricardo Moreno Rodríguez 
+
+ 
+
+
+
+ 
+
+3. OPERACIONES EVOLUTIVAS EN PARALELO 
+
+ Selección: Este proceso elige a los individuos con mejor rendimiento para que se reproduzcan en la 
+
+siguiente generación. La selección puede hacerse en paralelo, dividiendo la población en grupos y 
+
+seleccionando a los mejores individuos de cada grupo. 
+
+ Cruce (Crossover): Durante esta fase, los genes de los individuos seleccionados se combinan para crear 
+
+nuevos individuos. En un sistema paralelo, varias parejas de individuos pueden cruzarse al mismo tiempo, 
+
+produciendo más descendencia en menos tiempo. 
+
+ Mutación: Consiste en cambiar aleatoriamente los genes de ciertos individuos para introducir diversidad 
+
+genética en la población. Esto también puede realizarse en paralelo, aplicando mutaciones 
+
+simultáneas a diferentes individuos. 
+
+EJEMPLO PRÁCTICO DE CRUCE Y MUTACIÓN EN PARALELO 
+
+ Imagina un sistema paralelo en el que tienes 10 procesadores y una población de 100 individuos. Cada 
+
+procesador puede trabajar en paralelo con 10 individuos, aplicando operaciones de cruce y mutación. 
+
+Esto permite generar una nueva generación completa en el tiempo que tomaría procesar solo 10 
+
+individuos en un sistema secuencial. 
+
+4. VENTAJAS DEL PARALELISMO EN POBLACIONES 
+
+ Reducción de Tiempo de Cálculo: Al distribuir el trabajo de evaluación y manipulación de los individuos 
+
+entre múltiples procesadores, el tiempo de cálculo se reduce considerablemente, lo cual es crucial en 
+
+problemas de gran escala. 
+
+ Mejor Búsqueda de Soluciones: Con una población procesada rápidamente en paralelo, se pueden 
+
+realizar más iteraciones (o generaciones) en un tiempo determinado, lo que permite explorar un espacio 
+
+de soluciones más amplio y, potencialmente, encontrar soluciones de mayor calidad. 
+
+ Escalabilidad: En sistemas distribuidos, la capacidad de paralelizar la evaluación y manipulación de 
+
+individuos permite escalar el algoritmo a poblaciones de mayor tamaño, lo cual es ideal en problemas 
+
+complejos y de alta dimensionalidad. 
+
+5. APLICACIONES PRÁCTICAS DEL PARALELISMO EN COMPUTACIÓN EVOLUTIVA 
+
+ Optimización de Redes Neuronales: Los algoritmos evolutivos paralelos se utilizan para optimizar 
+
+arquitecturas de redes neuronales, buscando estructuras que proporcionen un rendimiento óptimo. 
+
+ Problemas de Ruta y Logística: Problemas como el enrutamiento de vehículos o la asignación de tareas 
+
+en un entorno de fabricación son abordados eficazmente con algoritmos evolutivos paralelos, dada su 
+
+capacidad de manejar múltiples soluciones en paralelo. 
+
+Computación de alto rendimiento 
+Ricardo Moreno Rodríguez 
+
+ 
+
+
+
+ 
+
+ Diseño de Algoritmos de IA: En el diseño de sistemas de inteligencia artificial, la computación evolutiva 
+
+en paralelo ayuda a encontrar configuraciones de parámetros, pesos y arquitecturas de redes de 
+
+manera eficiente. 
+
+RESUMEN 
+
+El paralelismo en poblaciones en computación evolutiva es una estrategia que optimiza el proceso 
+de evaluación y evolución de posibles soluciones a problemas complejos. Al procesar cada individuo 
+de forma independiente, este enfoque permite reducir el tiempo de cálculo, mejorar la exploración 
+de soluciones y escalar el tamaño de la población de manera eficiente. Esta técnica es 
+particularmente útil en aplicaciones de IA, donde se requiere evaluar y optimizar múltiples soluciones 
+de manera simultánea. 
+
+  
+
+Computación de alto rendimiento 
+Ricardo Moreno Rodríguez 
+
+ 
+
+
+
+ 
+
+DESARROLLO DE LA PRÁCTICA 
+
+Objetivo: 
+
+Los estudiantes leerán y analizarán el documento sobre Computación Inteligente Evolutiva y Redes Neuronales, 
+
+reflexionando sobre su aplicación en redes sociales y sus implicaciones éticas y prácticas. A través de esta 
+
+actividad, se pretende que desarrollen una comprensión crítica sobre el papel de las personas en este contexto 
+
+y las ventajas e inconvenientes del enfoque evolutivo en la inteligencia artificial aplicada a redes sociales. 
+
+ 
+
+Desarrollo de la práctica: 
+
+1. Lectura del documento: 
+
+o Revisar el contenido proporcionado sobre Computación Evolutiva, prestando especial atención 
+
+a los siguientes aspectos: 
+
+ Concepto de paralelismo en poblaciones. 
+
+ Evaluación de soluciones en paralelo. 
+
+ Ventajas e inconvenientes del paralelismo en inteligencia artificial. 
+
+ Aplicaciones prácticas en la optimización de problemas complejos. 
+
+2. Reflexión individual: Tras la lectura, cada estudiante deberá realizar una reflexión escrita abordando las 
+
+siguientes cuestiones: 
+
+o Aplicación en redes sociales: 
+
+ ¿Cómo se podría aplicar la computación evolutiva para analizar el comportamiento 
+
+de los usuarios en redes sociales? 
+
+ ¿Podría utilizarse para identificar patrones de comportamiento y predecir tendencias? 
+
+o Papel de las personas: 
+
+ ¿Qué papel juegan los usuarios en este proceso? 
+
+ ¿Se ven reducidos a "individuos" dentro de una población optimizada por la IA? 
+
+ ¿Hasta qué punto se respeta su privacidad e individualidad? 
+
+o Retos éticos: 
+
+ ¿Podría la implementación de estos métodos afectar la privacidad de los usuarios? 
+
+ ¿Cuáles serían los posibles riesgos en la manipulación del comportamiento? 
+
+ ¿Existen regulaciones que deberían aplicarse para su implementación? 
+
+o Ventajas e inconvenientes: 
+
+ ¿Cuáles serían las principales ventajas de aplicar estos métodos en redes sociales? 
+
+ ¿Qué posibles desventajas o peligros se podrían presentar? 
+
+3. Discusión en grupo: 
+
+o Los estudiantes compartirán las ideas clave extraídas de su reflexión con el resto de la clase. 
+
+Computación de alto rendimiento 
+Ricardo Moreno Rodríguez 
+
+ 
+
+
+
+ 
+
+o Se fomentará un debate abierto en el que se abordarán diferentes puntos de vista y se 
+
+identificarán las ideas más relevantes. 
+
+4. Entrega de informe: 
+
+o Cada estudiante deberá subir un informe en Moodle, que incluya: 
+
+ Un resumen de las ideas discutidas en clase. 
+
+ Reflexión personal sobre las aportaciones de sus compañeros. 
+
+ Propuestas o soluciones relacionadas con los retos éticos detectados. 
+
+ 
+
+Materiales necesarios: 
+
+ Documento: Computación Inteligente Evolutiva y Redes Neuronales. 
+
+ Microsoft Teams o similar para discusión en grupo. 
+
+ Moodle para la entrega del informe. 
+
+ 
+
+Evaluación: 
+
+ Participación activa en la discusión (30%). 
+
+ Claridad y profundidad en la reflexión individual (40%). 
+
+ Calidad del informe presentado en Moodle (30%). 
+
+ 
+
+Computación de alto rendimiento 
+Ricardo Moreno Rodríguez
