@@ -1,0 +1,18 @@
+
+| Imagen | Tamaño | Tiempo CPU (s) | Tiempo GPU (s) |
+|--------|--------|----------------|----------------|
+| Foto facial 1.jpg | 224x224 | 0.0143 | N/A |
+| Foto facial 1.jpg | 512x512 | 0.0450 | N/A |
+| Foto facial 1.jpg | 1024x1024 | 0.2056 | N/A |
+| Foto facial 2.jpg | 224x224 | 0.0170 | N/A |
+| Foto facial 2.jpg | 512x512 | 0.0580 | N/A |
+| Foto facial 2.jpg | 1024x1024 | 0.2030 | N/A |
+| Foto facial 3.jpg | 224x224 | 0.0150 | N/A |
+| Foto facial 3.jpg | 512x512 | 0.0560 | N/A |
+| Foto facial 3.jpg | 1024x1024 | 0.2217 | N/A |
+| Foto facial 4.jpg | 224x224 | 0.0160 | N/A |
+| Foto facial 4.jpg | 512x512 | 0.0540 | N/A |
+| Foto facial 4.jpg | 1024x1024 | 0.2147 | N/A |
+| Foto facial 5.jpg | 224x224 | 0.0150 | N/A |
+| Foto facial 5.jpg | 512x512 | 0.0520 | N/A |
+| Foto facial 5.jpg | 1024x1024 | 0.2123 | N/A |
