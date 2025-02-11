@@ -1,0 +1,140 @@
+**MULTIPROCESADORES (SMP Y NUMA)**
+
+1. **Definición de multiprocesador y diferencia con un multicomputador:**
+   - Un multiprocesador es un sistema con múltiples CPU que comparten memoria y dispositivos de E/S.
+   - Un multicomputador es un conjunto de computadoras interconectadas mediante una red, cada una con su propia memoria.
+   - Diferencia clave: los multiprocesadores tienen memoria compartida, los multicomputadores usan paso de mensajes.
+
+2. **Memoria compartida en SMP y su impacto en el rendimiento:**
+   - En SMP, todas las CPU acceden a la misma memoria.
+   - Puede generar contención en el bus y cuellos de botella.
+   - Se optimiza con cachés y coherencia de memoria.
+
+3. **Problema de escalabilidad en SMP y mitigación:**
+   - Limitación en el ancho de banda de memoria compartida.
+   - Soluciones: mayor jerarquía de cachés, interconexiones avanzadas y arquitecturas NUMA.
+
+4. **Escalabilidad de NUMA vs. SMP:**
+   - NUMA permite que cada CPU tenga su propia memoria local.
+   - Reduce la contención en el bus y mejora la escalabilidad.
+
+5. **Impacto del acceso a memoria remota en NUMA:**
+   - El acceso a memoria remota es más lento.
+   - Se optimiza colocando datos frecuentemente usados en la memoria local.
+
+6. **Comparación entre SMP y NUMA:**
+   - SMP: menor latencia, menos escalable.
+   - NUMA: mayor escalabilidad, pero mayor complejidad en la gestión de memoria.
+
+7. **Condición de carrera y prevención:**
+   - Ocurre cuando dos hilos acceden simultáneamente a una variable compartida.
+   - Prevención: locks, semáforos y memoria transaccional.
+
+**MULTICOMPUTADORES Y PASO DE MENSAJES**
+
+8. **Definición y ejemplo de multicomputador:**
+   - Un sistema con nodos independientes que se comunican por red.
+   - Ejemplo: supercomputadoras distribuidas.
+
+9. **Paso de mensajes y protocolos comunes:**
+   - Se envían datos entre procesos sin memoria compartida.
+   - Protocolos: MPI, PVM.
+
+10. **Asignación de tareas en multicomputadores:**
+   - Estático: distribución fija antes de la ejecución.
+   - Dinámico: reasignación en tiempo de ejecución según carga.
+
+11. **Ventajas de multicomputadores en tolerancia a fallos:**
+   - Cada nodo es independiente.
+   - Fallo de un nodo no afecta a otros.
+
+12. **Algoritmo de distribución de tareas en 5 nodos:**
+   - Distribuir equitativamente las 1000 tareas entre los 5 nodos.
+   - Se pueden usar colas de tareas con MPI.
+
+13. **Latencia en multicomputadores vs. SMP:**
+   - En multicomputadores, la comunicación por red es más lenta que la memoria compartida de SMP.
+
+**BALANCEO DE CARGA**
+
+14. **Importancia del balanceo de carga:**
+   - Evita sobrecarga en un solo nodo.
+   - Maximiza la eficiencia de los recursos.
+
+15. **Comparación de balanceo estático y dinámico:**
+   - Estático: asignación fija, adecuado para cargas predecibles.
+   - Dinámico: ajusta tareas en ejecución, ideal para cargas variables.
+
+16. **Round-robin en 8 procesadores con 200 tareas:**
+   - Cada procesador recibe 200/8 = 25 tareas.
+
+17. **Redistribución de carga en multicomputadores:**
+   - Implementar migración de tareas según carga de cada nodo.
+
+18. **Algoritmo "Least Connections":**
+   - Asigna tareas al nodo con menos conexiones activas.
+   - Ejemplo: balanceo de servidores web.
+
+**GPUS**
+
+19. **Diferencia GPU vs. CPU:**
+   - GPU tiene más núcleos, pero menos flexibles.
+   - CPU es más potente en tareas secuenciales.
+
+20. **Paralelismo masivo en GPUs:**
+   - Miles de hilos ejecutan operaciones simultáneas.
+   - Utilizado en IA y simulaciones.
+
+21. **Cálculo de bloques para imagen 4096x4096:**
+   - Total de bloques = (4096/64) * (4096/64) = 4096 bloques.
+
+22. **Ventajas de GPUs en IA:**
+   - Alto rendimiento en operaciones matriciales.
+
+23. **Mejora de simulaciones con GPUs:**
+   - Ejemplo: cálculo de dinámica de fluidos en tiempo real.
+
+24. **Diferencias entre CUDA y OpenCL:**
+   - CUDA: exclusivo de NVIDIA.
+   - OpenCL: compatible con múltiples plataformas.
+
+**FPGAS**
+
+25. **Definición y aplicaciones de FPGA:**
+   - Circuitos reconfigurables para tareas específicas.
+
+26. **Comparación FPGA vs. GPU vs. CPU:**
+   - FPGA: mayor eficiencia energética, menor flexibilidad.
+
+27. **Uso de FPGA en conducción autónoma:**
+   - Procesamiento en tiempo real de sensores.
+
+28. **Lenguajes HDL en FPGA:**
+   - Definen el hardware, como VHDL y Verilog.
+
+29. **Ejemplo de FPGA en procesamiento de señales:**
+   - Filtrado digital en telecomunicaciones.
+
+**BENCHMARKING Y OPTIMIZACIÓN**
+
+30. **Importancia del benchmarking:**
+   - Evalúa el rendimiento de sistemas paralelos.
+
+31. **Cálculo de eficiencia de Sistemas A y B:**
+   - Speedup A = 40/10 = 4, eficiencia = 4/4 = 1.
+   - Speedup B = 40/8 = 5, eficiencia = 5/4 = 1.25.
+   - Sistema B es más eficiente.
+
+32. **Ley de Amdahl con 8 procesadores:**
+   - Speedup máximo = 1 / (0.3 + 0.7/8) = 2.74.
+   - Con 90% paralelizable: Speedup = 5.26.
+
+33. **Cuellos de botella y mitigación:**
+   - Identificación con benchmarking.
+   - Soluciones: optimización de código y paralelización mejorada.
+
+34. **Cálculo de tiempos y optimización:**
+   - Tiempo total original: 10 s.
+   - Con optimización: 7 s.
+   - Impacto: reducción del tiempo de ejecución mejora el rendimiento general.
+
