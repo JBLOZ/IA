@@ -155,3 +155,4 @@ if __name__ == "__main__":
     practica = PracticaCPUvsGPU()
     tabla = practica.run_all()
     print(tabla)
+
