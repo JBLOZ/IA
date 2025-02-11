@@ -1,5 +1,4 @@
-
-| Imagen | Tamaño | Tiempo CPU (s) | Tiempo GPU (s) |
+| Imagen | Tamaï¿½o | Tiempo CPU (s) | Tiempo GPU (s) |
 |--------|--------|----------------|----------------|
 | Foto facial 1.jpg | 224x224 | 0.0143 | N/A |
 | Foto facial 1.jpg | 512x512 | 0.0450 | N/A |
