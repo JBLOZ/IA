@@ -34,5 +34,9 @@ datos_meteorologicos = {
     "Jueves": [20, "22", 24, 26]  # 🔴 OJO! Datos de entrada incorrectos
 }
 
+
+
+
+
 analizar_datos(datos_meteorologicos)
 
