@@ -1,0 +1,234 @@
+﻿Tema 1. Introducción
+Razonamiento y representación del conocimiento
+
+
+
+Conceptos
+● Representación del conocimiento y el razonamiento es un área de la 
+
+inteligencia artificial cuyo objetivo fundamental es representar el 
+conocimiento de una manera que facilite la inferencia (sacar conclusiones) 
+a partir de dicho conocimiento. Analiza cómo pensar formalmente - cómo 
+usar un sistema de símbolos para representar un dominio del discurso 
+(aquello de lo que se puede hablar), junto con funciones que permitan 
+inferir (realizar un razonamiento formal) sobre los objetos. (Fuente: wikipedia)
+
+● Usaremos algún tipo de lógica para proveer una semántica formal de cómo 
+las funciones de razonamiento se aplican a los símbolos del dominio del 
+discurso
+
+
+
+Conceptos
+● En el mundo real el dominio de discurso no suele ser 
+
+completamente observable. Tenemos, entonces que tratar 
+con la incertidumbre:
+
+● La información puede no existir o no estar disponible
+● La información puede ser ambigua
+● La representación puede ser imprecisa o inconsistente
+
+
+
+Representación del conocimiento
+● En ciencia de la computación, particularmente la 
+
+inteligencia artificial, se han ideado un número de 
+representaciones para estructurar la información.
+
+● Representación del conocimiento es un término 
+comúnmente usado para referirse a representaciones 
+pensadas para el procesamiento por ordenadores 
+modernos
+
+
+
+Representación del conocimiento
+● Originalmente se utiliza la lógica
+
+● Almacenar hechos
+● Establecer relaciones entre los hechos → reglas de producción
+● Inferir nuevos hechos
+● Los hechos observados o deducidos + las reglas de producción 
+
+constituyen la base de conocimiento de un sistema inteligente
+
+
+
+Representación del conocimiento
+● Agentes lógicos: utilizan representación de conocimiento 
+
+para realizar su tarea
+1. Obtener una percepción (se tiene un nuevo hecho)
+2. Incorporar la percepción a la base de conocimiento
+3. Actualizar la base de conocimiento dada la percepción 
+
+(inferencia) y obtener la siguiente acción a realizar dado el 
+objetivo del agente
+
+4. Realizar la acción y, en caso necesario, actualizar la base de 
+conocimiento. Volver al paso 1.
+
+
+
+Representación del conocimiento
+● Según se expande la IA, la representación del conocimiento 
+
+necesita salir del campo formal de la lógica (nunca del todo)
+● ¿Cómo representa un robot móvil la información del entorno 
+
+que lo rodea para poder moverse desde su posición hasta su 
+destino a la vez que evita chocar con los obstáculos que se 
+encuentre?
+
+● ¿De qué manera almacenan los chatbots actuales la información 
+para dar respuestas ‘correctas’ y rápidas a nuestras preguntas?
+
+
+
+Conocimiento incierto
+● Los sistemas inteligentes tendrán que trabajar en 
+
+condiciones de incertidumbre
+● Puede que seamos ‘demasiado vagos’ para obtener toda la 
+
+información
+● Puede que el universo de discurso no sea directamente 
+
+observable
+
+
+
+Conocimiento incierto
+● Concepto de racionalidad
+
+● En ausencia de incertidumbre podemos asegurar toma de 
+decisiones racionales
+
+● Con incertidumbre
+● Grado de creencia
+● Utilidad de las acciones que se decide realizar
+
+● Cómo representamos la incertidumbre: teoría de la 
+probabilidad
+
+
+
+El mundo Wumpus
+● Veamos un ejemplo de aplicación de la lógica para resolver 
+
+un problema por un agente inteligente
+
+
+
+El mundo Wumpus
+● ‘El mundo Wumpus’ es un juego de lógica de tablero
+● El tablero representa las localizaciones por las que puede 
+
+moverse nuesto agente
+● En alguna casilla del tablero hay un tesoro, que es el objetivo 
+
+que queremos alcanzar. Su localización es desconocida. 
+Obtendremos el tesoro cuando nos movamos a la casilla que 
+lo contiene. Nos tendremos que mover por el mapa hasta 
+encontrar el tesoro
+
+
+
+El mundo Wumpus
+● Pero no todo va a ser tan fácil como lanzar un algoritmo de 
+
+exploración…
+● En el mundo representado por el tablero vive el Wumpus: una 
+
+criatura maligna que no dudará en devorarnos si nos movemos 
+a la casilla en la que se encuentre.
+
+● El Wumpus no cambia de localización durante el juego, siempre 
+está en la misma casilla.
+
+
+
+El mundo Wumpus
+● Pero no todo va a ser tan fácil como lanzar un algoritmo de 
+
+exploración…
+● ¡Agujeros! El mundo por el que nos movemos tiene agujeros que 
+
+nos haran precipitarnos al vacío y morir si entramos en alguna 
+casilla que los contenga
+
+● Ni el Wumpus ni los agujeros se pueden ver desde las casillas 
+adyacentes. Descubriremos su ubicación (fatalmente) si nos 
+movemos a una casilla que los contenga. Por suerte, también 
+podemos utilizar la inferencia lógica para detectarlos
+
+
+
+El mundo Wumpus
+● El agente es un explorador con:
+
+● Actuadores
+● Puede moverse a las casillas contiguas en dirección Norte-Sur-Este-
+
+Oeste (NSEO)
+● Está equipado con una arco y una flecha. Puede disparar la flecha en 
+
+las direcciones NSEO para intentar matar al Wumpus. La flecha volará 
+en la dirección escogida hasta llegar al borde del tablero. Si el Wumpus 
+está en su trayectoria, morirá.
+
+
+
+El mundo Wumpus
+● El agente es un explorador con:
+
+● Sensores:
+● Olfato: el agente puede detectar el hedor que emite el Wumpus si se encuentra 
+
+en una casilla adyacente
+● Tacto: el agente puede detectar corrientes de viento si se encuentra en una 
+
+casilla adyacente a una que contenga un agujero
+● Oído: el agente oirá gritar al Wumpus si lo alcanza con una flecha
+● Vista: si el agente se encuentra en una casilla en la que esté el tesoro, lo verá (y 
+
+lo cogerá)
+● Una percepción del agente se representará como una tupla de cuatro valores: 
+
+{olfato, tacto, oído, vista}
+
+
+
+El mundo Wumpus
+● Un mundo de wumpus 
+
+típico. El agente está 
+situado en la esquina 
+inferior izquierda.
+
+
+
+El mundo Wumpus
+● Percepción: {nada, nada, nada, 
+
+nada}
+
+● Acción: moverse a (2,1) 
+
+
+
+El mundo Wumpus
+● Percepción: {nada, brisa, nada, 
+
+nada}
+
+● Acción: moverse a (1,1) y a (1,2) 
+
+
+
+El mundo Wumpus
+● Percepción: {hedor, nada, nada, 
+
+nada}

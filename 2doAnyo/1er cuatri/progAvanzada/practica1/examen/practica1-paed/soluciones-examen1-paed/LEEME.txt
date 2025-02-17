@@ -1,5 +1,0 @@
-Este paquete contiene las soluciones y los tests empleados en el primer examen de prácticas de PAED del curso 2024/2025.
-
-La carpeta "1500" contiene los datos del examen que se realizó en el turno de las 15:00 y la carpeta "1900", los del examen que se realizó a las 19:00.
-
-En cada carpeta, hay un fichero "solucion.cc" con la implementación del método pedido en el enunciado así como de algunos métodos auxiliares. Los tests se encuentran en los ficheros que acaban en .inp y en .cor. Por ejemplo, el fichero "hard-3.inp" contiene una fecha, y el fichero "hard-3.cor" contiene el resultado que tiene que devolver el método para esa fecha.

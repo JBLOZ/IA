@@ -1,0 +1,41 @@
+﻿Práctica 3.2: Vuelta atrás
+
+Algoritmia y optimización
+
+Curso 2024–25
+
+1. Introducción
+
+En esta práctica plantearemos la resolución de problemas mediante el esquema “vuelta
+atrás”.
+
+2. Objetivos
+
+Entender el esquema de vuelta atrás.
+
+Practicar el diseño de cotas optimistas.
+
+Ser capaz de comparar la eficiencia emṕırica de distintas alternativas.
+
+3. Ejercicio
+
+Resuelve los problemas de la Práctica 3.1 utilizando la estrategia de Vuelta atrás.
+Haz que tu código sea capaz de computar tanto el valor de la solución como el propio vector
+solución (solución completa).
+
+Para esta práctica se pide implementar distintas versiones (incrementales) de cada
+problema:
+
+Solución básica
+
+Añadir poda por cota optimista
+
+Añadir inicialización con solución voraz
+
+Para comprobar la eficacia de las distintas mejoras aplicadas al esquema básico, de-
+bes computar cuántas llamadas recursivas se realizan con cada una de las alternativas
+anteriores, a distintas tallas del problema. También es interesante que te plantees diver-
+sas cotas optimistas y estrategias voraces y las compares en términos de la métrica
+descrita en el párrafo anterior.
+
+1
