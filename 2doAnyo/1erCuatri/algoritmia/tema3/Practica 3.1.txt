@@ -1,0 +1,127 @@
+﻿Práctica 3.1: Algoritmos voraces
+
+Algoritmia y optimización
+
+Curso 2024–25
+
+1. Introducción
+
+En esta práctica plantearemos la resolución de problemas mediante estrategias voraces.
+
+2. Objetivos
+
+Entender en qué consiste una estrategia voraz.
+
+Practicar la implementación de estrategias voraces.
+
+3. Ejercicio
+
+Implementa estrategias voraces para los problemas presentados en las siguientes seccio-
+nes. Haz que tu código calcule tanto el valor óptimo como la solución completa.
+
+Además, para cada estrategia plantéate:
+
+Cómo vas a codificar una posible solución para el correspondiente problema.
+
+Si la estrategia encuentra siempre una solución al problema.
+
+Si la estrategia encuentra siempre la solución óptima al problema.
+
+3.1. El cambio de monedas
+
+El problema consiste en formar una suma M con el número mı́nimo de monedas esco-
+gidas (con posibilidad de repetición) de un conjunto finito C = {c1, c2, . . .}.
+
+E∑l problema se puede formalizar como sigue. Una solución es una secuencia de decisiones
+S = (s1, s2, . . . , sn) tal que si ∈ C. El objetivo es minimizar |S|, con la la restricción de
+que n
+
+i=1 valor(si) = M .
+
+1
+
+
+
+3.2. El fontanero diligente
+
+Un fontanero necesita hacer n reparaciones urgentes y sabe de antemano el tiempo
+que le va a llevar cada una de ellas: en la tarea i-ésima tardará ti minutos. Como en su
+empresa le pagan dependiendo de la satisfacción del cliente, necesita decidir el orden en el
+que atenderá los avisos para minimizar el tiempo medio de espera de los clientes.
+
+En otras palabras, si llamamos Ei a lo que espera el cliente i-ésimo hasta ver reparada
+su aveŕıa por completo, necesita minimizar la expresión:
+
+∑n ∑i
+
+E = Ei con Ei = tj
+i=1 j=1
+
+3.3. El coloreado de grafos
+
+Dado un grafo no dirigido, el problema consiste en encontrar el menor número de colores
+con el que se pueden colorear sus vértices de forma que no haya dos vértices adyacentes
+con el mismo color. Por ejemplo, dado el grafo de la Fig. 1, el mı́nimo número de colores
+seŕıa 3.
+
+Figura 1: Ejemplo de grafo cuyo coloreado mı́nimo requiere 3 colores.
+
+Para este problema puedes definir un grafo mediante una matriz de adyacencia {0, 1}|V |×|V |.
+
+3.4. El laberinto con cuatro movimientos
+
+Se dispone de una cuadŕıcula n×m de valores {0, 1} que representa un laberinto. Un
+valor 0 en una casilla cualquiera de la cuadŕıcula indica una posición inaccesible; por el
+contrario, con el valor 1 se simbolizan las casillas accesibles.
+
+Encontrar un camino que permita ir de la posición (0, 0) a la posición (n − 1,m − 1)
+con cuatro tipos de movimiento (arriba, abajo, derecha, izquierda).
+
+2
+
+
+
+3.5. La asignación de tareas
+
+Supongamos que disponemos de n trabajadores y n tareas. Sea bij > 0 el coste de
+asignarle el trabajo j al trabajador i.
+
+Una asignación de tareas puede ser expresada como una asignación de los valores 0 ó 1
+a las variables xij , donde xij = 0 significa que al trabajador i no le han asignado la tarea
+j, y xij = 1 indica que śı.
+
+Una asignación válida es aquella en la que a cada trabajador sólo le corresponde una
+tarea y cada tarea está asignada a un trabajador.
+
+Dada una asignación válida, definimos el coste de dicha asignación como:
+
+∑n ∑n
+xijbij
+
+i=1 j=1
+
+El problema consiste en encontrar una asignación óptima, es decir, de mı́nimo coste.
+
+Cuestión: ¿cambia el algoritmo si añadimos una matriz W = {0, 1}n×n tal que un tra-
+bajador i solo puede asignarse a la tarea j si Wij = 1?
+
+3.6. El viajante de comercio
+
+Imagina que un vendedor debe visitar varias ciudades, partiendo de una ciudad inicial,
+y regresar a ella al final. Su objetivo es encontrar la ruta más corta que le permita visitar
+todas las ciudades una sola vez.
+
+Formalmente, el problema se reduce a encontrar un recorrido en un grafo ponderado,
+con pesos no negativos, que recorre todos los vértices sólo una vez y regresa al de partida
+con el mı́nimo coste (es decir, que minimice la suma del peso de las aristas). Se puede
+asumir que el vértice de partida y regreso siempre es el numerado como primero.
+
+Para este problema puedes definir un grafo mediante una matriz de adyacencia ponde-
+rada R+|V |×|V |
+
+. Puedes usar un valor especial (-1) para indicar que no hay arista entre dos
+vértices.
+
+Cuestión: ¿Cambia el algoritmo dependiendo de si el grafo es completo?
+
+3
