@@ -3,33 +3,37 @@
 #include <cstdlib>
 #include <ctime>
 #include <omp.h>
-#include <string>
+#include <iomanip>
 using namespace std;
 
-// Rango de valores para la cantidad de farolas y consumo de cada tipo
+// Constantes de tamaños de mapa, número de hilos y schedules
+const int MAP_SIZES[] = {200, 1000, 2000};
+const int NUM_MAPS = 3;
+const int THREAD_COUNTS[] = {4, 8, 16};
+const int NUM_THREADS = 3;
+const string SCHEDULES[] = {"static", "dynamic", "guided"};
+const int NUM_SCHEDULES = 3;
+
 const int MIN_FAROLAS = 50, MAX_FAROLAS = 500;
 const int BAJO_MIN = 70, BAJO_MAX = 100;
 const int MEDIO_MIN = 150, MEDIO_MAX = 200;
 const int ALTO_MIN = 250, ALTO_MAX = 300;
 
-// Estructura que representa una celda en el mapa
 struct Celda {
-    int num_farolas;    // Número de farolas en la celda
-    int consumo_total;  // Consumo total acumulado en la celda
+    int num_farolas;
+    int consumo_total;
 };
 
-// Función que inicializa el mapa con valores aleatorios para cada celda.
-// 'size' es el número de filas y columnas del mapa.
-void inicializarMapa(vector<vector<Celda>> &mapa, int size)
-{
-    srand(time(0));  // Inicializa la semilla para números aleatorios
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            // Asigna un número aleatorio de farolas a la celda
+void inicializarMapa(vector<vector<Celda>> &mapa, int map_size) {
+    // Usamos srand solo una vez; en caso de llamar repetidamente dentro del bucle
+    // puede reinicializar la semilla, pero esto es solo un ejemplo.
+    srand(time(0));
+    for (int i = 0; i < map_size; i++) {
+        for (int j = 0; j < map_size; j++) {
             mapa[i][j].num_farolas = rand() % (MAX_FAROLAS - MIN_FAROLAS + 1) + MIN_FAROLAS;
-            // Calcula y suma un consumo aleatorio para cada farola según su tipo
+            mapa[i][j].consumo_total = 0;  // reinicializamos para cada celda
             for (int k = 0; k < mapa[i][j].num_farolas; k++) {
-                int tipo = rand() % 3; // Selecciona aleatoriamente un tipo: 0, 1 o 2
+                int tipo = rand() % 3;
                 if (tipo == 0)
                     mapa[i][j].consumo_total += rand() % (BAJO_MAX - BAJO_MIN + 1) + BAJO_MIN;
                 else if (tipo == 1)
@@ -41,106 +45,134 @@ void inicializarMapa(vector<vector<Celda>> &mapa, int size)
     }
 }
 
-// Función que calcula de forma secuencial el total de farolas y el consumo total del mapa.
-void calcularConsumoSecuencial(const vector<vector<Celda>> &mapa, int size, long long &total_farolas, long long &consumo_total)
-{
+// Función secuencial para calcular totales
+void calcularConsumoSecuencial(const vector<vector<Celda>> &mapa, long long &total_farolas, long long &consumo_total, int map_size) {
     total_farolas = 0;
     consumo_total = 0;
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
+    for (int i = 0; i < map_size; i++) {
+        for (int j = 0; j < map_size; j++) {
             total_farolas += mapa[i][j].num_farolas;
             consumo_total += mapa[i][j].consumo_total;
         }
     }
 }
 
-// Función que calcula en paralelo el total de farolas y el consumo total del mapa.
-// Se usa 'schedule(runtime)' para que se emplee el schedule configurado en tiempo de ejecución.
-void calcularConsumoParalelo(const vector<vector<Celda>> &mapa, int size, long long &total_farolas, long long &consumo_total)
-{
+// Función paralela con schedule(runtime).
+// Se utiliza omp_set_schedule() para configurar la política según la cadena recibida.
+void calcularConsumoParalelo(const vector<vector<Celda>> &mapa, long long &total_farolas, long long &consumo_total,
+                              int map_size, int num_threads, string schedule, double &tiempo) {
     total_farolas = 0;
     consumo_total = 0;
+    omp_set_num_threads(num_threads);
+
+    // Configuramos la política de schedule según el parámetro recibido.
+    if(schedule == "static")
+        omp_set_schedule(omp_sched_static, 0);
+    else if(schedule == "dynamic")
+        omp_set_schedule(omp_sched_dynamic, 0);
+    else if(schedule == "guided")
+        omp_set_schedule(omp_sched_guided, 0);
+
+    double start = omp_get_wtime();
     #pragma omp parallel for reduction(+:total_farolas, consumo_total) schedule(runtime)
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
+    for (int i = 0; i < map_size; i++) {
+        for (int j = 0; j < map_size; j++) {
             total_farolas += mapa[i][j].num_farolas;
             consumo_total += mapa[i][j].consumo_total;
         }
     }
+    tiempo = omp_get_wtime() - start;
 }
 
-int main()
-{
-    // Definición de los tamaños de mapa a probar: 200x200, 1000x1000 y 2000x2000.
-    int sizes[] = {200, 1000, 2000};
-    // Definición de los tipos de schedule a evaluar.
-    string schedules[] = {"static", "dynamic", "guided"};
-    // Definición de los números de hilos a usar.
-    int thread_counts[] = {4, 8, 16};
+int main() {
+    // Para mostrar resultados con más decimales
+    cout << fixed << setprecision(8);
 
-    int num_sizes = 3;
-    int num_schedules = 3;
-    int num_thread_counts = 3;
-    // Número de veces que se ejecutará cada experimento paralelo para promediar el tiempo.
-    int num_parallel_runs = 3;
+    double totalSecuencialGlobal = 0;
+    int countSecuencial = 0;
 
-    // Para cada tamaño de mapa
-    for (int i = 0; i < num_sizes; i++){
-        int map_size = sizes[i];
+    // Para acumular promedios por schedule globalmente
+    double sumaSchedule[NUM_SCHEDULES] = {0};
+    int countSchedule[NUM_SCHEDULES] = {0};
 
-        // --- Ejecución secuencial (se hace una sola vez por tamaño de mapa) ---
-        vector<vector<Celda>> mapa_seq(map_size, vector<Celda>(map_size, {0, 0}));
-        inicializarMapa(mapa_seq, map_size);
+    // Matriz para almacenar el tiempo promedio (sobre schedules) de cada mapa y configuración de hilos.
+    double promedioParaleloPorMapa[NUM_MAPS][NUM_THREADS] = {0};
+
+    // Además, para el mensaje final se requiere imprimir “Promedio Paralelo con X hilos MxM”
+    // para cada mapa.
+
+    // Recorremos cada tamaño de mapa
+    for (int m = 0; m < NUM_MAPS; m++) {
+        int map_size = MAP_SIZES[m];
+        vector<vector<Celda>> mapa(map_size, vector<Celda>(map_size, {0,0}));
+        inicializarMapa(mapa, map_size);
+
+        // Cálculo secuencial (se ejecuta una vez por mapa)
         long long total_farolas_seq, consumo_total_seq;
-        double start_seq = omp_get_wtime();
-        calcularConsumoSecuencial(mapa_seq, map_size, total_farolas_seq, consumo_total_seq);
-        double end_seq = omp_get_wtime();
-        double tiempo_seq = end_seq - start_seq;
-        cout << "Map Size: " << map_size << "x" << map_size << " - Secuencial:" << endl;
-        cout << "Total Farolas: " << total_farolas_seq
-             << ", Consumo Total: " << consumo_total_seq
-             << ", Tiempo: " << tiempo_seq << " s.\n";
-        cout << "----------------------------------------\n";
+        double start = omp_get_wtime();
+        calcularConsumoSecuencial(mapa, total_farolas_seq, consumo_total_seq, map_size);
+        double tiempo_seq = omp_get_wtime() - start;
+        totalSecuencialGlobal += tiempo_seq;
+        countSecuencial++;
 
-        // --- Ejecuciones paralelas ---
-        for (int s = 0; s < num_schedules; s++){
-            for (int t = 0; t < num_thread_counts; t++){
-                int current_threads = thread_counts[t];
-                // Configura el schedule según el tipo actual
-                if (schedules[s] == "static")
-                    omp_set_schedule(omp_sched_static, 0);
-                else if (schedules[s] == "dynamic")
-                    omp_set_schedule(omp_sched_dynamic, 0);
-                else if (schedules[s] == "guided")
-                    omp_set_schedule(omp_sched_guided, 0);
+        cout << "\n---------- Mapa tamaño: " << map_size << " ----------\n";
+        cout << "Secuencial ->  | Tiempo: " << tiempo_seq << " s" << endl;
 
-                // Configura el número de hilos
-                omp_set_num_threads(current_threads);
+        // Variable para acumular, por cada cantidad de hilos, el tiempo (sobre los 3 schedules)
+        double sumaTiempoPorThreads[NUM_THREADS] = {0};
 
-                // Crea e inicializa el mapa para el experimento paralelo.
-                vector<vector<Celda>> mapa_par(map_size, vector<Celda>(map_size, {0, 0}));
-                inicializarMapa(mapa_par, map_size);
-
+        // Recorremos cada schedule y cada configuración de hilos
+        for (int s = 0; s < NUM_SCHEDULES; s++) {
+            for (int t = 0; t < NUM_THREADS; t++) {
                 long long total_farolas_par, consumo_total_par;
-                double total_par_time = 0.0;
-                // Ejecuta varias veces para obtener el tiempo promedio
-                for (int run = 0; run < num_parallel_runs; run++){
-                    double start_par = omp_get_wtime();
-                    calcularConsumoParalelo(mapa_par, map_size, total_farolas_par, consumo_total_par);
-                    double end_par = omp_get_wtime();
-                    total_par_time += (end_par - start_par);
-                }
-                double average_par_time = total_par_time / num_parallel_runs;
+                double tiempo_par;
+                start = omp_get_wtime();
+                calcularConsumoParalelo(mapa, total_farolas_par, consumo_total_par, map_size, THREAD_COUNTS[t], SCHEDULES[s], tiempo_par);
+                tiempo_par = omp_get_wtime() - start;
+                // Imprimimos cada ejecución paralela (no se vuelcan los totales en cada línea)
+                cout << "Paralelo -> Schedule: " << SCHEDULES[s]
+                     << " | Hilos: " << THREAD_COUNTS[t]
+                     << " ->  | Tiempo: " << tiempo_par << " s" << endl;
 
-                cout << "Map Size: " << map_size << "x" << map_size
-                     << ", Schedule: " << schedules[s]
-                     << ", Threads: " << current_threads << "\n";
-                cout << "Paralelo - Total Farolas: " << total_farolas_par
-                     << ", Consumo Total: " << consumo_total_par
-                     << ", Tiempo Promedio: " << average_par_time << " s.\n";
-                cout << "----------------------------------------\n";
+                sumaTiempoPorThreads[t] += tiempo_par;
+
+                // Acumulamos para promedios globales por schedule (cada prueba cuenta)
+                sumaSchedule[s] += tiempo_par;
+                countSchedule[s]++;
             }
         }
+
+        // Imprimimos los resultados numéricos (una sola vez por mapa, según la versión secuencial)
+        cout << "Total Farolas: " << total_farolas_seq
+             << " | Consumo Total: " << consumo_total_seq << endl;
+
+        cout << "--------------------------------------------\n";
+
+        // Calculamos y guardamos el promedio (sobre los 3 schedules) para cada cantidad de hilos para éste mapa.
+        for (int t = 0; t < NUM_THREADS; t++) {
+            promedioParaleloPorMapa[m][t] = sumaTiempoPorThreads[t] / NUM_SCHEDULES;
+        }
+    }
+
+    // Promedio global de la ejecución secuencial
+    double promedioSecuencialGlobal = totalSecuencialGlobal / countSecuencial;
+    cout << "\nPromedio de ejecución Secuencial: " << promedioSecuencialGlobal << " s\n" << endl;
+
+    // Imprimir promedios paralelos por configuración y por mapa
+    for (int m = 0; m < NUM_MAPS; m++) {
+        int map_size = MAP_SIZES[m];
+        for (int t = 0; t < NUM_THREADS; t++) {
+            cout << "Promedio Paralelo con " << THREAD_COUNTS[t] << " hilos "
+                 << map_size << "x" << map_size << ": "
+                 << promedioParaleloPorMapa[m][t] << " s" << endl;
+        }
+        cout << endl;
+    }
+
+    // Imprimir promedios globales por schedule (a lo largo de todos los mapas y configuraciones)
+    for (int s = 0; s < NUM_SCHEDULES; s++) {
+        double promSch = sumaSchedule[s] / countSchedule[s];
+        cout << "Promedio con schedule " << SCHEDULES[s] << ": " << promSch << " s" << endl;
     }
 
     return 0;
