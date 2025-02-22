@@ -10,9 +10,8 @@ class DataLoader:
         if base_dir is None:
             # Assume this file is at .../practicas/src/data/dataloader.py,
             # so go two levels up to reach the project root and then 'data'
-            self.base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data"))
-        else:
-            self.base_dir = base_dir
+            self.base_dir = "../data"
+
         self.dataframes = {}
 
     def load_data(self):
