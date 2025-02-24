@@ -14,6 +14,8 @@ class DataLoader:
 
         self.dataframes = {}
 
+        
+
     def load_data(self):
         """
         Loads data from folders under the base directory.
@@ -26,6 +28,9 @@ class DataLoader:
             return self.dataframes
 
         for category in os.listdir(self.base_dir):
+            # Evitar la carpeta __pycache__
+
+
             cat_path = os.path.join(self.base_dir, category)
             if os.path.isdir(cat_path):
                 pairs = {}
@@ -49,6 +54,11 @@ class DataLoader:
                 df = pd.DataFrame(rows)
                 key = f"{category.lower()}_df"
                 self.dataframes[key] = df
+
+        if "__pycache__df" in self.dataframes:
+            del self.dataframes["__pycache__df"]
+
+
         return self.dataframes
 
     def get_dataframe(self, category_key):
