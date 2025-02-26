@@ -1,115 +1,144 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstdlib>
+#include <ctime>
 #include <omp.h>
+#include <map>
+#include <iomanip>
 
-// Definición de constantes para la simulación
-#define NUM_VOICE_PRINTS 1000000
-#define NUM_LANGUAGES 5
-
-// Estructura para representar coordenadas GPS
-typedef struct {
+// Estructura para almacenar los datos de cada usuario
+struct UserData {
+    int id;
+    std::string detectedLanguage;
     double latitude;
     double longitude;
-} GPS_Coords;
+    std::string region;
+    bool languageAdaptation;
+};
 
-// Función simulada para analizar una huella de voz y retornar un ID de idioma (0 a NUM_LANGUAGES-1)
-int analyze_voice_print(int id) {
-    // Se simula un procesamiento complejo (en la práctica se analizaría la señal de audio)
-    return id % NUM_LANGUAGES;
+// Función que simula la detección de idioma a partir de una muestra de audio.
+// Se selecciona aleatoriamente un idioma de una lista.
+std::string simulateLanguageDetection(unsigned int* seed) {
+    int idx = rand_r(seed) % 4;
+    static const std::string languages[4] = {"English", "Spanish", "French", "Portuguese"};
+    return languages[idx];
 }
 
-// Función simulada para obtener coordenadas GPS de un usuario
-GPS_Coords get_gps_coordinates(int id) {
-    GPS_Coords coords;
-    coords.latitude = (double)(id % 180) - 90.0;    // Rango: -90 a 90
-    coords.longitude = (double)(id % 360) - 180.0;   // Rango: -180 a 180
-    return coords;
+// Función que determina la región del usuario en función de sus coordenadas GPS.
+std::string getRegion(double lat, double lon) {
+    if (lat >= 0) {
+        if (lon >= 0)
+            return "Region A";  // Predominante: English
+        else
+            return "Region B";  // Predominante: French
+    } else {
+        if (lon >= 0)
+            return "Region C";  // Predominante: Spanish
+        else
+            return "Region D";  // Predominante: Portuguese
+    }
+}
+
+// Función que devuelve el idioma predominante según la región.
+std::string getPredominantLanguage(const std::string& region) {
+    if (region == "Region A") return "English";
+    else if (region == "Region B") return "French";
+    else if (region == "Region C") return "Spanish";
+    else return "Portuguese";
 }
 
 int main() {
-    int total_users_identified = 0;        // Contador global de usuarios identificados
-    int language_counts[NUM_LANGUAGES] = {0}; // Arreglo para acumular conteos por idioma
-    int i;
+    // Número de usuarios a simular
+    const int numUsers = 1000000;
+    std::vector<UserData> users(numUsers);
 
-    // Reserva de memoria para almacenar coordenadas de cada usuario (casting explícito para C++)
-    GPS_Coords *user_coords = (GPS_Coords *)malloc(NUM_VOICE_PRINTS * sizeof(GPS_Coords));
-    if (user_coords == NULL) {
-        fprintf(stderr, "Error en la asignación de memoria.\n");
-        return EXIT_FAILURE;
+    // Medición del tiempo de procesamiento
+    double startTime = omp_get_wtime();
+
+    // Procesamiento paralelo de cada usuario utilizando OpenMP
+    #pragma omp parallel for schedule(dynamic)
+    for (int i = 0; i < numUsers; i++) {
+        // Cada hilo utiliza su propia semilla para la generación aleatoria
+        unsigned int seed = i + omp_get_thread_num();  // Se puede agregar omp_get_thread_num() para mayor variabilidad
+
+        // Simulación del reconocimiento de la huella de voz: asignación de un ID único
+        users[i].id = i;
+
+        // Simulación de la detección del idioma a partir de la muestra de audio
+        users[i].detectedLanguage = simulateLanguageDetection(&seed);
+
+        // Simulación de la obtención de coordenadas GPS (latitud y longitud aleatorias)
+        double randLat = -90.0 + (rand_r(&seed) / (double)RAND_MAX) * 180.0;
+        double randLon = -180.0 + (rand_r(&seed) / (double)RAND_MAX) * 360.0;
+        users[i].latitude = randLat;
+        users[i].longitude = randLon;
+
+        // Determinar la región basada en las coordenadas GPS
+        users[i].region = getRegion(randLat, randLon);
+
+        // Obtener el idioma predominante para la región y comparar con el idioma detectado
+        std::string predominantLanguage = getPredominantLanguage(users[i].region);
+        users[i].languageAdaptation = (users[i].detectedLanguage != predominantLanguage);
     }
 
-    // Medición del tiempo de ejecución
-    double start_time = omp_get_wtime();
+    double processingTime = omp_get_wtime() - startTime;
 
-    /*
-       Procesamiento en paralelo de la base de datos de huellas de voz:
-       - Se utiliza 'parallel for' para dividir el trabajo entre hilos.
-       - 'schedule(dynamic)' se usa para balancear la carga, ya que el tiempo de análisis puede variar.
-       - 'reduction' se emplea para acumular de forma segura el conteo total de usuarios.
-    */
-    #pragma omp parallel for schedule(dynamic) reduction(+:total_users_identified)
-    for (i = 0; i < NUM_VOICE_PRINTS; i++) {
-        // 1. Identificación de Usuario por Huella de Voz:
-        int lang = analyze_voice_print(i);
+    // Análisis estadístico: conteo de usuarios por idioma
+    std::map<std::string, int> languageCounts;
+    #pragma omp parallel for schedule(dynamic)
+    for (int i = 0; i < numUsers; i++) {
+        // Se utiliza critical para evitar condiciones de carrera en el acceso al mapa
+        #pragma omp critical
+        {
+            languageCounts[users[i].detectedLanguage]++;
+        }
+    }
 
-        /*
-           Acumulación de conteos por idioma:
-           Dado que el arreglo 'language_counts' es compartido, se protege la actualización con 'atomic'.
-           Para operaciones simples como el incremento, 'atomic' es más eficiente que 'critical'.
-        */
-        #pragma omp atomic
-        language_counts[lang]++;
-
-        total_users_identified++; // Acumulación mediante reduction
-
-        // 3. Geolocalización Global:
-        // Obtención de las coordenadas GPS para el usuario actual.
-        GPS_Coords coords = get_gps_coordinates(i);
-        // Cada hilo escribe en una posición única del arreglo, por lo que no se requiere sincronización aquí.
-        user_coords[i] = coords;
-
-        // 4. Adaptación de Idioma:
-        // Si el idioma detectado no coincide con el idioma local predominante (por ejemplo, idioma 0),
-        // se podría sugerir un cambio. Se utiliza 'critical' para proteger esta sección.
-        if (lang != 0) { // Suponiendo que el idioma 0 es el local
+    // Análisis estadístico: conteo de usuarios que requieren adaptación por región
+    std::map<std::string, int> adaptationCounts;
+    #pragma omp parallel for schedule(dynamic)
+    for (int i = 0; i < numUsers; i++) {
+        if (users[i].languageAdaptation) {
             #pragma omp critical
             {
-                // Se podría actualizar una estructura de sugerencias o imprimir un mensaje.
-                // Nota: La impresión en paralelo se evita en aplicaciones de alto rendimiento.
-                // printf("Usuario %d: Sugerencia de adaptación del idioma de %d a 0\n", i, lang);
+                adaptationCounts[users[i].region]++;
             }
         }
     }
 
-    // 5. Generación del Mapa Mundial:
-    /*
-       Se emplea una barrera para sincronizar a todos los hilos, garantizando que
-       finalicen el procesamiento de las huellas de voz antes de consolidar la información.
-    */
-    #pragma omp parallel
-    {
-        #pragma omp barrier
-        // Aquí se podría iniciar la consolidación de datos para generar el mapa global.
-        // Por ejemplo, cada hilo podría contribuir a la actualización de regiones en el mapa.
+    // Conteo total de usuarios que requieren adaptación utilizando la directiva reduction
+    int totalAdaptations = 0;
+    #pragma omp parallel for reduction(+:totalAdaptations) schedule(dynamic)
+    for (int i = 0; i < numUsers; i++) {
+        if (users[i].languageAdaptation)
+            totalAdaptations++;
     }
 
-    double end_time = omp_get_wtime();
-    double elapsed_time = end_time - start_time;
-
-    // 6. Análisis Estadístico y Comercial:
-    // Se muestran los resultados y se reporta el tiempo total de ejecución.
-    printf("Total de usuarios identificados: %d\n", total_users_identified);
-    for (i = 0; i < NUM_LANGUAGES; i++) {
-        printf("Usuarios con idioma %d: %d\n", i, language_counts[i]);
+    // Impresión de resultados y estadísticas
+    std::cout << "Tiempo de procesamiento: " << processingTime << " segundos.\n";
+    std::cout << "\nDistribución de usuarios por idioma:\n";
+    for (auto &entry : languageCounts) {
+        std::cout << "  " << entry.first << ": " << entry.second << "\n";
     }
-    printf("Tiempo de ejecución paralelo: %f segundos\n", elapsed_time);
 
-    /*
-       Nota: Para calcular el speed-up, se debe comparar este tiempo con el obtenido en una versión secuencial.
-       Además, se pueden generar gráficos o tablas para analizar el rendimiento y detectar posibles cuellos de botella.
-    */
+    std::cout << "\nUsuarios que requieren adaptación de idioma por región:\n";
+    for (auto &entry : adaptationCounts) {
+        std::cout << "  " << entry.first << ": " << entry.second << "\n";
+    }
+    std::cout << "\nTotal de usuarios que requieren adaptación: " << totalAdaptations << "\n";
 
-    // Liberación de la memoria asignada
-    free(user_coords);
+    // Simulación de la generación de un mapa global: se muestran los datos de geolocalización de los primeros 5 usuarios
+    std::cout << "\nMuestra de datos de geolocalización (ultimos 15 usuarios):\n";
+    for (int i = numUsers - 1; i > numUsers - 16; i--) {
+        std::cout << "Usuario " << users[i].id
+                  << " - Latitud: " << std::fixed << std::setprecision(2) << users[i].latitude
+                  << ", Longitud: " << users[i].longitude
+                  << ", Región: " << users[i].region
+                  << ", Idioma detectado: " << users[i].detectedLanguage
+                  << ", Adaptación sugerida: " << (users[i].languageAdaptation ? "Sí" : "No")
+                  << "\n";
+    }
+
     return 0;
 }
