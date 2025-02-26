@@ -8,7 +8,7 @@ omp_sched_t schedules[] = {omp_sched_static, omp_sched_dynamic, omp_sched_guided
 const char* schedule_names[] = {"static", "dynamic", "guided"};
 for (int s = 0; s < 3; s++) {
 suma = 0;
-omp_set_schedule(schedules[s], 1000); // Tamaño de chunk
+omp_set_schedule(schedules[s],0); // Tamaño de chunk
 double start = omp_get_wtime();
 #pragma omp parallel for schedule(runtime) reduction(+:suma)
 for (int i = 1; i <= N; i++) {
