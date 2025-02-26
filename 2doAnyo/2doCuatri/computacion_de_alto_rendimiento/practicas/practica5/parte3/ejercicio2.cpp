@@ -129,8 +129,8 @@ int main() {
     std::cout << "\nTotal de usuarios que requieren adaptación: " << totalAdaptations << "\n";
 
     // Simulación de la generación de un mapa global: se muestran los datos de geolocalización de los primeros 5 usuarios
-    std::cout << "\nMuestra de datos de geolocalización (ultimos 15 usuarios):\n";
-    for (int i = numUsers - 1; i > numUsers - 16; i--) {
+    std::cout << "\nMuestra de datos de geolocalización (ultimos 5 usuarios):\n";
+    for (int i = numUsers - 1; i > numUsers - 6; i--) {
         std::cout << "Usuario " << users[i].id
                   << " - Latitud: " << std::fixed << std::setprecision(2) << users[i].latitude
                   << ", Longitud: " << users[i].longitude
