@@ -1,6 +1,0 @@
-Category,Mean_Accuracy,Std_Deviation,Number_of_Images
-car_df,0.7118,0.3007,40
-duck_df,0.6753,0.2878,50
-face_df,0.8452,0.1879,109
-motorbike_df,0.8265,0.2302,40
-winebottle_df,0.8826,0.1792,66
