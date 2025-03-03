@@ -1,6 +1,0 @@
-Category,Mean_Accuracy,Std_Deviation,Number_of_Pairs
-car_df,0.7863,0.2709,0
-duck_df,0.7061,0.2798,0
-face_df,0.9073,0.1511,0
-motorbike_df,0.869,0.2067,0
-winebottle_df,0.8912,0.171,0

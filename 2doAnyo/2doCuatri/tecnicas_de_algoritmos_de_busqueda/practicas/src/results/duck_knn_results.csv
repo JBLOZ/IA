@@ -1,0 +1,4 @@
+Method,Mean_Accuracy,Std_Deviation,Number_of_Pairs
+KNN(3),0.6283,0.2149,1225
+KNN(5),0.8202,0.1619,1225
+KNN(7),0.9223,0.1021,1225

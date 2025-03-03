@@ -20,9 +20,6 @@ class DataLoader:
         # Iterar sobre cada categoría en el directorio base
         for category in os.listdir(self.base_dir):
             
-            if category.startswith('__'):
-                continue
-            
             cat_path = os.path.join(self.base_dir, category)
             if not os.path.isdir(cat_path):
                 continue
@@ -34,8 +31,12 @@ class DataLoader:
 
                 file_path = os.path.join(cat_path, file)
                 name, ext = os.path.splitext(file)
+
                 
                 if ext.lower() in [".png", ".mat"]:
+
+                    if name not in file_dict:
+                        file_dict[name] = {"img": None, "mat": None}
                     
                     if ext.lower() == ".png":
                         file_dict[name]["img"] = file_path
