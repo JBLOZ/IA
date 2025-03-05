@@ -78,47 +78,46 @@ baseline_rs
 
 enhanced_rs
 
+|    | Category   |   Mean_Accuracy |   Std_Deviation |   Number_of_Pairs |
+|---:|:-----------|----------------:|----------------:|------------------:|
+|  0 | car        |               1 |               0 |                15 |
+|  1 | duck       |               1 |               0 |                15 |
+|  2 | face       |               1 |               0 |                15 |
+|  3 | motorbike  |               1 |               0 |                15 |
+|  4 | winebottle |               1 |               0 |                15 |
 
-|   | Category   | Mean_Accuracy | Std_Deviation | Number_of_Pairs |
-| -: | :--------- | ------------: | ------------: | --------------: |
-| 0 | car        |         0.653 |        0.3159 |              66 |
-| 1 | duck       |        0.7909 |        0.2586 |              66 |
-| 2 | face       |        0.8511 |        0.2031 |              66 |
-| 3 | motorbike  |        0.9091 |        0.1433 |              66 |
-| 4 | winebottle |        0.8939 |        0.1402 |              66 |
 
 knn3_rs
 
+|    | Category   |   Mean_Accuracy |   Std_Deviation |   Number_of_Pairs |
+|---:|:-----------|----------------:|----------------:|------------------:|
+|  0 | car        |          0.9533 |          0.1746 |                15 |
+|  1 | duck       |          1      |          0      |                15 |
+|  2 | face       |          1      |          0      |                15 |
+|  3 | motorbike  |          1      |          0      |                15 |
+|  4 | winebottle |          1      |          0      |                15 |
 
-|   | Category   | Mean_Accuracy | Std_Deviation | Number_of_Pairs |
-| -: | :--------- | ------------: | ------------: | --------------: |
-| 0 | car        |        0.6545 |        0.3271 |              66 |
-| 1 | duck       |        0.7727 |        0.2694 |              66 |
-| 2 | face       |        0.7871 |        0.2094 |              66 |
-| 3 | motorbike  |         0.903 |        0.1435 |              66 |
-| 4 | winebottle |        0.9303 |        0.1231 |              66 |
 
 knn5_rs
 
-
-|   | Category   | Mean_Accuracy | Std_Deviation | Number_of_Pairs |
-| -: | :--------- | ------------: | ------------: | --------------: |
-| 0 | car        |        0.6773 |        0.3237 |              66 |
-| 1 | duck       |        0.7742 |        0.2653 |              66 |
-| 2 | face       |        0.8205 |        0.2275 |              66 |
-| 3 | motorbike  |        0.9106 |        0.1372 |              66 |
-| 4 | winebottle |        0.9455 |        0.0956 |              66 |
+|    | Category   |   Mean_Accuracy |   Std_Deviation |   Number_of_Pairs |
+|---:|:-----------|----------------:|----------------:|------------------:|
+|  0 | car        |          1      |          0      |                15 |
+|  1 | duck       |          1      |          0      |                15 |
+|  2 | face       |          1      |          0      |                15 |
+|  3 | motorbike  |          1      |          0      |                15 |
+|  4 | winebottle |          1      |          0      |                15 |
 
 knn7_rs
 
+|    | Category   |   Mean_Accuracy |   Std_Deviation |   Number_of_Pairs |
+|---:|:-----------|----------------:|----------------:|------------------:|
+|  0 | car        |          1      |          0      |                15 |
+|  1 | duck       |          1      |          0      |                15 |
+|  2 | face       |          1      |          0      |                15 |
+|  3 | motorbike  |          1      |          0      |                15 |
+|  4 | winebottle |          1      |          0      |                15 |
 
-|   | Category   | Mean_Accuracy | Std_Deviation | Number_of_Pairs |
-| -: | :--------- | ------------: | ------------: | --------------: |
-| 0 | car        |        0.6652 |        0.3296 |              66 |
-| 1 | duck       |        0.7591 |        0.2685 |              66 |
-| 2 | face       |        0.7871 |        0.2101 |              66 |
-| 3 | motorbike  |        0.8985 |        0.1472 |              66 |
-| 4 | winebottle |        0.9545 |        0.0838 |              66 |
 
 ![media](./results/mean_accuracy_comparison.svg)
 
