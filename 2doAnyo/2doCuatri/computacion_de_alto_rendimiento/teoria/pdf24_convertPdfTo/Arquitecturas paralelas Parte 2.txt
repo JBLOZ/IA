@@ -1,0 +1,1351 @@
+﻿Arquitecturas Paralelas 
+(Parte 2)
+
+ACroqmupituetcatcuiróan  ddee l oaslt oC ormenpduimtaideonrteos
+
+
+
+Objetivos
+
+Objetivos
+Características • Diferenciación entre multiprocesadores y 
+
+Multiprocesadores
+Objetivos multicomputadores.
+
+Multicomputadores
+
+Metodología • El papel de GPUs y FPGAs como aceleradores en la 
+Comparativa
+
+Contenidos Computación de Alto Rendimiento (CAR).
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna • Conceptos de benchmarking para optimizar el rendimiento.
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Amdahl Gustafson
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+Introducción a los Multiprocesadores
+
+Objetivos
+Características • Multiprocesadores (SMP y NUMA)
+
+Multiprocesadores
+Objetivos
+
+• Multiprocesadores: Arquitecturas donde varios procesadores 
+Multicomputadores
+
+Metodología comparten una única memoria común.
+Comparativa
+
+Contenidos
+Balanceo carga • Modelos principales:
+
+GPU Eavrqauluiteactiuórna • SMP (Symmetric Multiprocessing): Todos los procesadores tienen 
+
+FPGAs acceso uniforme a la memoria.
+
+Comparativa • NUMA (Non-Uniform Memory Access): El tiempo de acceso a la 
+
+memoria varía según su proximidad al procesador.
+Benchmarking
+
+Amdahl Gustafson • Ventajas:
+
+Ejercicios • Baja latencia en el acceso a la memoria.
+
+• Programación más sencilla en comparación con sistemas 
+
+Presentación de distribuidos.
+prácticas
+
+
+
+Introducción a los Multiprocesadores
+
+Objetivos
+Características • SMP (Symmetric Multiprocessing): Todos los procesadores 
+
+Multiprocesadores
+Objetivos tienen acceso uniforme a la memoria.
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Amdahl Gustafson
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+Introducción a los Multiprocesadores
+
+Objetivos
+Características • Arquitectura de SMP (Multiprocesamiento Simétrico)
+
+Multiprocesadores
+Objetivos • Definición: Los sistemas SMP permiten que varios procesadores 
+
+Multicomputadores accedan de forma equitativa a una misma memoria compartida.
+Metodología
+
+Comparativa • El tiempo de acceso a la memoria es uniforme para todos los 
+Contenidos procesadores.
+
+Balanceo carga
+
+• Los procesadores suelen comunicarse a través de la memoria sin 
+GPU Eavrqauluiteactiuórna necesidad de mensajes explícitos.
+
+FPGAs • Características:
+
+Comparativa • Baja latencia: Los procesadores acceden a la memoria sin esperas 
+significativas.
+
+Benchmarking
+• Escalabilidad limitada: Al aumentar el número de procesadores, la 
+
+Amdahl Gustafson contención por el acceso a la memoria se convierte en un problema.
+
+Ejercicios • Ventaja clave: Fácil de programar con herramientas como 
+OpenMP, ya que no requiere gestionar mensajes entre 
+procesadores.
+
+Presentación de 
+prácticas
+
+
+
+Introducción a los Multiprocesadores
+
+Objetivos
+Características • NUMA (Non-Uniform Memory Access): El tiempo de acceso 
+
+Multiprocesadores
+Objetivos a la memoria varía según su proximidad al procesador.
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Amdahl Gustafson
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+Introducción a los Multiprocesadores
+
+Objetivos
+Características • NUMA (Non-Uniform Memory Access): El tiempo de 
+
+Multiprocesadores
+Objetivos acceso a la memoria varía según su proximidad al 
+
+Multicomputadores
+
+Metodología procesador.
+Comparativa
+
+Contenidos • Definición: En NUMA, cada procesador tiene su propia memoria 
+Balanceo carga
+
+local, a la que accede rápidamente.
+GPU Eavrqauluiteactiuórna • El acceso a la memoria de otros procesadores es posible, pero con 
+
+mayor latencia.
+FPGAs
+
+• Ideal para sistemas con un gran número de procesadores, ya que 
+Comparativa
+
+reduce la contención de memoria.
+
+Benchmarking • Ventajas de NUMA:
+Amdahl Gustafson • Mejora la escalabilidad en comparación con SMP.
+
+Ejercicios • Reduce los cuellos de botella al distribuir la carga de memoria.
+
+• Problema potencial:
+
+• La programación es más compleja, ya que se deben optimizar los 
+Presentación de 
+
+prácticas accesos a memoria remota para evitar penalizaciones de latencia.
+
+
+
+Introducción a los Multiprocesadores
+
+Objetivos
+Características • Comparación SMP vs. NUMA
+
+Multiprocesadores
+Objetivos
+
+SMP NUMA 
+Multicomputadores CARACTERÍSTICA (Symmetric (Non-Uniform Memory
+
+Metodología Multiprocessing) Access)
+Comparativa
+
+Acceso a memoria Uniforme: el tiempo de No uniforme: el tiempo 
+Contenidos
+
+Balanceo carga acceso es el mismo para de acceso depende de la 
+todos los procesadores. proximidad del 
+
+GPU Eavrqauluiteactiuórna
+procesador.
+
+FPGAs
+
+Escalabilidad Limitada por la Alta, debido a la 
+Comparativa contención de la reducción de la 
+
+memoria compartida. contención.
+Benchmarking
+
+Amdahl Gustafson Coherencia de memoria Necesaria mediante Necesaria, pero puede 
+protocolos como MESI. optimizarse según la 
+
+Ejercicios
+topología.
+
+Aplicaciones típicas Bases de datos Simulaciones científicas, 
+Presentación de transaccionales, procesamiento masivo 
+
+prácticas servidores de de datos.
+aplicaciones.
+
+
+
+Introducción a los Multiprocesadores
+
+Objetivos
+Características • Problemas y limitaciones en Multiprocesadores
+
+Multiprocesadores
+Objetivos • Problemas de escalabilidad:
+
+Multicomputadores La competencia por la memoria compartida puede degradar el 
+Metodología rendimiento cuando se añaden más procesadores.
+
+Comparativa
+
+• Condiciones de carrera:
+Contenidos
+
+Balanceo carga Ocurren cuando dos o más procesadores acceden 
+GPU Eavrqauluiteactiuórna simultáneamente a los mismos datos sin la sincronización 
+
+adecuada.
+FPGAs
+
+• Técnicas de optimización:
+Comparativa • Uso de secciones críticas para evitar conflictos
+
+Benchmarking • Balanceo de carga dinámico para optimizar la distribución de 
+tareas.
+
+Amdahl Gustafson
+
+Ejercicios
+
+NOTA. Éstos problemas iremos abordándolos en sesiones 
+posteriores
+
+Presentación de 
+prácticas
+
+
+
+Introducción a los Multicomputadores
+
+Objetivos
+Características • Definición de Multicomputadores
+
+Multiprocesadores
+Objetivos
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Amdahl Gustafson
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+Introducción a los Multicomputadores
+
+Objetivos
+Características • Definición de Multicomputadores
+
+Multiprocesadores
+Objetivos • Un multicomputador está compuesto por varios nodos 
+
+Multicomputadores independientes, cada uno con su propio procesador y memoria 
+Metodología
+
+Comparativa local.
+
+Contenidos
+Balanceo carga • A diferencia de los multiprocesadores (memoria compartida), los 
+
+multicomputadores se basan en memoria distribuida.
+GPU Eavrqauluiteactiuórna
+
+• Los nodos se comunican mediante el paso de mensajes con 
+FPGAs protocolos como MPI (Message Passing Interface))
+
+Comparativa
+• Ventajas clave:
+
+Benchmarking
+
+• Alta escalabilidad, ya que es fácil añadir más nodos si afectar al 
+Amdahl Gustafson rendimiento global.
+
+Ejercicios • Tolerancia a fallos: Si un nodo falla, el sistema global puede 
+continuar funcionando.
+
+Presentación de • Desventaja:
+prácticas
+
+• Mayor latencia debido a la comunicación entre nodos.
+
+• Mayor complejidad por el manejo de paso de mensajes
+
+
+
+Multiprocesadores Vs 
+Multicomputadores
+
+Objetivos
+Características • Comparación entre Multiprocesadores y 
+
+Multiprocesadores
+Objetivos Multicomputadores
+
+Multicomputadores
+
+Metodología
+Comparativa Característica Multiprocesadores Multicomputadores
+
+Contenidos
+Balanceo carga
+
+Memoria Compartida entre todos Distribuida, cada nodo 
+GPU Eavrqauluiteactiuórna los procesadores tiene la suya
+
+FPGAs
+
+Comunicación Mediante acceso directo Paso de mensajes 
+Comparativa a la memoria explícito
+
+Benchmarking
+
+Escalabilidad Limitada por la Alta: se pueden añadir 
+Amdahl Gustafson competencia por la más nodos
+
+memoria
+Ejercicios
+
+Latencia Baja Alta (depende de la red 
+de interconexión)
+
+Presentación de 
+prácticas Programación Más sencilla Más compleja, requiere 
+
+gestión explícita de 
+mensajes
+
+
+
+Balanceo de Carga en Multiprocesadores 
+y Multicomputadores
+
+Objetivos
+Características • En multiprocesadores:
+
+Multiprocesadores Las tareas deben distribuirse equitativamente entre los procesadores 
+Objetivos para evitar cuellos de botella en el acceso a la memoria.
+
+Multicomputadores
+
+Metodología • En multicomputadores:
+Comparativa Se debe asegurar que tanto las tareas como los datos estén 
+
+Contenidos distribuidos de forma uniforme para evitar que un nodo esté 
+Balanceo carga
+
+sobrecargado mientras otros están inactivos.
+GPU Eavrqauluiteactiuórna
+
+• Técnicas de balanceo de carga:
+FPGAs • Estático: Las tareas se asignan antes de la ejecución.
+
+Comparativa
+• Dinámico: Las tareas se asignan o reasignan en tiempo de 
+
+Benchmarking ejecución.
+
+Amdahl Gustafson
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+Balanceo de Carga en Multiprocesadores 
+y Multicomputadores
+
+Objetivos
+Características • Estático: Las tareas se asignan antes de la ejecución.
+
+Multiprocesadores • Distribución del tráfico se realiza según reglas predefinidas que 
+Objetivos
+
+Multicomputadores no cambian en tiempo real.
+Metodología
+
+Comparativa • Este método no considera el estado actual de los servidores o 
+recursos.
+
+Contenidos
+Balanceo carga
+
+• Ejemplo: algoritmo "round robin", donde las solicitudes se 
+GPU Eavrqauluiteactiuórna
+
+asignan secuencialmente a cada servidor en un orden cíclico.
+FPGAs
+
+• Este enfoque es sencillo y funciona bien cuando los servidores 
+Comparativa tienen capacidades similares y la carga es predecible.
+
+Benchmarking
+
+Amdahl Gustafson
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+Balanceo de Carga en Multiprocesadores 
+y Multicomputadores
+
+Objetivos
+Características • Dinámico: Las tareas se asignan o reasignan en tiempo de 
+
+ejecución.
+Multiprocesadores
+
+Objetivos
+
+Multicomputadores • Ajusta la distribución del tráfico en función del estado actual de 
+Metodología los servidores como la carga de CPU, el uso de memoria o el 
+
+Comparativa número de conexiones activas.
+Contenidos
+
+Balanceo carga • Por ejemplo, el algoritmo de “Least Connections" dirige las 
+GPU Eavrqauluiteactiuórna nuevas solicitudes al servidor con la menor cantidad de 
+
+conexiones activas en ese momento.
+FPGAs
+
+• Este enfoque es más adaptable en entornos con cargas variables.
+Comparativa
+
+Benchmarking
+
+Amdahl Gustafson
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+Visita recomendada: https://aws.amazon.com/es/what-is/load-balancing
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características • Características clave de las GPUs:
+
+Multiprocesadores
+Objetivos • Miles de núcleos trabajando en paralelo.
+
+Multicomputadores
+
+Metodología • Optimizadas para operaciones vectoriales y de punto 
+Comparativa flotante.
+
+Contenidos
+Balanceo carga
+
+• Lenguajes de programación: CUDA (NVIDIA) y OpenCL.
+GPU Eavrqauluiteactiuórna
+
+• Casos de uso:
+FPGAs
+
+• Redes neuronales profundas.
+Comparativa
+
+• Renderizado de gráficos.
+Benchmarking
+
+Amdahl Gustafson • Simulaciones físicas.
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+Visita recomendada: https://aws.amazon.com/es/what-is/load-balancing/?utm_source=chatgpt.com
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características • Características clave de las GPUs:
+
+Multiprocesadores
+Objetivos
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Amdahl Gustafson
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características • Características clave de las GPUs:
+
+Multiprocesadores
+Objetivos
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Amdahl Gustafson
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características
+
+1. NVIDIA Fermi GPU 2. Streaming
+Multiprocesadores Multiprocessor
+
+Objetivos (izquierda): (derecha):
+Multicomputadores DRAM Memory (~3-6 64 KB Constant Cache: 
+
+Metodología Almacena valores 
+GB): Memoria global 
+
+Comparativa constantes para accesos 
+
+donde se almacenan los rápidos.
+Contenidos
+
+Balanceo carga 64 KB L1 Cache / 
+datos principales. Shared Memory: Memoria 
+
+GPU Eavrqauluiteactiuórna 768 KB Level 2 de baja latencia compartida 
+entre hilos del bloque.
+
+Cache: Caché que reduce SP (Streaming
+FPGAs
+
+el tiempo de acceso a la Processor): Núcleo CUDA 
+que ejecuta instrucciones en 
+
+Comparativa memoria global. paralelo.
+
+GPC (Graphics LD/ST Units: Gestiona 
+Benchmarking la carga y almacenamiento 
+
+Processor Cluster): de datos entre la memoria y 
+Amdahl Gustafson Agrupa varios SMs y los registros.
+
+SFU (Special Function
+gestiona cálculos.
+
+Ejercicios Units): Realiza operaciones 
+
+SM (Streaming matemáticas complejas 
+(trigonométricas, raíces, 
+
+Multiprocessor): Unidad etc.).
+
+que contiene núcleos Tex (Texture Cache): 
+Presentación de Caché para acceso rápido a 
+
+prácticas CUDA para la texturas y datos gráficos.
+
+computación en paralelo.
+
+Ejemplo: Un modelo como GeForce GTX 480 tiene 15 SMs con 480 núcleos CUDA en total.
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características • Ejemplo práctico: 
+
+Multiprocesadores
+Objetivos Para procesar una imagen de la cara de una persona y 
+
+Multicomputadores aplicar reconocimiento facial utilizando una GPU como la 
+Metodología que describe el esquema de NVIDIA Fermi, cada parte de 
+
+Comparativa
+la GPU tendría un papel específico
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características 1. Entrada de la imagen y su preparación
+
+Multiprocesadores • La imagen de la cara llega en formato digital (1024x1024)
+Objetivos
+
+Multicomputadores • Antes de ser procesada, se convierte en una matriz de píxeles (p-ej
+Metodología 1024x1024).
+
+Comparativa
+
+Contenidos • Cada píxel contiene información de color o luminosidad.
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna • DRAM Memory (~3-6 GB): Se 
+almacena la imagen original y los 
+
+FPGAs datos intermedios (como 
+características detectadas) en esta 
+
+Comparativa
+memoria principal.
+
+Benchmarking
+• Texture Cache (Tex): Si 
+
+Ejercicios trabajamos con características 
+basadas en texturas, como bordes o 
+patrones locales, esta cache puede 
+optimizar el acceso rápido a 
+pequeños bloques de la imagen.
+
+Presentación de 
+prácticas
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características 2. Descomposición de la imagen en tareas 
+
+Multiprocesadores paralelas
+Objetivos
+
+Multicomputadores Para el reconocimiento facial, dividimos la imagen en pequeños bloques
+
+Metodología (fragmentos de 16x16 píxeles) y asignamos cada bloque a un grupo de hilos 
+Comparativa paralelos.
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna • GPC (Graphics Processor Cluster): 
+Coordina el trabajo de varios SMs
+
+FPGAs (Streaming Multiprocessors), 
+asignando fragmentos de la imagen 
+
+Comparativa
+a diferentes partes de la GPU.
+
+Benchmarking
+• SMs: Cada SM se encarga de 
+
+Ejercicios procesar un bloque de la imagen.
+
+• SPs (Streaming Processors): Dentro 
+de cada SM, múltiples núcleos SP 
+aplican un filtro de detección de 
+bordes (como Sobel) para encontrar 
+
+Presentación de 
+prácticas las líneas de la nariz, ojos, y boca
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características 3. Extracción de características
+
+Multiprocesadores Durante esta fase, se detectan características importantes en la imagen, como la 
+Objetivos forma de los ojos, la distancia entre ellos, o el contorno de la cara.
+
+Multicomputadores
+
+Metodología
+Comparativa • SFU (Special Function Units): Estas 
+
+Contenidos unidades ejecutan funciones 
+Balanceo carga matemáticas complejas como raíces 
+
+cuadradas, logaritmos o funciones 
+GPU Eavrqauluiteactiuórna
+
+trigonométricas, que son necesarias 
+FPGAs en cálculos como la detección de 
+
+bordes, el escalado o la 
+Comparativa transformación de la imagen.
+
+Benchmarking • LD/ST Units: Los datos intermedios 
+se mueven constantemente entre los 
+
+Ejercicios
+registros de los SPs y la L1 Cache
+
+• L1 Cache / Shared Memory: Los 
+datos temporales y las 
+características intermedias (por 
+
+Presentación de ejemplo, bordes detectados o 
+prácticas fragmentos filtrados) se almacenan 
+
+aquí para reducir la latencia.
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características 4. Comparación con la base de datos
+
+Multiprocesadores Una vez detectadas las características, se comparan con una base de datos 
+Objetivos preentrenada que contiene rostros conocidos.
+
+Multicomputadores
+
+Metodología
+Comparativa • L2 Cache (768 KB): Almacena 
+
+Contenidos parámetros del modelo y datos 
+Balanceo carga intermedios.
+
+GPU Eavrqauluiteactiuórna • LD Units: Cargan los parámetros 
+necesarios del modelo de 
+
+FPGAs
+reconocimiento desde la L2 Cache o 
+
+Comparativa la DRAM Memory hacia los SPs.
+
+Benchmarking • SPs: Ejecutan en paralelo las 
+operaciones de comparación.
+
+Ejercicios
+
+• Si el modelo utiliza una red 
+neuronal convolucional (CNN), los 
+LD Units cargan los pesos de la red 
+desde la memoria, y los SPs aplican 
+el modelo a las características 
+
+Presentación de 
+prácticas detectadas.
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características 5. Salida del resultado
+
+Multiprocesadores El resultado final (por ejemplo, "Juan Pérez identificado") se almacena en la 
+Objetivos memoria para su uso por el sistema externo.
+
+Multicomputadores
+
+Metodología
+Comparativa • ST Units: Almacenan el resultado
+
+Contenidos final en la DRAM Memory.
+Balanceo carga
+
+• DRAM Memory (~3-6 GB): 
+GPU Eavrqauluiteactiuórna Contiene el resultado del 
+
+procesamiento listo para ser enviado 
+FPGAs
+
+al sistema de control.
+Comparativa
+
+Benchmarking
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+GPUs y su Arquitectura Paralela
+
+Objetivos
+Características Resumen del papel de los LD/ST Units en cada 
+
+Multiprocesadores paso:
+Objetivos
+
+Multicomputadores 1. Cargar (LD): Los bloques de imagen 
+Metodología son cargados desde la DRAM Memory
+
+Comparativa hacia la L1 Cache y los registros de los 
+Contenidos SPs.
+
+Balanceo carga
+
+2. Mover datos intermedios (LD/ST): 
+GPU Eavrqauluiteactiuórna
+
+Durante el procesamiento, los bordes 
+FPGAs detectados y otras características se 
+
+mueven entre los registros de los SPs y 
+Comparativa la shared memory.
+
+Benchmarking 3. Cargar parámetros del modelo 
+(LD): Los pesos del modelo de 
+
+Ejercicios
+reconocimiento se cargan desde la L2 
+Cache hacia los SPs.
+
+4. Almacenar el resultado final (ST): 
+El resultado del reconocimiento se 
+
+Presentación de almacena en la DRAM Memory para su 
+prácticas uso externo.
+
+
+
+FPGAs - Personalización del Hardware
+
+Objetivos
+Características • ¿Qué es una FPGA?
+
+Multiprocesadores
+Objetivos
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+FPGAs - Personalización del Hardware
+
+Objetivos
+Características • Comparación General de FPGAs y CPUs
+
+Multiprocesadores
+Objetivos
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+FPGAs - Personalización del Hardware
+
+Objetivos
+Características • Esquema interno FPGA (ejemplo)
+
+Multiprocesadores
+Objetivos
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+FPGAs - Personalización del Hardware
+
+Objetivos
+Características • Definición y Características
+
+Multiprocesadores • FPGA (Field Programmable Gate Array): Circuitos integrados 
+Objetivos
+
+reconfigurables que permiten personalizar su funcionamiento 
+Multicomputadores
+
+Metodología después de la fabricación.
+Comparativa
+
+• Se programan mediante lenguajes de descripción de 
+Contenidos
+
+Balanceo carga hardware (HDL). 
+
+GPU Eavrqauluiteactiuórna • Los bloques lógicos configurables, como las Lookup Tables
+FPGAs (LUTs) y los flip-flops, son las partes principales que se deben 
+
+programar desde un ordenador usando software especializado 
+Comparativa (por ejemplo, Xilinx Vivado o Intel Quartus).
+
+Benchmarking
+• Son ideales para aplicaciones específicas o prototipos.
+
+Ejercicios
+• Permiten un alto nivel de paralelismo, lo que las hace útiles en 
+
+telecomunicaciones, procesamiento de señales y sistemas 
+embebidos.
+
+Presentación de 
+prácticas
+
+
+
+FPGAs - Personalización del Hardware
+
+Objetivos
+Características • Ejemplo práctico (ADAS)
+
+Multiprocesadores • En automoción, las FPGAs son esenciales en los Sistemas
+Objetivos
+
+Avanzados de Asistencia al Conductor (ADAS).
+Multicomputadores
+
+Metodología • Permiten procesar rápidamente datos de múltiples sensores
+Comparativa
+
+como cámaras, radares y lidars.
+Contenidos
+
+Balanceo carga
+
+• Estos dispositivos ejecutan tareas críticas como el
+GPU Eavrqauluiteactiuórna reconocimiento de objetos (peatones, señales de tráfico),
+
+FPGAs detección de carriles y monitorización del entorno.
+
+Comparativa • Su flexibilidad permite adaptar algoritmos específicos y mejorar
+funcionalidades, lo que las hace ideales para pruebas y mejoras
+
+Benchmarking
+sin rediseñar el hardware continuas en tecnologías de
+
+Ejercicios conducción autónoma y asistencia segura.
+
+Presentación de 
+prácticas
+
+
+
+FPGAs - Personalización del Hardware
+
+Objetivos
+Características • Ejemplo práctico (ADAS)
+
+Multiprocesadores 1. Captura de datos de sensores: Los datos de cámaras (imágenes), radares 
+Objetivos (distancias) y lidars (mapas 3D) se envían a las entradas de la FPGA.
+
+Multicomputadores 2. Procesamiento en LUTs (Lookup Tables): Las LUTs ejecutan operaciones 
+Metodología como detección de bordes, clasificación de objetos y filtrado de 
+
+Comparativa
+ruidos. Por ejemplo, se detecta si un objeto es un peatón o una señal de 
+
+Contenidos
+Balanceo carga tráfico.
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+FPGAs - Personalización del Hardware
+
+Objetivos
+Características • Ejemplo práctico (ADAS)
+
+Multiprocesadores 3. Combinar resultados mediante el selector: El selector (C1, C2..)decide
+Objetivos qué información debe pasar a la siguiente etapa o combinarse con otros 
+
+Multicomputadores módulos.
+Metodología 4. Almacenamiento temporal en flip-flops: Los resultados intermedios (por 
+
+Comparativa
+ejemplo, detección de carriles) se almacenan y sincronizan con el reloj para 
+
+Contenidos
+Balanceo carga su procesamiento ordenado.
+
+5. Cálculo de decisiones: Las FPGA analizan los datos procesados para emitir 
+GPU Eavrqauluiteactiuórna decisiones (como frenar o cambiar de carril) en tiempo real.
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+FPGAs - Personalización del Hardware
+
+Objetivos
+Características • Comparación General de GPUs, FPGAs y CPUs
+
+Multiprocesadores
+Objetivos
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Ejercicios
+
+Presentación de 
+prácticas
+
+
+
+FPGAs - Personalización del Hardware
+
+Objetivos
+Características • Comparación General de GPUs, FPGAs y CPUs
+
+Multiprocesadores
+Objetivos
+
+Multicomputadores
+
+Metodología
+Comparativa
+
+Característica GPUs FPGAs CPUs
+Contenidos
+
+Balanceo carga
+
+Paralelismo Alto Medio Bajo
+GPU Eavrqauluiteactiuórna
+
+FPGAs Eficiencia 
+Moderada Alta Moderada
+
+energética
+Comparativa
+
+Benchmarking Flexibilidad Media Alta Alta
+
+Ejercicios Criptografía, 
+Casos de uso Simulaciones, 
+
+procesamiento Tareas generales
+redes neuronales
+
+en tiempo real
+
+Presentación de 
+prácticas
+
+
+
+Benchmarking:
+Concepto y Tiempos de Ejecución
+
+Objetivos
+Características • Definición:
+
+Multiprocesadores • El benchmarking en sistemas paralelos mide el rendimiento 
+Objetivos
+
+mediante la comparación de tiempos de ejecución al ejecutar 
+Multicomputadores
+
+Metodología tareas con distintas configuraciones o cargas. 
+Comparativa
+
+• Su objetivo es identificar cuellos de botella y mejorar la eficiencia.
+Contenidos
+
+Balanceo carga
+
+• Tiempos de Ejecución:
+GPU Eavrqauluiteactiuórna
+
+• Tiempo Total:
+FPGAs
+
+• Representa el tiempo necesario para completar una tarea de 
+Comparativa principio a fin. 
+
+Benchmarking • Incluye todas las fases del proceso y es un indicador global del 
+Ejercicios rendimiento.
+
+• Tiempos Parciales:
+
+• Son mediciones intermedias (por ejemplo, entre subprocesos o 
+etapas del algoritmo). 
+
+Presentación de 
+prácticas
+
+• Sirven para identificar dónde se producen retrasos (cuellos de 
+botella),
+
+
+
+Ejercicios
+
+Objetivos
+Características • ¿Dudas o Preguntas ?
+
+Multiprocesadores • A continuación puedes practicar los conceptos básicos vistos 
+Objetivos
+
+Multicomputadores en ésta sesión mediante algunos ejercicios tipo que puedes 
+Metodología encontrar en Moodle
+
+Comparativa
+
+Contenidos
+Balanceo carga
+
+GPU Eavrqauluiteactiuórna
+
+FPGAs
+
+Comparativa
+
+Benchmarking
+
+Ejercicios
+
+Presentación de 
+prácticas
