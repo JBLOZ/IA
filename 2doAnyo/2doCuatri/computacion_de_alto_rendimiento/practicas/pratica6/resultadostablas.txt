@@ -1,0 +1,50 @@
+======================== Ejercicio 1 ========================
+Tabla de resultados (Ejercicio 1):
+Hilos(N)   T_N (s)      Speed-up     Efic.E
+1          25.0426      1.00         1.00
+2          12.6149      1.99         0.99
+4          6.4653       3.87         0.97
+8          3.3495       7.48         0.93
+16         1.8108       13.83        0.86
+
+======================== Ejercicio 2 ========================
+Tabla de resultados (Ejercicio 2):
+Hilos      Critical(s)  Atomic(s)    Reduction(s)
+1          4.2256       3.9355       2.5182
+2          33.6221      21.6872      1.2802
+4          84.2287      41.7595      0.6652
+8          143.8371     59.0352      0.3556
+16         221.1664     118.6365     0.1993
+
+======================== Ejercicio 3 ========================
+Tabla de resultados (Ejercicio 3):
+Schedule    4 hilos (s)  8 hilos (s)
+static      2.6360       1.8648
+dynamic     3.1292       1.8634
+guided      2.8726       1.8548
+
+======================== Ejercicio 4 ========================
+ - p = 0.85
+ - Speed-up teórico con hilos infinitos = 6.66667
+ - Speed-up teórico (4 hilos) = 2.75862
+ - Speed-up teórico (8 hilos) = 3.90244
+
+Velocidades Reales (tomadas de Ejercicio 1):
+ - Speed-up real (4 hilos) = 3.86779
+ - Speed-up real (8 hilos) = 7.4835
+
+Conclusión: Compara si el Speed-up real se acerca al teórico.
+            En la práctica, siempre hay overhead y no se
+            suele llegar exactamente al límite teórico.
+
+
+======================== Ejercicio 5 ========================
+Escalabilidad débil: para N hilos -> 10,000 millones * N elementos.
+(En esta demo se reduce el valor de 10,000 millones.)
+
+Tabla de resultados (Ejercicio 5):
+Hilos      Elementos proces. Tiempo(s)
+1          100000000        0.2556
+2          200000000        0.2558
+4          400000000        0.2587
+8          800000000        0.2705
