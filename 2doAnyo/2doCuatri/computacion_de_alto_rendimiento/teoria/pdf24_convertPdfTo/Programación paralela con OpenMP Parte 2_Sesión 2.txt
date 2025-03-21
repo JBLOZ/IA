@@ -1,0 +1,1723 @@
+﻿INTRODUCCIÓN A LA 
+PROGRAMACIÓN PARALELA 
+CON OPENMP (PARTE 2) S2
+
+ACroqmupituetcatcuiróan  ddee l oaslt oC ormenpduimtaideonrteos
+
+
+
+Índice
+
+CaraÍcntdeircíesticas
+1. Introducción a la Optimización en Programación Paralela
+
+Introducción
+Objetivos
+
+Sincronización 2. Sincronización y Gestión de Hilos en OpenMP
+Metodología
+Balanceo
+
+3. Balanceo de Carga y Distribución de Trabajo
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión 4. Optimización de Accesos a Memoria y Reducción de 
+Estrategias Datos
+
+5. Medición y Análisis de Rendimiento
+
+6. Estrategias Avanzadas y Mejores Prácticas
+
+Presentación de 
+prácticas
+
+
+
+1. Introducción a la Optimización en 
+Programación Paralela
+
+CaraÍcntdeircíesticas
+
+Introducción Aspectos clave para mejorar el rendimiento:
+Objetivos
+
+Sincronización
+Metodología • Sincronización eficiente: garantizar el buen uso de los 
+Balanceo
+
+recursos.
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión • Balanceo de carga: Distribuir el trabajo 
+Estrategias equitativamente
+
+• Accesos a memoria: Gestión de una memoria 
+compartida.
+
+• Overhead: Costo de la creación de hilos.
+
+📌 Sin estas optimizaciones, un código paralelo puede ser 
+Presentación de 
+
+prácticas
+incluso más lento que su equivalente secuencial.
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Sincronización
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.1 Condiciones de carrera y sincronización
+
+Introducción
+Objetivos
+
+Sincronización
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+Int suma = 0 ¿suma?
+ReEnvdiamluieanctoión suma += 1 
+
+Estrategias
+
+suma += 1 
+
+suma += 1 
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.2 Directivas de sincronización: critical, atomic y barrier
+
+Introducción
+Objetivos
+
+Sincronización • critical: Protege secciones críticas complejas.
+Metodología
+Balanceo
+
+• atomic: Más eficiente para operaciones simples.
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión • barrier: Sincroniza todos los hilos en un punto 
+Estrategias específico.
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+Critical (#pragma omp critical)
+
+Introducción
+Objetivos
+
+Sincronización • Sintaxis:
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+• No bloquea toda la ejecución paralela, solo la 
+
+sección protegida.
+• Todos los hilos pueden acceder a la sección, pero uno a 
+
+la vez.
+• Puede ser más lento que #pragma omp atomic para 
+
+operaciones simples.
+Presentación de • Se recomienda solo cuando atomic no es suficiente.
+
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+Critical (#pragma omp critical)
+
+Introducción
+Objetivos
+
+Sincronización
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+{critical}
+
+Estrategias
+
+{critical}
+
+{critical}
+
+{critical}
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+Atomic (#pragma omp atomic)
+
+Introducción
+Objetivos
+
+Sincronización • Sintaxis:
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+• Más rápido que critical.
+• No protege múltiples líneas de código, solo la instrucción 
+
+inmediatamente después.
+• No permite estructuras complejas, como actualizaciones 
+
+en estructuras de datos.
+Presentación de 
+
+prácticas • No bloquea hilos, sino que garantiza accesos atómicos a 
+memoria.
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+Atomic (#pragma omp atomic)
+
+Introducción
+Objetivos
+
+Sincronización
+Metodología
+Balanceo M +=, -=, *=, /=, ++, --
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+Barrier: (#pragma omp barrier)
+
+Introducción
+Objetivos
+
+Sincronización • Sintaxis:
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+• Todos los hilos deben llegar a barrier antes de continuar.
+
+• Puede generar sobrecarga si se usa en exceso.
+
+• No debe usarse fuera de una región paralela.
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+Barrier: (#pragma omp barrier)
+
+Introducción
+Objetivos
+
+Sincronización
+Metodología #barrier
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.4 Uso de reduction para sincronización segura
+
+Introducción
+Objetivos
+
+Sincronización • Sintaxis:
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+• Cada hilo tiene su copia local de la variable de reducción.
+• Al final, OpenMP combina todas las copias locales
+• Solo funciona con operaciones predefinidas (+, *, &&, ||, 
+
+etc.).
+• Operaciones en las que no importa el orden de llegada a 
+
+Presentación de 
+prácticas la operación (resta ordenada no, por ejemplo)
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.4 Uso de reduction para sincronización segura
+
+Introducción
+Objetivos
+
+Sincronización
+Metodología
+Balanceo M +=, -=, *=, /=, ++, --, estructuras
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.4 Uso de reduction para sincronización segura
+
+Introducción
+Objetivos
+
+Sincronización • Cuando USAR rectuction y Cuándo NO
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias Situación ¿Usar reduction? Alternativa
+
+ReEnvdiamluieanctoión
+Acumulaciones en una única 
+variable (sumas, productos, ✅ Sí -
+
+Estrategias mínimos, máximos)
+
+Operaciones con múltiples 
+❌ No
+
+variables #pragma omp critical
+
+Actualización de estructuras 
+❌ No
+
+de datos complejas #pragma omp critical
+
+Modificación individual 
+❌ No
+
+atómica sobre una variable #pragma omp atomic
+
+Presentación de Desbalanceo de carga entre 
+prácticas
+
+hilos (hilos rápidos ❌ Puede ser ineficiente Optimizar balanceo de 
+esperando a los más lentos) carga
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.5 Manejo de excepciones en entornos paralelos
+
+Introducción
+Objetivos
+
+Sincronización • Los errores en código paralelo pueden ser difíciles de 
+Metodología depurar debido a la concurrencia.
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias !
+
+! !
+Presentación de 
+
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.5 Manejo de excepciones en entornos paralelos
+
+Introducción
+Objetivos
+
+Sincronización • Buena práctica: Uso de Flags (variable compartida)
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias Flag [0 ,1 ,2 ,3 ] 0  = no iniciado
+ReEnvdiamluieanctoión 1  = iniciado
+
+2  = finalizado
+Estrategias -1 = Error
+
+0
+
+1
+
+2
+Presentación de 3
+
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.5 Manejo de excepciones en entornos paralelos
+
+Introducción
+Objetivos
+
+Sincronización • ¿Se para el programa automáticamente?
+Metodología
+Balanceo • ✔ Sí, si el error es grave.
+
+AcceCsoon Mteenmiodroias • Si un hilo accede a memoria no válida
+ReEnvdiamluieanctoión
+
+• Error matemático (ej. división por cero), puede 
+Estrategias continuar o lanzar una excepción.
+
+• Si hay una condición de carrera o deadlock ( 
+bloqueado indefinidamente)
+
+• ✔ No siempre, si el error ocurre en un solo hilo.
+• Un solo hilo puede fallar, pero seguir los demás
+• Pueden haber valores incorrectos.
+
+Presentación de 
+prácticas
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Balanceo de Carga y 
+Distribución de Trabajo
+
+Presentación de 
+prácticas
+
+
+
+3. Balanceo de Carga y Distribución de 
+Trabajo
+
+CaraÍcntdeircíesticas 3.1 Distribución eficiente de carga con schedule()
+Introducción
+
+Objetivos static: Cargas uniformes y predecibles.
+Sincronización
+
+Metodología dynamic: Cargas desbalanceadas o variables.
+Balanceo
+
+AcceCsoon Mteenmiodroias guided: Cargas pesadas e impredecibles. 
+ReEnvdiamluieanctoión
+
+Estrategias
+1/2 1/2
+
+1/2
+
+1/2 1/2
+
+1/2
+
+Presentación de 
+prácticas
+
+static dynamic guided
+
+
+
+3. Balanceo de Carga y Distribución de 
+Trabajo
+
+CaraÍcntdeircíesticas 3.3 Paralelización Anidada (Nested Parallelism)
+Introducción
+
+Objetivos • Regiones paralelas dentro de otras regiones paralelas
+Sincronización
+
+Metodología • Desactivada por defecto: omp_set_nested(1)
+Balanceo
+
+AcceCsoon Mteenmiodroias R
+
+ReEnvdiamluieanctoión G 
+B
+
+Estrategias
+
+Filtro ruido Filtro croma
+
+Presentación de 
+prácticas
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Optimización de Accesos a 
+Memoria y Reducción de 
+
+Datos
+
+Presentación de 
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+Minimizar accesos a memoria compartida
+
+Introducción
+Objetivos
+
+Sincronización • El acceso frecuente a memoria compartida por 
+Metodología múltiples hilos introduce latencia
+Balanceo
+
+AcceCsoon Mteenmiodroias • ¿Es realmente necesario?
+ReEnvdiamluieanctoión +=, -=, *=, /=, ++
+
+Estrategias M
+M
+M
+M
+M
+
+Presentación de 
+prácticas
+
+No: puedo trabajar localmente Si: necesito compartir datos
+Ojo! : Condiciones de carrera Ojo!: sincronización
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+Cuando NO es necesario memoria compartida
+
+Introducción
+Objetivos
+
+Sincronización • Uso memoria local
+Metodología
+Balanceo • Debo evitar condiciones de carrera (técnicas básicas)
+
+AcceCsoon Mteenmiodroias • Opciones disponibles:
+ReEnvdiamluieanctoión
+
+• private → Cada hilo tiene su propia copia de la 
+Estrategias variable.
+
+• firstprivate → Igual que private, pero mantiene el 
+valor original de la variable.
+
+• lastprivate → La última iteración del bucle guarda 
+su valor en la variable global (valor del último hilo)
+
+Presentación de 
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+Cuando SI es necesario memoria compartida
+
+Introducción
+Objetivos
+
+Sincronización • Uso memoria compartida
+Metodología
+Balanceo • Debo depurar la sincronización para optimizar la 
+
+AcceCsoon Mteenmiodroias ejecución
+ReEnvdiamluieanctoión • Opciones disponibles:
+Estrategias • critical → Controla acceso a memoria compartida 
+
+(pero puede ser lento)
+• atomic → Similar a critical, pero más eficiente en 
+
+operaciones simples
+• reduction → La mejor opción para acumulaciones y 
+
+sumas
+• barrier → Asegura sincronización entre hilos
+
+Presentación de 
+prácticas
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Medición y Análisis de 
+Rendimiento
+
+Presentación de 
+prácticas
+
+
+
+Índice
+
+CaraÍcntdeircíesticas
+5. Medición y Análisis de Rendimiento
+
+Introducción
+Objetivos
+
+Sincronización 5.1 Uso de omp_get_wtime()
+Metodología
+Balanceo
+
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión Escalabilidad
+
+Estrategias 5.3 Ley de Amdahl y su aplicación
+
+5.5 Depuración y perfiles de rendimiento
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.1 Uso de omp_get_wtime()
+
+Introducción
+Objetivos
+
+Sincronización • Se utiliza para medir el tiempo transcurrido entre dos 
+Metodología
+Balanceo puntos del código (recordatorio).
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Cuantifican la eficiencia de un programa paralelo en 
+
+AcceCsoon Mteenmiodroias comparación con su versión secuencial
+ReEnvdiamluieanctoión • Speed-up: Mide la mejora de rendimiento en 
+
+paralelo.
+Estrategias
+
+• Eficiencia: Evalúa el aprovechamiento de los hilos.
+• Escalabilidad: Analiza el rendimiento al variar el 
+
+número de hilos o el tamaño del problema.
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Speed-up (S): cuántas veces el programa es más rápido al 
+
+AcceCsoon Mteenmiodroias
+ejecutar en paralelo.
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+• Speed-up ideal:  S = N 
+
+• Ejemplo: 4 núcleos más = 4 veces más rápido
+
+Presentación de • En la práctica, alcanzar un Speed-up perfecto es difícil 
+prácticas
+
+debido a la sincronización
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Eficiencia: Evalúa qué tan bien se utilizan los hilos 
+
+AcceCsoon Mteenmiodroias
+disponibles.
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+• S = Speed-up obtenido
+• N = Número de hilos
+• Eficiencia ideal: E = 1 (100%)
+
+Presentación de • En la práctica, valores entre 0.7 y 0.9 se consideran 
+prácticas
+
+buenos.
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Escalabilidad: Cómo se comporta el rendimiento de un 
+
+AcceCsoon Mteenmiodroias
+programa paralelo modificando los trabajos y/o recursos.
+
+ReEnvdiamluieanctoión
+
+• ¿Agregar más recursos computacionales mejora el rendimiento? 
+Estrategias
+
+y ¿hasta qué punto?.
+
+• Tipos de escalabilidad:
+
+• Escalabilidad fuerte
+
+• Escalabilidad débil
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Escalabilidad Fuerte:
+
+AcceCsoon Mteenmiodroias • Qué tan rápido puedes resolver el mismo problema al 
+ReEnvdiamluieanctoión aumentar el número de hilos.
+
+Estrategias • Se centra en Speed-up y Eficiencia.
+
+• Donde:
+• T1 = Tiempo con 1 hilo.
+• TN = Tiempo con N hilos.
+• N = Número de hilos.
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Ejemplo (Escalabilidad Fuerte): Queremos procesar 1.000 
+
+AcceCsoon Mteenmiodroias imágenes y analizar cómo responde el sistema al aumentar el 
+número de hilos:
+
+ReEnvdiamluieanctoión
+• El tamaño del problema es fijo: siempre son 1.000 imágenes.
+
+Estrategias
+• Se repite la ejecución con distintos hilos (1, 2, 4, 8…).
+
+• Se mide el tiempo (T_N) en cada caso.
+
+• Buenos resultados:
+
+• Speed-up ≈ Nº hilos (ideal).
+Presentación de 
+
+prácticas • Eficiencia > 70% al escalar.
+
+• El tiempo baja al añadir hilos.
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Resultado posible:
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Escalabilidad Débil:
+
+AcceCsoon Mteenmiodroias • Analiza si el programa puede mantener tiempos de ejecución 
+ReEnvdiamluieanctoión constantes al aumentar tanto la carga de trabajo como el número 
+
+de hilos.
+Estrategias
+
+• Donde:
+• T1 = Tiempo con 1 hilo y carga base.
+• TN = Tiempo con N hilos y carga N veces mayor.
+
+• Valor cercano a 1 indica buena escalabilidad débil.
+Presentación de 
+
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Ejemplo (Escalabilidad Débil): Queremos aumentar en el 
+
+AcceCsoon Mteenmiodroias problema anterior Tanto el número de imágenes como de hilos:
+
+ReEnvdiamluieanctoión • El tamaño del problema aumenta: 1.000, 2.000, 4.000… imágenes.
+
+• Se repite la ejecución con distintos hilos (1, 2, 4…).
+Estrategias
+
+• Se mide el tiempo (T_N) en cada caso.
+
+• Buenos resultados:
+
+• Tiempo ≈  constante.
+
+• Eficiencia Débil ≈ 1.
+Presentación de 
+
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.2 Métricas clave de rendimiento: Speed-up, Eficiencia, 
+
+Introducción
+Objetivos
+
+Sincronización Escalabilidad
+Metodología
+Balanceo • Resultado posible:
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.3 Ley de Amdahl y su aplicación (recordatorio)
+
+Introducción
+Objetivos
+
+Sincronización • La aceleración máxima que se puede obtener mediante 
+Metodología paralelización está limitada por la fracción del código que no se 
+Balanceo puede paralelizar.
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+• Donde:
+
+• p = fracción paralelizable
+• N = número de hilos
+
+• Recordar que:
+• Altos Speed-up solo se logran cuando la fracción paralelizable es 
+
+muy alta (p ≈ 0.9 o más).
+• Agregar más hilos no siempre mejora el rendimiento 
+
+Presentación de significativamente.
+prácticas
+
+• Es esencial optimizar el código secuencial antes de escalar.
+
+
+
+5. Medición y Análisis de Rendimiento
+
+CaraÍcntdeircíesticas
+5.4 Depuración y perfiles de rendimiento
+
+Introducción
+Objetivos
+
+Sincronización • Herramientas de perfilado recomendadas:
+Metodología
+Balanceo
+
+• Intel VTune Profiler: Permite identificar cuellos de botella, 
+AcceCsoon Mteenmiodroias
+
+problemas de sincronización y patrones de acceso a memoria.
+ReEnvdiamluieanctoión
+
+• gprof: Herramienta simple para generar perfiles de rendimiento de 
+Estrategias
+
+programas.
+
+• Valgrind (con Callgrind): Útil para obtener información sobre la 
+utilización de la caché y el consumo de memoria.
+
+Presentación de 
+prácticas
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Estrategias Avanzadas y 
+Mejores Prácticas
+
+Presentación de 
+prácticas
+
+
+
+Índice
+
+CaraÍcntdeircíesticas
+6. Estrategias Avanzadas y Mejores Prácticas
+
+Introducción
+Objetivos
+
+Sincronización 6.1 Resumen de estrategias para optimización
+Metodología
+Balanceo
+
+6.2 Mejores prácticas para código paralelo eficiente
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+6. Estrategias Avanzadas y Mejores 
+Prácticas
+
+CaraÍcntdeircíesticas
+6.1 Resumen de estrategias para optimización
+
+Introducción
+Objetivos
+
+Sincronización • Minimizar sincronización innecesaria: Reducir el uso de
+Metodología
+Balanceo secciones críticas y barreras que puedan causar bloqueos y
+
+AcceCsoon Mteenmiodroias ralentización.
+ReEnvdiamluieanctoión
+
+• Utilizar directivas eficientes: Emplear atomic para
+Estrategias
+
+operaciones simples y reduction para acumulaciones seguras
+en lugar de critical.
+
+• Balancear la carga de trabajo efectivamente:
+Implementar schedule(dynamic) o schedule(guided) para
+distribuir tareas desiguales entre hilos.
+
+Presentación de • Optimizar accesos a memoria compartida: Usar variables
+prácticas
+
+locales y técnicas de reducción para disminuir la contención.
+
+
+
+6. Estrategias Avanzadas y Mejores 
+Prácticas
+
+CaraÍcntdeircíesticas
+6.1 Resumen de estrategias para optimización
+
+Introducción
+Objetivos
+
+Sincronización • Ajustar el tamaño de los bloques de trabajo:
+Metodología
+Balanceo Experimentar con diferentes configuraciones de chunk size en
+
+AcceCsoon Mteenmiodroias schedule() para encontrar el equilibrio óptimo entre
+ReEnvdiamluieanctoión sobrecarga y balanceo.
+Estrategias
+
+• Aplicar técnicas de paralelización granular: Dividir las
+tareas en unidades más pequeñas para aprovechar mejor los
+recursos.
+
+• Medir y analizar el rendimiento continuamente: Utilizar
+herramientas como omp_get_wtime() y métricas clave
+(Speed-up, Eficiencia) para identificar cuellos de botella y
+
+Presentación de 
+prácticas
+
+áreas de mejora.
+
+
+
+6. Estrategias Avanzadas y Mejores 
+Prácticas
+
+CaraÍcntdeircíesticas
+6.2 Mejores prácticas para código paralelo eficiente
+
+Introducción
+Objetivos
+
+Sincronización • Diseño modular y claro: Estructurar el código en módulos 
+Metodología
+Balanceo bien definidos facilita la paralelización y el mantenimiento.
+
+AcceCsoon Mteenmiodroias
+• Evitar secciones críticas extensas: Limitar el tamaño de las 
+
+ReEnvdiamluieanctoión
+secciones críticas reduce la contención y mejora el rendimiento.
+
+Estrategias
+
+• Uso de variables locales: Siempre que sea posible, emplear 
+variables locales para minimizar accesos a memoria 
+compartida.
+
+• Análisis y optimización continua: Realizar pruebas 
+frecuentes y utilizar herramientas de análisis de rendimiento 
+
+Presentación de para detectar cuellos de botella.
+prácticas
+
+
+
+6. Estrategias Avanzadas y Mejores 
+Prácticas
+
+CaraÍcntdeircíesticas
+6.2 Mejores prácticas para código paralelo eficiente
+
+Introducción
+Objetivos
+
+Sincronización • Escalabilidad como prioridad: Diseñar el código pensando en 
+Metodología
+Balanceo la escalabilidad para aprovechar futuros aumentos de recursos.
+
+AcceCsoon Mteenmiodroias
+• Documentación clara y completa: Documentar todas las 
+
+ReEnvdiamluieanctoión
+decisiones de paralelización y optimización facilita futuras 
+
+Estrategias
+modificaciones y el trabajo en equipo.
+
+• Manejo adecuado de excepciones y errores: Implementar 
+mecanismos robustos para manejar fallos durante la ejecución 
+paralela.
+
+• Revisión de código y buenas prácticas: Realizar revisiones 
+Presentación de periódicas del código para asegurar el cumplimiento de las 
+
+prácticas
+
+mejores prácticas y detectar posibles mejoras.
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Ejemplos…
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas
+Ejemplo de Uso (#pragma omp critical)
+
+Introducción
+Objetivos
+
+Sincronización
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas
+Ejemplo de Uso (#pragma omp atomic)
+
+Introducción
+Objetivos
+
+Sincronización
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas
+Ejemplo de Uso (#pragma omp barrier)
+
+Introducción
+Objetivos
+
+Sincronización
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas
+Ejemplo de Uso: reduction(operador:variable)
+
+Introducción
+Objetivos
+
+Sincronización
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejemplo de Uso: array de flags
+Introducción
+
+Objetivos Thread_Id Flags [ 0, 1, 2, … , 10]
+Sincronización
+
+Metodología
+Balanceo
+
+Todos los valores del array = 0
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias 1= ha comenzado el hilo
+
+-1=  error en los múltiplos de 3
+
+2= ha terminado sin errores
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejemplo de Uso: array de flags (posible resultado)
+Introducción
+
+Objetivos
+Sincronización
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejemplo de Paralelización Anidada (Nested Parallelism
+Introducción
+
+Objetivos
+Sincronización
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejemplo de uso de private, firstprivate y lastprivate
+Introducción
+
+Objetivos
+Sincronización
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias La x es local, no afecta a la global
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+La x es local, no afecta a la global
+
+La x es local, no afecta a la global
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejemplo de uso de private, firstprivate y lastprivate
+Introducción
+
+Objetivos (un posible resultado)
+Sincronización
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejercicio: Aplicación de la Ley de Amdahl
+Introducción
+
+Objetivos • Dado un programa que procesa datos de sensores. Se ha 
+Sincronización analizado el código y se sabe que:
+
+Metodología
+Balanceo • El 80% del tiempo de ejecución puede paralelizarse.
+
+AcceCsoon Mteenmiodroias • El 20% del código es estrictamente secuencial y no se 
+ReEnvdiamluieanctoión puede paralelizar.
+
+Estrategias • Pregunta:
+• ¿Cuál es el Speed-up máximo teórico si se usa un 
+
+número infinito de hilos?
+• ¿Cuál es el Speed-up si se utilizan 4 hilos?
+• ¿Qué eficiencia tendría el programa con esos 4 hilos?
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejercicio: Aplicación de la Ley de Amdahl
+Introducción
+
+Objetivos
+Sincronización
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias • Speed-up máximo (hilos infinitos)
+
+• Speed-up con 4 hilos:
+
+• Eficiencia con 4 hilos:
+Presentación de 
+
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejercicio: Escalabilidad Fuerte
+Introducción
+
+Objetivos • Sabiendo que se han procesado 1000 imágenes y obtenido los 
+Sincronización siguientes tiempos:
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+• 1. Calcular el Speed-up (S):
+
+Presentación de 
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejercicio: Escalabilidad Fuerte
+Introducción
+
+Objetivos • 2. Calcular la Eficiencia (E):
+Sincronización
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+• Conclusiones:
+• Buena escalabilidad hasta 4 hilos.
+• A partir de 8 hilos, eficiencia baja (sincronización, partes 
+
+secuenciales).
+• La Escalabilidad Fuerte muestra si más hilos reducen el 
+
+Presentación de tiempo.
+prácticas
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejercicio: Escalabilidad Débil
+Introducción
+
+Objetivos • Sabiendo que se han subido proporcionalmente el número de 
+Sincronización imágenes procesadas y los hilos, obteniendo los siguientes resultados:
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+Presentación de 
+prácticas
+
+• Comprobar si el sistema escala débilmente, es decir, si el tiempo 
+permanece constante al aumentar hilos y carga.
+
+
+
+Ejemplos
+
+CaraÍcntdeircíesticas Ejercicio: Escalabilidad Débil
+Introducción
+
+Objetivos • 1. Eficiencia Débil (Ew):
+Sincronización
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión
+
+Estrategias
+
+• Conclusión:
+• El tiempo crece poco aunque el trabajo aumenta → buena 
+
+escalabilidad débil.
+• Eficiencia débil cercana a 1 indica que el sistema gestiona más 
+
+carga sin perder rendimiento.
+Presentación de 
+
+prácticas

@@ -1,0 +1,1016 @@
+﻿INTRODUCCIÓN A LA 
+PROGRAMACIÓN PARALELA 
+CON OPENMP (PARTE 1)
+
+ACroqmupituetcatcuiróan  ddee l oaslt oC ormenpduimtaideonrteos
+
+
+
+1. Introducción
+
+Introducción
+Características • Índice
+
+Configuración
+Objetivos
+
+Directivas • ¿Qué es OpenMP?
+Metodología
+
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas • Diferencias entre concurrencia y paralelismo.
+
+EjemEpvloasl uFaincailóens
+• Modelo de ejecución Fork-Join en OpenMP.
+
+Presentación de 
+prácticas
+
+
+
+1. Introducción
+
+Introducción
+Características • ¿Qué es OpenMP?
+
+Configuración
+Objetivos
+
+Directivas • Es una API (Intefez de Programación de Aplicaciones)
+Metodología
+
+Ejemplos Básicos • Open Multi-Processing
+Contenidos
+
+Buenas Prácticas • Es un Estándar Abierto, permite Procesar Múltiples hilos 
+EjemEpvloasl uFaincailóens paralelos
+
+• Se basa en directivas de compilador (#pragma omp)
+
+• Funciona en arquitecturas de memoria compartida.
+
+• Compatible con GCC, Clang, Visual Studio, Intel Compiler, 
+entre otros.
+
+• Escalable, permitiendo aumentar el número de hilos 
+según el hardware disponible.
+
+Presentación de 
+prácticas
+
+
+
+1. Introducción
+
+Introducción
+Características • ¿Qué es OpenMP?
+
+Configuración
+Objetivos
+
+Directivas • Compatibilidades
+Metodología
+
+Ejemplos Básicos
+
+Contenidos Plataformas Lenguajes Compilador
+Buenas Prácticas
+
+compatibles compatibles
+EjemEpvloasl uFaincailóens
+
+Linux, Windows, macOS C, C++ y Fortran GCC (GNU Compiler
+Collection)
+
+Linux, Windows, macOS C, C++ Clang/LLVM
+
+Windows C, C++ Microsoft Visual Studio 
+(MSVC)
+
+Linux, Windows, macOS C, C++ y Fortran Intel C++ Compiler (ICC, 
+ICX)
+
+Linux y sistemas IBM C, C++ y Fortran IBM XL Compiler
+Presentación de 
+
+prácticas
+Linux, Windows C, C++ y Fortran PGI/NVIDIA HPC Compiler
+
+
+
+1. Introducción
+
+Introducción
+Características • Diferencias entre concurrencia y paralelismo.
+
+Configuración
+Objetivos
+
+Directivas
+
+Metodología
+Ejemplos Básicos
+
+Contenidos Ncl 1
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Ncl 2
+
+Ncl 1-x
+
+Ncl 3
+
+Ncl 4
+
+Ncl 5
+Presentación de 
+
+prácticas
+
+Concurrencia Paralelismo
+
+
+
+1. Introducción
+
+Introducción
+Características • Diferencias entre concurrencia y paralelismo.
+
+Configuración
+Objetivos
+
+Directivas
+
+Metodología
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas X4
+EjemEpvloasl uFaincailóens
+
+Secuencial
+
+Presentación de 
+prácticas
+
+Paralelo
+
+
+
+1. Introducción
+
+Introducción
+Características • Diferencias entre concurrencia y paralelismo.
+
+Configuración
+Objetivos
+
+Directivas
+
+Metodología
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens X4
+
+Presentación de 
+prácticas
+
+⚠ Nota: El orden depende de cómo OpenMP asigne las 
+iteraciones a los hilos en el momento de la ejecución.
+
+
+
+1. Introducción
+
+Introducción
+Características • Modelo de ejecución Fork-Join en OpenMP
+
+Configuración
+Objetivos
+
+Directivas
+
+Metodología
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Conclusión
+
+hilo maestro
+
+Presentación de 
+prácticas
+
+Fork
+
+Join
+
+Fork
+
+Join
+
+Fork
+
+Join
+
+
+
+2. Configuración del Entorno
+
+Introducción
+Características • Índice
+
+Configuración
+Objetivos
+
+Directivas • Instalación y uso de OpenMP en GCC, Clang y Visual 
+Metodología
+
+Ejemplos Básicos
+Studio. (prácticas)
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens • Verificar si OpenMP está activo en tu computadora 
+
+(prácticas)
+
+Presentación de 
+prácticas
+
+
+
+2. Configuración del Entorno
+
+Introducción
+Características • Instalación y uso de OpenMP en GCC, Clang y 
+
+Configuración
+Objetivos
+
+Directivas Visual Studio.
+Metodología
+
+Ejemplos Básicos
+• Para usar OpenMP, es necesario activarlo en el compilador.
+
+Contenidos
+Buenas Prácticas
+
+• Algunos ejemplos para diferentes compiladores y cómo 
+EjemEpvloasl uFaincailóens activarlo:
+
+Sistema Compilador Comando/Configuración
+Operativo
+
+Linux/macOS/Win GCC gcc -fopenmp programa.c -o programa
+dows (MinGW)
+
+Linux/macOS/Win Clang clang -fopenmp programa.c -o programa
+dows
+
+Presentación de 
+prácticas Windows Microsoft Visual Ir a Propiedades del Proyecto →
+
+Studio C/C++ → Lenguaje. Activar Soporte de 
+OpenMP (/openmp).
+
+
+
+2. Configuración del Entorno
+
+Introducción
+Características • Verificar si OpenMP está activo en tu 
+
+Configuración
+Objetivos
+
+Directivas computadora
+Metodología
+
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas • Ejemplo.
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • Índice
+
+Configuración
+Objetivos
+
+Directivas • #pragma omp parallel → Creación de hilos.
+Metodología
+
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas • #pragma omp for → Paralelización de bucles.
+
+EjemEpvloasl uFaincailóens
+• #pragma omp sections → Dividir código en 
+
+secciones ejecutadas por diferentes hilos.
+
+• Variables compartidas (shared) vs privadas 
+
+(private).
+
+• Uso de num_threads(n) para definir el número de 
+
+Presentación de hilos.
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • #pragma omp parallel → Creación de hilos.
+
+Configuración
+Objetivos
+
+Directivas • Se usa para indicar que una región de código debe 
+Metodología
+
+Ejemplos Básicos ejecutarse en paralelo.
+Contenidos
+
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • #pragma omp for → Paralelización de bucles.
+
+Configuración
+Objetivos
+
+Directivas • Se usa para dividir automáticamente las iteraciones de un 
+Metodología
+
+Ejemplos Básicos bucle entre los hilos (ejemplo 1)
+Contenidos
+
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+Aquí:
+10 iteraciones /10 hilos
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • #pragma omp for → Paralelización de bucles.
+
+Configuración
+Objetivos
+
+Directivas • Ejemplo 2:
+Metodología
+
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+Aquí:
+10 iteraciones /4 hilos
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • #pragma omp for → Paralelización de bucles.
+
+Configuración
+Objetivos
+
+Directivas • Ejemplo 3: Supongamos que queremos sumar los números 
+Metodología
+
+Ejemplos Básicos del 1 al 10 usando 4 hilos en paralelo.
+Contenidos
+
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens • OpenMP divide el
+bucle for en partes y
+cada hilo se encarga
+de un grupo de
+iteraciones.
+
+• Problema: Los hilos
+pueden modificar
+suma al mismo
+tiempo, lo que puede
+
+Presentación de causar errores.
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • Introducción a la clausula Schedule() 
+
+Configuración
+Objetivos
+
+Directivas • Es una clausula que se usa con #pragma omp for
+Metodología
+
+Ejemplos Básicos • Sirve para dividir tareas en bloques paralelos
+Contenidos
+
+Buenas Prácticas • Hay tres tipos principales:
+
+EjemEpvloasl uFaincailóens • Static
+
+• Dynamic
+
+• Guided
+
+• La elección correcta afecta al rendimiento y balanceo de 
+carga
+
+• Parámetro opcional: chunk_size detemina el tamaño de los 
+bloques
+
+Presentación de 
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • Schedule(static, chunk_size)
+
+Configuración
+Objetivos
+
+Directivas • Construye bloques fijos de nº aproximado de iteraciones a los 
+Metodología hilos antes de la ejecución.
+
+Ejemplos Básicos
+• Buena opción para cargas homogéneas
+
+Contenidos
+Buenas Prácticas
+
+• Menos sobrecarga porque la distribución se hace de antemano
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+#pragma omp for schedule(static, chunk_size)
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • Schedule(dynamic, chunk_size)
+
+Configuración
+Objetivos
+
+Directivas • Asigna bloques de iteraciones cuando un hilo queda libre
+Metodología • Equilibra la carga de trabajo cuando las iteraciones toman tiempos 
+
+Ejemplos Básicos
+diferentes
+
+Contenidos
+Buenas Prácticas
+
+• Mayor sobrecarga que `static` debido a la reasignación continua.
+EjemEpvloasl uFaincailóens
+
+• Ideal cuando las iteraciones tienen tiempos de ejecución 
+variables
+
+Presentación de 
+prácticas
+
+#pragma omp for schedule(dynamic, chunk_size)
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • Schedule(guided, chunk_size)
+
+Configuración
+Objetivos
+
+Directivas • Similar a `dynamic`, pero empieza con bloques grandes y los 
+Metodología reduce progresivamente
+
+Ejemplos Básicos
+• Equilibra la carga y reduce la sobrecarga administrativa 
+
+Contenidos
+Buenas Prácticas comparado con `dynamic
+
+EjemEpvloasl uFaincailóens • Buena opción cuando algunas iteraciones son más pesadas que 
+otras
+
+1/2 1/2
+
+1/2
+
+1/2 1/2
+
+1/2
+Presentación de 
+
+prácticas
+
+#pragma omp for schedule(guided, chunk_size)
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • ¿Cuándo usar cada una?
+
+Configuración
+Objetivos
+
+Directivas • static → Cuando todas las iteraciones toman tiempo similar y 
+Metodología
+
+Ejemplos Básicos queremos la menor sobrecarga administrativa posible.
+Contenidos
+
+Buenas Prácticas
+• dynamic → Cuando las iteraciones tienen cargas muy desiguales 
+
+EjemEpvloasl uFaincailóens
+y queremos balancear la carga de trabajo.
+
+• guided → Cuando las iteraciones tienen cargas desiguales, pero 
+
+queremos reducir el overhead (tiempo administrativo extra) 
+
+comparado con dynamic.
+
+Presentación de 
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • #pragma omp sections→ Dividir código en 
+
+Configuración
+Objetivos
+
+Directivas secciones ejecutadas por diferentes hilos.
+Metodología
+
+Ejemplos Básicos
+
+• Si queremos que diferentes hilos hagan diferentes tareas, 
+Contenidos
+
+Buenas Prácticas
+
+usamos sections.
+EjemEpvloasl uFaincailóens
+
+• La clasificación en tareas la decidimos manualmente por 
+
+motivos del propio problema
+
+Presentación de 
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • #pragma omp sections→ Dividir código en 
+
+Configuración
+Objetivos
+
+Directivas secciones ejecutadas por diferentes hilos.
+Metodología
+
+Ejemplos Básicos
+• Ejemplo: En un motor de videojuegos, distintas tareas se 
+
+Contenidos
+Buenas Prácticas
+
+ejecutan en paralelo:
+EjemEpvloasl uFaincailóens
+
+• 🎨 Renderizar gráficos
+
+• 🎶 Procesar sonido
+
+• 🎮 Detectar colisiones
+
+• 🎭 Calcular inteligencia artificial de los enemigos
+
+Presentación de 
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • #pragma omp sections→ Dividir código en 
+
+Configuración
+Objetivos
+
+Directivas secciones ejecutadas por diferentes hilos.
+Metodología
+
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • Variables compartidas (shared) vs privadas 
+
+Configuración
+Objetivos (private)
+
+Directivas
+
+Metodología • Shared (compartidas):
+Ejemplos Básicos
+
+Contenidos • La variable es la misma para todos los hilos.
+Buenas Prácticas
+
+• Los hilos pueden leer y escribir en la misma dirección de 
+EjemEpvloasl uFaincailóens
+
+memoria.
+
+• Problema: Puede causar condiciones de carrera si varios hilos 
+escriben a la vez.
+
+• Private (privadas):
+
+• Cada hilo tiene su propia copia de la variable.
+
+• Se inicializa sin valor definido al inicio del bloque paralelo.
+
+• Evita problemas de concurrencia, ya que cada hilo trabaja con su 
+propia versión de la variable.
+
+Presentación de 
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • Variables compartidas (shared) vs privadas 
+
+Configuración
+Objetivos (private)
+
+Directivas
+
+Metodología • Ejemplo de uso:
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • Variables compartidas (shared) vs privadas 
+
+Configuración
+Objetivos (private)
+
+Directivas
+
+Metodología • Ejemplo de problema sin private (Condición de 
+Ejemplos Básicos
+
+carrera):
+Contenidos
+
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+Dado que x es compartida, varios hilos la sobrescriben al mismo tiempo, 
+causando comportamiento inesperado.
+
+
+
+3.Directivas Fundamentales de OpenMP
+
+Introducción
+Características • Uso de num_threads(n) para definir el 
+
+Configuración
+Objetivos número de hilos.
+
+Directivas
+
+Metodología • OpenMP permite definir cuántos hilos queremos usar 
+Ejemplos Básicos manualmente con num_threads(n), en lugar de usar el valor por 
+
+Contenidos
+Buenas Prácticas defecto.
+
+EjemEpvloasl uFaincailóens • Evito sobre cargar de hilos en sistemas con recursos limitados
+
+• Útil si la carga es previsible
+
+• Ejemplo:
+
+Presentación de 
+prácticas
+
+
+
+4. Ejemplos básicos
+
+Introducción
+Características • Índice
+
+Configuración
+Objetivos
+
+Directivas • #pragma omp parallel → Creación de hilos.
+Metodología
+
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas • #pragma omp for → Paralelización de bucles.
+
+EjemEpvloasl uFaincailóens
+• #pragma omp sections → Dividir código en 
+
+secciones ejecutadas por diferentes hilos.
+
+• Variables compartidas (shared) vs privadas 
+
+(private).
+
+• Uso de num_threads(n) para definir el número de 
+
+Presentación de hilos.
+prácticas
+
+
+
+4. Ejemplos básicos
+
+Introducción
+Características • Ejemplo básico de "Hola Mundo" con OpenMP
+
+Configuración
+Objetivos
+
+• Código básico con #pragma omp parallel
+Directivas
+
+Metodología
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Salida esperada:
+
+• La región paralela crea múltiples hilos, cada uno ejecutando el printf().
+
+• omp_get_thread_num() muestra el número del hilo.
+
+Presentación de • omp_get_num_threads() indica el total de hilos activos.
+prácticas
+
+• El orden de la salida no está garantizado debido a la ejecución concurrente.
+
+
+
+4. Ejemplos básicos
+
+Introducción
+Características • Paralelización de un bucle for simple con OpenMP
+
+Configuración
+Objetivos
+
+• Código básico con #pragma omp for
+Directivas
+
+Metodología
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Diferencias entre ejecución secuencial y paralela:
+
+• Ejecución secuencial: Un solo hilo ejecuta todas las iteraciones del bucle.
+
+Presentación de • Ejecución paralela: OpenMP distribuye las iteraciones entre varios hilos.
+prácticas
+
+• Beneficio: Ahorro de tiempo cuando el bucle tiene muchas iteraciones.
+
+
+
+4. Ejemplos básicos
+
+Introducción
+Características • Medición del número de hilos con 
+
+Configuración omp_get_thread_num()
+Objetivos
+
+Directivas • Es útil saber qué hilo ejecuta cada parte del programa
+Metodología
+
+Ejemplos Básicos • omp_get_thread_num(), devuelve el identificador del hilo actual
+Contenidos
+
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+El orden de la salida no está garantizado debido a la ejecución concurrente
+
+
+
+4. Ejemplos básicos
+
+Introducción
+Características • Comparación entre ejecución secuencial y 
+
+Configuración paralela
+Objetivos
+
+Directivas • Medición del tiempo de ejecución con omp_get_wtime()
+Metodología
+
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas
+
+omp_get_wtime() mide el tiempo antes y después de la ejecución del bucle.
+
+Se puede comparar el tiempo entre la versión secuencial y paralela.
+
+
+
+5. Buenas Prácticas en Omp (parte 1)
+
+Introducción
+Características • Cuándo y por qué paralelizar
+
+Configuración
+Objetivos • No siempre paralelizar mejora el rendimiento (por el overhead de creación 
+
+de hilos).
+Directivas
+
+Metodología • Se recomienda en cálculos costosos o cuando hay suficiente trabajo para 
+Ejemplos Básicos
+
+distribuir.
+Contenidos
+
+Buenas Prácticas
+• Overhead de la paralelización
+
+EjemEpvloasl uFaincailóens
+• Creación y sincronización de hilos consume tiempo.
+
+• Evaluar si la carga de trabajo justifica el uso de OpenMP.
+
+• Ejemplos de errores comunes al paralelizar código 
+• Condiciones de carrera: Dos hilos modifican la misma variable sin 
+
+sincronización.
+
+• Uso incorrecto de private y shared.
+
+• Falso compartir: Múltiples hilos acceden a datos en la misma línea de 
+caché.
+
+Presentación de • Uso incorrecto de #pragma omp barrier causando deadlocks.
+prácticas
+
+
+
+6. Ejemplo Final
+
+Introducción
+Características • Ejemplo completo
+
+Configuración
+Objetivos
+
+Directivas
+
+Metodología
+Ejemplos Básicos
+
+Contenidos
+Buenas Prácticas
+
+EjemEpvloasl uFaincailóens
+
+Presentación de 
+prácticas

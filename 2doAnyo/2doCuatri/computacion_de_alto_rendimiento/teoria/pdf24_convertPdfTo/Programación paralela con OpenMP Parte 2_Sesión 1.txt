@@ -1,0 +1,1227 @@
+﻿INTRODUCCIÓN A LA 
+PROGRAMACIÓN PARALELA 
+CON OPENMP (PARTE 2) S1
+
+ACroqmupituetcatcuiróan  ddee l oaslt oC ormenpduimtaideonrteos
+
+
+
+Índice
+
+CaraÍcntdeircíesticas
+1. Introducción a la Optimización en Programación Paralela
+
+Introducción
+Objetivos
+
+Sincronización 2. Sincronización y Gestión de Hilos en OpenMP
+Metodología
+Balanceo
+
+3. Balanceo de Carga y Distribución de Trabajo
+AcceCsoon Mteenmiodroias
+
+ReEnvdiamluieanctoión 4. Optimización de Accesos a Memoria y Reducción de 
+Datos
+
+Presentación de 
+prácticas
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Introducción a la Optimización 
+en Programación Paralela
+
+Presentación de 
+prácticas
+
+
+
+Índice
+
+CaraÍcntdeircíesticas
+1. Introducción a la Optimización en Programación Paralela
+
+Introducción
+Objetivos
+
+Sincronización 1.1 ¿Por qué optimizar código paralelo?
+Metodología
+Balanceo
+
+1.2 Principios fundamentales de optimización
+AcceCsoon Mteenmiodroias
+
+Evaluación
+
+Presentación de 
+prácticas
+
+
+
+1. Introducción a la Optimización en 
+Programación Paralela
+
+CaraÍcntdeircíesticas
+1.1 ¿Por qué optimizar código paralelo?
+
+Introducción
+Objetivos
+
+Sincronización • Sobrecarga por sincronización: Tiempo extra que se 
+Metodología
+Balanceo pierde esperando en barreras o bloqueos.
+
+AcceCsoon Mteenmiodroias
+
+Evaluación • Contención de recursos: Accesos concurrentes a 
+memoria compartida pueden ralentizar la ejecución.
+
+• Desbalanceo de carga: Si algunos hilos tienen más 
+trabajo que otros, se generan cuellos de botella.
+
+• Overhead de creación de hilos: En algunos casos, 
+crear demasiados hilos puede ser contraproducente.
+
+Presentación de 
+prácticas
+
+
+
+1. Introducción a la Optimización en 
+Programación Paralela
+
+CaraÍcntdeircíesticas
+1.2 Principios fundamentales de optimización:
+
+Introducción
+Objetivos
+
+Sincronización • Minimizar secciones críticas y sincronizaciones.
+Metodología
+Balanceo
+
+• Reducir el número de accesos a memoria compartida.
+AcceCsoon Mteenmiodroias
+
+Evaluación • Balancear la carga entre hilos.
+
+• Evitar trabajo redundante.
+
+Presentación de 
+prácticas
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Sincronización y Gestión de 
+Hilos en OpenMP
+
+Presentación de 
+prácticas
+
+
+
+Índice
+
+CaraÍcntdeircíesticas
+2. Sincronización y Gestión de Hilos en OpenMP
+
+Introducción
+Objetivos
+
+Sincronización 2.1 Condiciones de carrera y sincronización
+Metodología
+Balanceo
+
+2.2 Directivas de sincronización: critical, atomic y barrier
+AcceCsoon Mteenmiodroias
+
+Evaluación 2.3 Comparación entre atomic y critical
+
+2.4 Uso de reduction para sincronización segura
+
+2.5 Manejo de excepciones en entornos paralelos
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.1 Condiciones de carrera y sincronización
+
+Introducción
+Objetivos
+
+Sincronización • Las condiciones de carrera ocurren cuando múltiples 
+Metodología
+Balanceo hilos acceden y modifican una variable compartida sin la 
+
+AcceCsoon Mteenmiodroias
+debida sincronización
+
+Evaluación
+
+• Generan resultados impredecibles.
+
+Int suma = 0 ¿suma?
+suma += 1 
+
+suma += 1 
+
+Presentación de suma += 1 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.2 Directivas de sincronización: critical, atomic y barrier
+
+Introducción
+Objetivos
+
+Sincronización • critical: Protege secciones críticas complejas.
+Metodología
+Balanceo
+
+• atomic: Más eficiente para operaciones simples.
+AcceCsoon Mteenmiodroias
+
+Evaluación • barrier: Sincroniza todos los hilos en un punto 
+específico.
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+Critical:
+
+Introducción
+Objetivos
+
+Sincronización • Protege secciones críticas complejas.
+Metodología
+Balanceo
+
+• Garantiza que solo un hilo a la vez ejecute el bloque de 
+AcceCsoon Mteenmiodroias
+
+Evaluación código protegido.
+
+• Ventaja: Seguro para operaciones complejas.
+
+• Desventaja: Introduce sobrecarga significativa al hacer 
+que los hilos esperen su turno.
+
+#pragma omp critical
+{
+
+contador += 1;
+}
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+atomic:
+
+Introducción
+Objetivos
+
+Sincronización • Protege operaciones simples sobre variables compartidas 
+Metodología
+Balanceo (sumas, incrementos, etc.).
+
+AcceCsoon Mteenmiodroias
+
+Evaluación • Ventaja: Más eficiente que critical para operaciones 
+simples.
+
+• Desventaja: No admite operaciones complejas o 
+múltiples líneas.
+
+#pragma omp atomic
+contador += 1;
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+barrier:
+
+Introducción
+Objetivos
+
+Sincronización • Fuerza a todos los hilos a detenerse en un punto hasta 
+Metodología
+Balanceo que todos hayan alcanzado esa barrera.
+
+AcceCsoon Mteenmiodroias
+
+Evaluación • Uso: Sincronizar distintas fases de ejecución.
+
+#pragma omp barrier
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.3 Comparación entre atomic y critical
+
+Introducción
+Objetivos
+
+Sincronización • Veamos dos escenarios en los que utilizaremos una de 
+Metodología
+Balanceo las dos opciones (atomic y crítical)
+
+AcceCsoon Mteenmiodroias
+
+Evaluación • En ambos escenarios varios hilos están incrementando 
+un contador global.
+
+• Queremos evitar condiciones de carrera, pero también 
+optimizar el rendimiento.
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.3 Comparación entre atomic y critical
+
+Introducción
+Objetivos
+
+Sincronización • Opción 1 – Uso de critical:
+Metodología
+Balanceo
+
+#include <stdio.h>
+AcceCsoon Mteenmiodroias
+
+#include <omp.h>
+
+Evaluación int main() {
+int contador = 0;
+#pragma omp parallel for
+for (int i = 0; i < 1000000; i++) {
+
+#pragma omp critical
+{
+
+contador += 1;
+}
+
+}
+printf("Contador final: %d\n", contador);
+return 0;
+
+}
+
+Presentación de 
+prácticas
+
+Resultado correcto, pero ineficiente debido a que solo un hilo puede acceder 
+a la sección crítica a la vez.
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.3 Comparación entre atomic y critical
+
+Introducción
+Objetivos
+
+Sincronización • Opción 2: Uso de atomic
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias #include <stdio.h>
+#include <omp.h>
+
+Evaluación int main() {
+int contador = 0;
+#pragma omp parallel for
+for (int i = 0; i < 1000000; i++) {
+
+#pragma omp atomic
+contador += 1;  // Operación protegida de forma más eficiente
+
+}
+printf("Contador final: %d\n", contador);
+return 0;
+
+}
+
+Resultado correcto y más eficiente que critical.
+¿Por qué?
+
+Presentación de •atomic protege operaciones simples como incrementos y es menos 
+prácticas
+
+costoso en términos de sincronización.
+•Evita la sobrecarga del bloqueo completo que introduce critical.
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.3 Comparación entre atomic y critical
+
+Introducción
+Objetivos
+
+Sincronización • ¿Cuándo usar critical sobre atomic?
+Metodología
+Balanceo
+
+• Recomendamos usar atomic para operaciones 
+AcceCsoon Mteenmiodroias
+
+Evaluación simples sobre variables compartidas (suma, resta, 
+multiplicación).
+
+• Recomendamos usar critical cuando la operación 
+involucra múltiples líneas o es más compleja (por 
+ejemplo, actualizar múltiples variables o escribir en 
+un archivo).
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.4 Uso de reduction para sincronización segura
+
+Introducción
+Objetivos
+
+Sincronización • Cada hilo obtiene su propia copia privada de la variable.
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+Evaluación reduction(+:suma)
+
+reduction(+:suma)
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.4 Uso de reduction para sincronización segura
+
+Introducción
+Objetivos
+
+Sincronización • La cláusula reduction permite acumular resultados de 
+Metodología manera segura evitando condiciones de carrera
+Balanceo
+
+AcceCsoon Mteenmiodroias • Es más eficiente que critical o atomic para operaciones 
+acumulativas.
+
+Evaluación
+
+• Al finalizar la región paralela, los resultados se combinan 
+utilizando el operador especificado.
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.4 Uso de reduction para sincronización segura
+
+Introducción
+Objetivos
+
+Sincronización • Ejemplo de suma paralela con reduction:
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+Evaluación
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.4 Uso de reduction para sincronización segura
+
+Introducción
+Objetivos
+
+Sincronización • Como podemos ver en el código.
+Metodología
+Balanceo • Cada hilo tiene su propia copia de suma para evitar 
+
+AcceCsoon Mteenmiodroias interferencias.
+Evaluación • Al finalizar el bucle, OpenMP combina los resultados.
+
+• Este enfoque elimina condiciones de carrera y es 
+más eficiente que usar atomic o critical (los veremos 
+a continuación).
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.5 Manejo de excepciones en entornos paralelos
+
+Introducción
+Objetivos
+
+Sincronización • En entornos paralelos con OpenMP, el manejo de 
+Metodología excepciones puede ser complicado
+Balanceo
+
+AcceCsoon Mteenmiodroias • Múltiples hilos podrían generar errores al mismo tiempo.
+Evaluación • OpenMP no proporciona una estructura formal de 
+
+manejo de excepciones
+• Debemos seguir el uso de buenas prácticas para 
+
+asegurar una ejecución controlada.
+
+!
+
+Presentación de 
+prácticas
+
+! !
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.5 Manejo de excepciones en entornos paralelos
+
+Introducción
+Objetivos
+
+Sincronización • Buenas prácticas para manejo de errores:
+Metodología
+Balanceo • Utilizar variables compartidas y banderas (Flags) 
+
+AcceCsoon Mteenmiodroias de error para notificar fallos entre hilos.
+Evaluación • Proteger secciones críticas que podrían generar 
+
+excepciones usando directivas como critical.
+• Evitar lanzar excepciones desde dentro de regiones 
+
+paralelas en C/C++, ya que esto puede generar 
+comportamientos indefinidos.
+
+• Ejemplo:
+
+Presentación de 
+prácticas
+
+
+
+2. Sincronización y Gestión de Hilos en 
+OpenMP
+
+CaraÍcntdeircíesticas
+2.5 Manejo de excepciones en entornos paralelos
+
+Introducción
+Objetivos
+
+Sincronización • Ejemplo de manejo de errores usando una bandera:
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+Evaluación
+
+Presentación de 
+prácticas
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Balanceo de Carga y 
+Distribución de Trabajo
+
+Presentación de 
+prácticas
+
+
+
+Índice
+
+CaraÍcntdeircíesticas
+3. Balanceo de Carga y Distribución de Trabajo
+
+Introducción
+Objetivos
+
+Sincronización 3.1 Distribución eficiente de carga con schedule()
+Metodología
+Balanceo
+
+3.2 ¿Por qué usar schedule(dynamic)?
+AcceCsoon Mteenmiodroias
+
+Evaluación 3.3 Paralelización Anidada (Nested Parallelism)
+
+Presentación de 
+prácticas
+
+
+
+3. Balanceo de Carga y Distribución de 
+Trabajo
+
+CaraÍcntdeircíesticas
+3.1 Distribución eficiente de carga con schedule()
+
+Introducción
+Objetivos
+
+Sincronización • Problema del desbalanceo de carga:
+Metodología
+Balanceo • Si ciertos hilos tienen significativamente más 
+
+AcceCsoon Mteenmiodroias trabajo que otros, los hilos más rápidos quedarán 
+ociosos mientras esperan a los más lentos
+
+Evaluación
+
+• Solución:
+• Utilizar schedule para que los hilos tomen nuevas 
+
+tareas cuando terminan.
+• Reducir el tamaño del "chunk" para mejorar el 
+
+equilibrio (a costa de mayor overhead de 
+sincronización).
+
+Presentación de 
+prácticas
+
+
+
+3. Balanceo de Carga y Distribución de 
+Trabajo
+
+CaraÍcntdeircíesticas 3.1 Distribución eficiente de carga con schedule()
+Introducción
+
+Objetivos static: Cargas uniformes y predecibles.
+Sincronización
+
+Metodología dynamic: Cargas desbalanceadas o variables.
+Balanceo
+
+AcceCsoon Mteenmiodroias guided: Cargas pesadas e impredecibles. 
+Evaluación
+
+1/2 1/2
+
+1/2
+
+1/2 1/2
+
+1/2
+
+Presentación de 
+prácticas
+
+static dynamic guided
+
+
+
+3. Balanceo de Carga y Distribución de 
+Trabajo
+
+CaraÍcntdeircíesticas 3.2 ¿Por qué usar schedule(dynamic)?
+Introducción
+
+Objetivos • schedule(static) puede provocar un desbalance de carga.
+Sincronización
+
+Metodología • schedule(dynamic) mejora el equilibrio
+Balanceo
+
+AcceCsoon Mteenmiodroias • Ejemplo con schedule(static):
+Evaluación #include <stdio.h>
+
+#include <omp.h>
+#include <unistd.h>
+
+int main() {
+#pragma omp parallel for schedule(static)
+for (int i = 0; i < 8; i++) {
+
+printf("Hilo %d procesando iteración %d\n", omp_get_thread_num(), i);
+sleep(i % 3);  // Simula tareas con duraciones variables
+
+}
+return 0;
+
+}
+
+• Problema:
+Presentación de • Las tareas más largas ralentizan el hilo al que se 
+
+prácticas
+asignaron inicialmente, mientras que otros hilos 
+terminan antes y quedan ociosos.
+
+
+
+3. Balanceo de Carga y Distribución de 
+Trabajo
+
+CaraÍcntdeircíesticas 3.2 ¿Por qué usar schedule(dynamic)?
+Introducción
+
+Objetivos • Solución: Uso de schedule(dynamic), Ejemplo:
+Sincronización
+
+Metodología #include <stdio.h>
+Balanceo #include <omp.h>
+
+#include <unistd.h>
+AcceCsoon Mteenmiodroias
+
+int main() {
+Evaluación #pragma omp parallel for schedule(dynamic, 1)
+
+for (int i = 0; i < 8; i++) {
+printf("Hilo %d procesando iteración %d\n", omp_get_thread_num(), i);
+sleep(i % 3);  // Simula tareas con duraciones variables
+
+}
+return 0;
+
+}
+
+• Ventajas de schedule(dynamic):
+• Los hilos toman nuevas iteraciones dinámicamente 
+
+al finalizar su trabajo actual.
+
+Presentación de • Mejora el balance de carga en escenarios con tareas 
+prácticas heterogéneas.
+
+• Reduce el tiempo total de ejecución.
+
+
+
+3. Balanceo de Carga y Distribución de 
+Trabajo
+
+CaraÍcntdeircíesticas 3.3 Paralelización Anidada (Nested Parallelism)
+Introducción
+
+Objetivos • OpenMP permite la creación de regiones paralelas dentro 
+Sincronización de otras regiones paralelas: paralelización anidada
+
+Metodología
+Balanceo
+
+• Aunque está desactivada por defecto, se puede habilitar
+AcceCsoon Mteenmiodroias usando la función omp_set_nested(1)
+
+Evaluación • Ventajas:
+• Permite explotar más niveles de paralelismo, 
+
+especialmente en aplicaciones complejas.
+• Útil en problemas jerárquicos, como simulaciones multi-
+
+escala o algoritmos de matrices bloqueadas.
+• Desventajas:
+
+• Puede incrementar la sobrecarga por gestión de hilos.
+• Requiere un buen balanceo de carga para evitar 
+
+Presentación de 
+prácticas ineficiencias.
+
+
+
+3. Balanceo de Carga y Distribución de 
+Trabajo
+
+CaraÍcntdeircíesticas 3.3 Paralelización Anidada (Nested Parallelism)
+Introducción
+
+Objetivos • Ejemplo de paralelización anidada:
+Sincronización
+
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+Evaluación
+
+Presentación de 
+prácticas
+
+
+
+Características
+
+Objetivos
+
+Metodología
+
+Contenidos
+
+Evaluación Optimización de Accesos a 
+Memoria y Reducción de 
+
+Datos
+
+Presentación de 
+prácticas
+
+
+
+Índice
+
+CaraÍcntdeircíesticas
+4. Optimización de Accesos a Memoria y Reducción de 
+
+Introducción
+Objetivos
+
+Sincronización Datos
+Metodología
+Balanceo 4.1 Minimizar accesos a memoria compartida
+
+AcceCsoon Mteenmiodroias
+
+Evaluación 4.2 Alineación de datos y uso eficiente de cachés
+
+4.3 Variables privadas: private, firstprivate, lastprivate
+
+4.4 Inicialización con copyin
+
+Presentación de 
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.1 Minimizar accesos a memoria compartida
+
+Introducción
+Objetivos
+
+Sincronización • El acceso frecuente a memoria compartida por múltiples 
+Metodología
+Balanceo hilos introduce latencia
+
+AcceCsoon Mteenmiodroias
+
+Evaluación • Puede generar contention, afectando la eficiencia 
+general
+
+• Ejemplo:
+
+Presentación de 
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.1 Minimizar accesos a memoria compartida
+
+Introducción
+Objetivos
+
+Sincronización • Ejemplo con Accesos Frecuentes a Memoria Compartida
+Metodología
+Balanceo #include <stdio.h>
+
+#include <omp.h>
+AcceCsoon Mteenmiodroias
+
+int main() {
+Evaluación int data[10000];
+
+int suma = 0;
+
+#pragma omp parallel for
+for (int i = 0; i < 10000; i++) {
+
+#pragma omp atomic
+suma += data[i];  // Cada iteración accede a memoria compartida
+
+}
+
+printf("Suma total: %d\n", suma);
+return 0;
+
+}
+
+• Problema:
+Presentación de 
+
+prácticas • Cada hilo lee y actualiza la memoria compartida (suma) en 
+cada iteración, generando cuello de botella.
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.1 Minimizar accesos a memoria compartida
+
+Introducción
+Objetivos
+
+Sincronización • Solución: Uso de Variables Locales por Hilo:
+Metodología
+Balanceo #include <stdio.h>
+
+#include <omp.h>
+AcceCsoon Mteenmiodroias
+
+int main() {
+Evaluación int data[10000];
+
+int suma = 0;
+
+// Utiliza reduction para evitar accesos frecuentes a suma
+#pragma omp parallel for reduction(+:suma)
+for (int i = 0; i < 10000; i++) {
+
+suma += data[i];  // Acumulación local por hilo
+}
+
+printf("Suma total: %d\n", suma);
+return 0;
+
+}
+
+• Beneficios:
+• Cada hilo acumula la suma en su propia variable local.
+
+Presentación de 
+prácticas • Los resultados se combinan al final, minimizando accesos a 
+
+memoria compartida.
+• Resultado: Mejora significativa del rendimiento.
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.1 Minimizar accesos a memoria compartida
+
+Introducción
+Objetivos
+
+Sincronización Consejos Generales para Reducir Accesos a Memoria:
+Metodología
+Balanceo
+
+1. Usar variables locales dentro de regiones paralelas 
+AcceCsoon Mteenmiodroias
+
+Evaluación siempre que sea posible.
+
+2. Agrupar lecturas/escrituras para minimizar los 
+accesos dispersos.
+
+3. Evitar variables compartidas innecesarias.
+
+4. Usar técnicas de reducción para consolidar 
+resultados de manera eficiente.
+
+Presentación de 
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.2 Alineación de datos y uso eficiente de cachés
+
+Introducción
+Objetivos
+
+Sincronización • La forma en la que accedemos a memoria también 
+Metodología
+Balanceo afecta al rendimiento de aplicaciones paralelas
+
+AcceCsoon Mteenmiodroias
+
+Evaluación • Mejor: usar accesos a memorias locales (caché)
+
+• Alinear estructuras de datos a los límites de caché 
+para evitar penalizaciones de acceso
+
+• Evitar falsas comparticiones: varios hilos acceden a 
+diferentes variables almacenadas en la misma línea 
+de caché, generando conflictos innecesarios.
+
+Presentación de 
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.2 Alineación de datos y uso eficiente de cachés
+
+Introducción
+Objetivos
+
+Sincronización • Ejemplo de falsa compartición:
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+Evaluación
+
+Presentación de 
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.2 Alineación de datos y uso eficiente de cachés
+
+Introducción
+Objetivos
+
+Sincronización • Solución: Añadir relleno para evitar que dos variables 
+Metodología
+Balanceo usadas por distintos hilos compartan la misma línea de 
+
+AcceCsoon Mteenmiodroias
+caché:
+
+Evaluación
+
+Presentación de 
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.3 Variables privadas: private, firstprivate, lastprivate
+
+Introducción
+Objetivos
+
+Sincronización • private: Cada hilo tiene su propia copia no inicializada.
+Metodología
+Balanceo • firstprivate: Inicializa las copias privadas con el valor original.
+
+AcceCsoon Mteenmiodroias • lastprivate: Copia el valor de la última iteración al ámbito 
+global.
+
+Evaluación
+• Ejemplo:
+
+Presentación de 
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.3 Variables privadas: private, firstprivate, lastprivate
+
+Introducción
+Objetivos
+
+Sincronización • Ejemplo:
+Metodología
+Balanceo
+
+#include <stdio.h>
+AcceCsoon Mteenmiodroias #include <omp.h>
+
+Evaluación int main() {
+int x = 10;
+
+#pragma omp parallel for private(x) firstprivate(x) lastprivate(x)
+for (int i = 0; i < 5; i++) {
+
+x += i;
+printf("Hilo %d - Valor de x: %d\n", omp_get_thread_num(), x);
+
+}
+
+printf("Valor final de x después del bucle: %d\n", x);
+return 0;
+
+}
+
+• Resultado esperado:
+Presentación de 
+
+prácticas • Cada hilo trabaja con su propia copia de x.
+• La última iteración actualiza el valor global de x.
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.4 Inicialización con la clausula copyin
+
+Introducción
+Objetivos
+
+Sincronización • inicializa las variables declaradas como threadprivate en 
+Metodología
+Balanceo cada hilo con el valor de la variable global antes de entrar en 
+
+AcceCsoon Mteenmiodroias una región paralela
+Evaluación
+
+• ¿Cuándo usar copyin?
+
+• Cuando se tiene una variable global declarada como 
+threadprivate.
+
+• Para asegurar que cada hilo comience con el mismo valor 
+inicial antes de ejecutar la región paralela.
+
+• Ejemplo básico:
+Presentación de 
+
+prácticas
+
+
+
+4. Optimización de Accesos a Memoria y 
+Reducción de Datos
+
+CaraÍcntdeircíesticas
+4.4 Inicialización con la clausula copyin
+
+Introducción
+Objetivos
+
+Sincronización • Ejemplo básico:
+Metodología
+Balanceo
+
+AcceCsoon Mteenmiodroias
+
+Evaluación
+
+Presentación de 
+prácticas
