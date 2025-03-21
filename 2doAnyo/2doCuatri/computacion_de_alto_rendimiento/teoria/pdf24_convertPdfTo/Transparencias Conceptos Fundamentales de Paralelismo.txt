@@ -1,0 +1,987 @@
+﻿Conceptos Fundamentales de 
+Paralelismo
+
+ACroqmupituetcatcuiróan  ddee l oaslt oC ormenpduimtaideonrteos
+
+
+
+Objetivos
+
+Objetivos
+Características Objetivo general: Comprender el paralelismo y su papel en la 
+
+Introducción computación moderna.
+Objetivos
+
+Comparativa
+
+Metodología Objetivos específicos:
+Motivación
+
+Contenidos 1. Definir y entender qué es la computación paralela.
+Aplicaciones
+
+ETviapolusación 2. Diferenciar entre computación secuencial y paralela.
+Amdahl
+
+3. Explorar los tipos principales de paralelismo.
+Gustafson
+
+Limitaciones 4. Conocer las limitaciones del paralelismo (Ley de Amdahl y 
+
+Reflexión Gustafson).
+
+5. Ver ejemplos de aplicaciones prácticas en la industria.
+
+Presentación de 
+prácticas
+
+
+
+¿Qué es la computación paralela?
+
+Objetivos
+Características Definición: La computación paralela es un paradigma donde 
+
+Introducción múltiples tareas se ejecutan simultáneamente para mejorar el 
+Objetivos
+
+Comparativa rendimiento y reducir el tiempo de ejecución.
+Metodología
+Motivación
+
+Motivación: Con el crecimiento del volumen de datos y la 
+Contenidos
+
+Aplicaciones complejidad de los problemas computacionales, dividir las tareas es 
+ETviapolusación clave para procesar eficientemente.
+
+Amdahl
+Ejemplo:
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+
+
+Computación Secuencial vs. Paralela
+
+Objetivos
+Características Ventajas de la Computación Desventajas de la Computación 
+
+Paralela: Paralela:
+Introducción
+
+Objetivos
+Resuelve problemas complejos Consume más energía.
+
+Comparativa
+no manejables por una sola 
+
+Metodología Es más complicado programar y 
+Motivación CPU. sincronizar procesos.
+Contenidos
+
+Aplicaciones Reduce tiempos de ejecución Puede haber retrasos en la 
+significativamente.
+
+ETviapolusación comunicación entre tareas.
+Ejecuta tareas simultáneas, 
+
+Amdahl Más componentes implican 
+aumentando el rendimiento. mayor riesgo de fallos.
+
+Gustafson Divide grandes problemas en Costos altos de implementación 
+Limitaciones partes más pequeñas y fáciles y mantenimiento.
+
+de gestionar.
+Reflexión Riesgo de condiciones de 
+
+Mejora el balance entre costo y carrera y corrupción de datos 
+rendimiento respecto a la sin buena coordinación.
+computación secuencial.
+
+Difícil de automatizar hasta con 
+Es escalable y adaptable a 
+
+Presentación de IA en el proceso
+prácticas mayores necesidades.
+
+Ejecuta programas de orden de 
+complejidad mayor
+
+
+
+Motivación del Paralelismo
+
+Objetivos
+Características ¿Por qué necesitamos paralelismo?
+
+Introducción Crecimiento exponencial de datos: Procesar grandes volúmenes 
+Objetivos
+
+de datos rápidamente es esencial en aplicaciones como IA y Big 
+Comparativa
+
+Data.
+Metodología
+Motivación
+
+Contenidos
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+Nota: Un zettabyte (ZB) equivale a 1,000 exabytes, o un trillón de gigabytes
+Fuente. https://almacenamientoit.ituser.es
+
+
+
+Motivación del Paralelismo
+
+Objetivos
+Características ¿Por qué necesitamos paralelismo?
+
+Introducción Estancamiento en la velocidad de los procesadores: Aumentar 
+Objetivos
+
+la frecuencia del reloj se ha desacelerado, así que el enfoque actual 
+Comparativa
+
+es añadir más núcleos.
+Metodología
+Motivación
+
+Contenidos
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+Fuente de los datos: https://www.intel.la
+
+
+
+Motivación del Paralelismo
+
+Objetivos
+Características ¿Por qué necesitamos paralelismo?
+
+Introducción Estancamiento en la velocidad de los procesadores: Aumentar 
+Objetivos
+
+la frecuencia del reloj se ha desacelerado, así que el enfoque actual 
+Comparativa
+
+es añadir más núcleos.
+Metodología
+Motivación
+
+Contenidos
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+Fuente de los datos: https://www.intel.la
+
+
+
+Motivación del Paralelismo
+
+Objetivos
+Características ¿Por qué necesitamos paralelismo?
+
+Introducción Eficiencia energética: Aprovechar el paralelismo puede ser más 
+Objetivos
+
+eficiente que depender de un único procesador.
+Comparativa
+
+Metodología Ejecución de código en móviles: la tecnología de baterías no 
+Motivación
+
+evoluciona tan rápidamente como la de los procesadores
+Contenidos
+
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+Fuentes: https://es.wikipedia.org
+https://cincodias.elpais.com
+
+
+
+Aplicaciones del Paralelismo
+
+Objetivos
+Características Inteligencia Artificial (IA): Acelera el entrenamiento de modelos 
+
+complejos.
+Introducción
+
+Objetivos
+Big Data: Permite procesar grandes conjuntos de datos de forma 
+
+Comparativa
+distribuida.
+
+Metodología
+Motivación
+
+Simulaciones científicas: Predicción del tiempo, modelado 
+Contenidos
+
+Aplicaciones molecular, y simulaciones físicas.
+
+ETviapolusación Gráficos de videojuegos: Generación de gráficos realistas y 
+simulación física.
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+
+
+Aplicaciones del Paralelismo
+
+Objetivos
+Características Aplicación del Paralelismo en Inteligencia Artificial (IA)
+
+Introducción • Aceleración con GPUs: Las GPUs, diseñadas para ejecutar miles 
+Objetivos
+
+de hilos en paralelo, son clave en el entrenamiento rápido de redes 
+Comparativa
+
+neuronales profundas.
+Metodología
+Motivación
+
+• Procesamiento paralelo de datos: Durante el entrenamiento, 
+Contenidos
+
+Aplicaciones grandes conjuntos de datos (por ejemplo, imágenes) se dividen en 
+fragmentos procesados simultáneamente.
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+
+
+Aplicaciones del Paralelismo
+
+Objetivos
+Características Aplicación del Paralelismo en Inteligencia Artificial (IA)
+
+Introducción Ejemplo práctico: En las redes neuronales convolucionales (CNNs), 
+Objetivos
+
+cada imagen se separa en múltiples bloques, permitiendo aplicar 
+Comparativa
+
+filtros convolucionales a cada región en paralelo.
+Metodología
+Motivación
+
+Contenidos
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+https://www.diegocalvo.es/red-neuronal-convolucional/
+Beneficios:
+
+• Reducción drástica del tiempo de entrenamiento (de días a horas).
+Presentación de 
+
+prácticas • Mejora de la escalabilidad, permitiendo entrenar modelos más 
+grandes.
+
+• Optimización energética al usar mejor los recursos del hardware.
+
+
+
+Aplicaciones del Paralelismo
+
+Objetivos
+Características Big Data y su Procesamiento Distribuido:
+
+Introducción
+Objetivos
+
+Comparativa
+
+Metodología
+Motivación
+
+Contenidos
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+https://sensoricx.com/conocimiento/big-data/
+
+
+
+Aplicaciones del Paralelismo
+
+Objetivos
+Características Big Data y su Procesamiento Distribuido:
+
+Introducción Procesamiento distribuido: Herramientas como Apache Spark
+Objetivos
+
+dividen la carga de datos entre múltiples nodos, acelerando el 
+Comparativa
+
+análisis.
+Metodología
+Motivación
+
+Paralelismo natural: Los datos masivos se dividen en partes que 
+Contenidos
+
+Aplicaciones pueden procesarse en paralelo.
+
+ETviapolusación Escalabilidad horizontal: Permite agregar más nodos al clúster 
+según el crecimiento de los datos.
+
+Amdahl
+Manejo de datos heterogéneos: Capacidad para procesar datos 
+
+Gustafson estructurados y no estructurados (imágenes, texto, videos).
+
+Limitaciones Tolerancia a fallos: Los sistemas replican datos, garantizando 
+continuidad ante fallos.
+
+Reflexión
+
+Presentación de 
+prácticas
+
+
+
+Aplicaciones del Paralelismo
+
+Objetivos
+Características Simulaciones Científicas:
+
+Introducción Meteorología:
+Objetivos
+
+Comparativa Gran cantidad de datos: 
+Metodología
+
+• Temperatura, humedad, presión, 
+Motivación
+
+viento, radiación solar, etc.
+Contenidos
+
+Aplicaciones • Escala: Se generan y procesan datos 
+
+Evaluación a nivel local, regional y global.
+Tipos
+
+Cálculos intensivos:
+Amdahl
+
+• Los modelos climáticos dependen de 
+Gustafson ecuaciones complejas de dinámica 
+
+de fluidos, transferencia de calor y 
+Limitaciones
+
+humedad.
+Reflexión • Estos cálculos deben repetirse para 
+
+cada punto geográfico y momento 
+del tiempo.
+
+Escalabilidad:
+
+Presentación de • A medida que aumentan la 
+prácticas resolución y los datos, se pueden 
+
+añadir más nodos de procesamiento.
+
+https://climatearchive.org/
+
+
+
+Aplicaciones del Paralelismo
+
+Objetivos
+Características Simulaciones Científicas:
+
+Introducción Computación masiva en la secuenciación del ADN y el proceso de PCR
+Objetivos
+
+Comparativa Procesamiento masivo de datos: Permite dividir y analizar 
+Metodología millones de fragmentos de ADN simultáneamente.
+Motivación
+
+Iteraciones rápidas: La paralelización reduce el tiempo de análisis 
+Contenidos
+
+Aplicaciones de semanas a horas, permitiendo resultados rápidos y eficientes.
+ETviapolusación Análisis paralelo de muestras: Procesa diferentes muestras de 
+
+Amdahl ADN en paralelo, optimizando tiempos.
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+https://wikimedia.org
+
+
+
+Tipos de Paralelismo
+
+Objetivos
+Características Tipos de Paralelismo
+
+Introducción • A nivel de datos: La misma operación se aplica a diferentes datos 
+Objetivos
+
+simultáneamente.
+Comparativa
+
+Metodología • A nivel de instrucciones: Varias instrucciones se ejecutan 
+Motivación
+
+simultáneamente dentro de una CPU.
+Contenidos
+
+Aplicaciones • A nivel de tareas: Diferentes tareas independientes se ejecutan en 
+ETviapolusación paralelo.
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+
+
+Tipos de Paralelismo
+
+Objetivos
+Características Tipos de Paralelismo
+
+Introducción A nivel de datos: 
+Objetivos
+
+Comparativa • Definición: Se procesan múltiples datos simultáneamente con la 
+Metodología misma operación.
+Motivación
+
+• Ejemplo: Aplicar un filtro a una imagen procesando varios píxeles 
+Contenidos
+
+Aplicaciones en paralelo (filtro mediante convolución).
+ETviapolusación • Uso: GPUs y arquitecturas SIMD (Single Instruction, Multiple Data).
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+https://josecuartas.medium.com
+
+
+
+Tipos de Paralelismo
+
+Objetivos
+Características Tipos de Paralelismo
+
+Introducción A nivel de instrucciones: 
+Objetivos
+
+•Pipelining: Divide la ejecución de instrucciones en múltiples etapas (como 
+Comparativa
+
+búsqueda, decodificación y ejecución).
+Metodología
+Motivación •Ejecución Fuera de Orden: Permite a las CPUs reordenar la ejecución de 
+Contenidos instrucciones para optimizar el uso de las unidades funcionales.
+
+Aplicaciones
+
+•Superescalaridad: Uso de múltiples unidades de ejecución dentro de un 
+ETviapolusación procesador para ejecutar varias instrucciones en un solo ciclo de reloj.
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+https://ferestrepoca.github.io
+
+
+
+Tipos de Paralelismo
+
+Objetivos
+Características Tipos de Paralelismo
+
+Introducción A nivel de Tareas: 
+Objetivos
+
+•Definición: Divide un problema grande en múltiples tareas independientes que 
+Comparativa
+
+pueden ejecutarse simultáneamente.
+Metodología
+Motivación
+
+Contenidos
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+https://ferestrepoca.github.io
+
+
+
+Ley de Amdahl
+
+Objetivos
+Características Limitaciones en la paralelización
+
+Introducción • El beneficio del paralelismo está limitado por la fracción del 
+Objetivos
+
+programa que no puede ejecutarse en paralelo. Su ecuación se 
+Comparativa
+
+expresa como:
+Metodología
+Motivación
+
+Contenidos
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson • Donde:
+
+Limitaciones • S(N) es la aceleración obtenida con N procesadores.
+• P es la fracción del código que puede ejecutarse en paralelo.
+
+Reflexión
+• N es el número de unidades de procesamiento.
+
+Presentación de 
+prácticas
+
+
+
+Ley de Amdahl
+
+Objetivos
+Características Limitaciones en la paralelización
+
+Introducción Ejemplo 1: Código con Fracción Secuencial Significativa:
+Objetivos
+
+Comparativa • Supongamos que un programa tiene un 70% de su código 
+Metodología paralelizable (P = 0.7) y el 30% restante debe ejecutarse de 
+Motivación
+
+forma secuencial.
+Contenidos
+
+Aplicaciones • Si usamos 4 procesadores (N = 4), aplicamos la ecuación:
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+• Esto significa que, a pesar de cuadruplicar los procesadores, la 
+aceleración solo es 2.11 veces mayor, muy por debajo del ideal de 
+
+Presentación de 4x.
+prácticas
+
+
+
+Ley de Amdahl
+
+Objetivos
+Características Limitaciones en la paralelización
+
+Introducción Esta ley ayuda a definir si introducir una mejora en el sistema vale o 
+Objetivos
+
+no la pena 
+Comparativa
+
+Metodología
+Motivación
+
+Contenidos
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+https://ferestrepoca.github.io
+
+
+
+Ley de Gustafson
+
+Objetivos
+Características Limitaciones en la paralelización
+
+Introducción Un Enfoque Alternativo
+Objetivos
+
+Comparativa • La Ley de Gustafson sugiere que el paralelismo es más efectivo en 
+Metodología problemas escalables.
+Motivación
+
+• Conforme aumenta el tamaño del problema, la fracción paralelizable
+Contenidos
+
+Aplicaciones también crece. Su ecuación se expresa como:
+ETviapolusación
+
+S(N) = N - α (N - 1)
+Amdahl
+
+• Donde:
+Gustafson • S(N) es la aceleración obtenida con N procesadores.
+
+Limitaciones • α es la fracción secuencial del código.
+• N es el número de procesadores.
+
+Reflexión
+
+Presentación de 
+prácticas
+
+https://ferestrepoca.github.io
+
+
+
+Ley de Gustafson
+
+Objetivos
+Características Limitaciones en la paralelización
+
+Introducción Un Enfoque Alternativo
+Objetivos
+
+Comparativa • Ejemplo 2: Ley de Gustafson
+Metodología
+Motivación • Supongamos que un problema tiene una fracción secuencial del 
+
+5% (α = 0.05). Si usamos 16 procesadores (N = 16):
+Contenidos
+
+Aplicaciones
+
+ETviapolusación
+S(16) = 16 - 0.05 (16 - 1)
+
+Amdahl
+S(16) = 16 - 0.05 (15)
+
+Gustafson
+S(16) = 16 - 0.75
+
+Limitaciones S(16) = 15.25
+Reflexión
+
+• Este resultado indica que en lugar de la aceleración de 9.17 veces 
+obtenida con la Ley de Amdahl la Ley de Gustafson sugiere una 
+aceleración de 15.25 veces, lo que refleja un mejor 
+
+Presentación de aprovechamiento del paralelismo en problemas que pueden 
+prácticas
+
+escalar con la cantidad de procesadores.
+
+
+
+Ley de Gustafson
+
+Objetivos
+Características Limitaciones en la paralelización
+
+Introducción Esta ley ayuda a definir si introducir una mejora en el sistema vale o 
+Objetivos
+
+no la pena 
+Comparativa
+
+Metodología
+Motivación
+
+Contenidos
+Aplicaciones
+
+ETviapolusación
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+https://ferestrepoca.github.io
+
+
+
+Amdhal Vs. Gustafson
+
+Objetivos
+Características Limitaciones en la paralelización
+
+Introducción Comparación práctica: Amdahl vs. Gustafson
+Objetivos
+
+Comparativa • Amdahl nos indica si vale la pena optimizar el código existente, 
+Metodología mientras que Gustafson nos muestra cómo escalar la aplicación 
+Motivación
+
+para aprovechar más recursos.
+Contenidos
+
+Aplicaciones
+Situación práctica ¿Qué ley usar? Explicación
+
+ETviapolusación
+Optimización en sistemas Ley de Amdahl El problema es fijo y necesitas evaluar si
+
+Amdahl
+pequeños agregar más procesadores mejorará
+
+Gustafson significativamente el rendimiento.
+
+Limitaciones Desarrollo de simulaciones Ley de El problema puede crecer (más datos, más
+
+Reflexión escalables Gustafson complejidad) y necesitas aprovechar más
+
+procesadores.
+
+Diagnóstico del rendimiento Ley de Amdahl Para identificar cuánta parte del programa no es
+
+actual paralelizable y cómo limita la aceleración.
+
+Presentación de 
+prácticas Diseño de nuevas Ley de Cuando planificas un sistema que puede
+
+aplicaciones Gustafson aprovechar recursos adicionales en el futuro.
+
+
+
+Limitaciones
+
+Objetivos
+Características Limitaciones en la paralelización (cuellos de botella)
+
+Introducción • Costes de comunicación: La transferencia de datos entre 
+Objetivos
+
+procesadores puede ralentizar el rendimiento.
+Comparativa
+
+Metodología • Conflictos de acceso a memoria compartida: Varios 
+Motivación
+
+procesadores accediendo al mismo dato pueden generar esperas.
+Contenidos
+
+Aplicaciones • Sincronización: Necesidad de coordinar los procesadores para 
+ETviapolusación evitar errores
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
+
+
+
+Limitaciones
+
+Objetivos
+Características Reflexión y Práctica: A continuación realizaremos dos ejercicios 
+
+prácticos para reflexionar sobre:
+Introducción
+
+Objetivos
+
+Comparativa
+
+Metodología • La comparación entre la Ley de Amdahl y la Ley de 
+Motivación
+
+Gustafson.
+Contenidos
+
+Aplicaciones • La aplicación del paralelismo en la optimización de procesos 
+ETviapolusación reales.
+
+Amdahl
+
+Gustafson
+
+Limitaciones
+
+Reflexión
+
+Presentación de 
+prácticas
