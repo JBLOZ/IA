@@ -16,8 +16,8 @@ vector<ResultE1> runEjercicio1()
 {
     cout << "======================== Ejercicio 1 ========================\n";
 
-    // Para la DEMO, reducimos N. Ajusta según tus recursos:
-    long long N = 10000000000; // 200 millones (en vez de 10,000 millones)
+
+    long long N = 10000000000;
 
     // Valores de hilos a probar
     vector<int> threadsTest = {1, 2, 4, 8, 16};
@@ -177,8 +177,8 @@ void runEjercicio3()
 
     // schedules a comparar
     vector<string> schedules = {"static", "dynamic", "guided"};
-    // Cantidad de hilos a probar
-    vector<int> threadsTest = {4, 8};
+    // Cantidad de hilos a probar (ahora sí incluye 16)
+    vector<int> threadsTest = {4, 8, 16};
 
     // Resultados: un map [schedule][nThreads] = tiempo
     // Lo representamos con un simple diccionario encadenado,
@@ -208,12 +208,12 @@ void runEjercicio3()
 
             // Para poder cambiar el schedule en tiempo de ejecución,
             // debemos poner la directiva dentro de una macro o if.
-            // Para simplificar, repetimos manualmente.
+            // Para simplificar, repetimos manualmente según el schedule.
             if (schedules[sc] == "static")
             {
                 #pragma omp parallel for reduction(+:resultado_final) schedule(static)
                 for (int i = 0; i < 16; i++) {
-                    long long carga = 100000000 * (i % 4 + 1);
+                    long long carga = 1000000000 * (i % 4 + 1);
                     double local_result = 0.0;
                     for (long long j = 0; j < carga; j++) {
                         local_result += (j * 0.5) / (j + 1.0);
@@ -225,7 +225,7 @@ void runEjercicio3()
             {
                 #pragma omp parallel for reduction(+:resultado_final) schedule(dynamic, 1)
                 for (int i = 0; i < 16; i++) {
-                    long long carga = 100000000 * (i % 4 + 1);
+                    long long carga = 1000000000 * (i % 4 + 1);
                     double local_result = 0.0;
                     for (long long j = 0; j < carga; j++) {
                         local_result += (j * 0.5) / (j + 1.0);
@@ -237,7 +237,7 @@ void runEjercicio3()
             {
                 #pragma omp parallel for reduction(+:resultado_final) schedule(guided)
                 for (int i = 0; i < 16; i++) {
-                    long long carga = 100000000 * (i % 4 + 1);
+                    long long carga = 1000000000 * (i % 4 + 1);
                     double local_result = 0.0;
                     for (long long j = 0; j < carga; j++) {
                         local_result += (j * 0.5) / (j + 1.0);
@@ -253,13 +253,17 @@ void runEjercicio3()
 
     // Imprimimos resultados en tabla
     cout << "Tabla de resultados (Ejercicio 3):\n";
-    // Encabezado
-    printf("%-10s  %-10s  %-10s\n", "Schedule", "4 hilos (s)", "8 hilos (s)");
+
+    // Agregamos la columna de 16 hilos en el encabezado
+    printf("%-10s  %-10s  %-10s  %-10s\n", "Schedule", "4 hilos (s)", "8 hilos (s)", "16 hilos (s)");
+
+    // Ahora imprimimos los 3 valores para cada schedule
     for (size_t sc = 0; sc < schedules.size(); sc++) {
-        printf("%-10s  %-12.4f %-12.4f\n",
+        printf("%-10s  %-12.4f %-12.4f %-12.4f\n",
                schedules[sc].c_str(),
                resultados[sc][0],
-               resultados[sc][1]);
+               resultados[sc][1],
+               resultados[sc][2]);
     }
     cout << endl;
 }
@@ -379,19 +383,19 @@ void runEjercicio5()
 int main()
 {
     // Ejercicio 1
-    vector<ResultE1> resultadosE1 = runEjercicio1();
+    //vector<ResultE1> resultadosE1 = runEjercicio1();
 
     // Ejercicio 2
     //runEjercicio2();
 
     // Ejercicio 3
-    //runEjercicio3();
+    runEjercicio3();
 
     // Ejercicio 4 (usamos los resultados del Ejercicio 1 para comparar)
-    runEjercicio4(resultadosE1);
+    //runEjercicio4(resultadosE1);
 
     // Ejercicio 5 (opcional)
-    runEjercicio5();
+    //runEjercicio5();
 
     return 0;
 }
