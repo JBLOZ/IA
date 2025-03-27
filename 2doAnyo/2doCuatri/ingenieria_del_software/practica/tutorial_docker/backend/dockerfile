@@ -1,0 +1,18 @@
+
+FROM python:3.12
+
+# Especifica un directorio de trabajo
+WORKDIR /code
+
+# Copia un archivo del sistema local al sistema de archivos del contenedor en la ruta especificada
+COPY ./requirements.txt /code/requirements.txt
+
+# Ejecuta un comando dentro del contenedor
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+# Esto sería un copiado de producción
+# OJO! Esto no es eficiente para desarrollo
+COPY ./app /code/app
+
+# fastapi run app/main.py --port 80
+CMD ["fastapi", "run", "app/main.py", "--port", "80"]

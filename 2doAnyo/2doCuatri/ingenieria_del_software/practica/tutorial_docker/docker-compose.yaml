@@ -1,0 +1,45 @@
+services:
+  database:
+    image: mariadb:10.11
+    restart: unless-stopped
+    container_name: database
+    hostname: database
+    user: mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: tienda
+    volumes:
+      - ./database/datadir:/var/lib/mysql
+      - ./database/seed:/docker-entrypoint-initdb.d/
+
+  db-viewer:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    container_name: pma
+    hostname: viewer
+    depends_on: [database]
+    ports: [8090:8090]
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      APACHE_PORT: 8090
+
+  fastapi:
+    build: ./backend
+    depends_on: [database]
+    restart: unless-stopped
+    container_name: backend
+    hostname: backend
+    ports: [80:80]
+    profiles: [prod]
+
+  dev-fastapi:
+    build: ./backend
+    depends_on: [database]
+    restart: "no"
+    container_name: backend
+    hostname: backend
+    volumes: [./backend/app:/code/app]
+    ports: [80:80]
+    command: fastapi dev app/main.py --host 0.0.0.0 --port 80
+    profiles: [dev]
