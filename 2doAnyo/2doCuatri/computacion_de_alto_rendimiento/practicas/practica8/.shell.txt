@@ -1,0 +1,4 @@
+root@8cca41fe2650:/workdir# mpicc -o ejercicio1 ejercicio1.c
+root@8cca41fe2650:/workdir# mpirun -np 4 ./ejercicio1
+Proceso 2 recibió 42 y al multiplicarlo por 3 da: 126
+root@8cca41fe2650:/workdir#
