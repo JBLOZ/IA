@@ -1,0 +1,18 @@
+root@28eb3d9734de:/workdir# mpirun -np 16 ./prueba
+Hola mundo desde el proceso 6 de 16
+Hola mundo desde el proceso 10 de 16
+Hola mundo desde el proceso 7 de 16
+Hola mundo desde el proceso 0 de 16
+Hola mundo desde el proceso 4 de 16
+Hola mundo desde el proceso 11 de 16
+Hola mundo desde el proceso 13 de 16
+Hola mundo desde el proceso 14 de 16
+Hola mundo desde el proceso 2 de 16
+Hola mundo desde el proceso 15 de 16
+Hola mundo desde el proceso 12 de 16
+Hola mundo desde el proceso 1 de 16
+Hola mundo desde el proceso 9 de 16
+Hola mundo desde el proceso 5 de 16
+Hola mundo desde el proceso 3 de 16
+Hola mundo desde el proceso 8 de 16
+root@28eb3d9734de:/workdir#
