@@ -1,4 +1,13 @@
-root@8cca41fe2650:/workdir# mpicc -o ejercicio1 ejercicio1.c
-root@8cca41fe2650:/workdir# mpirun -np 4 ./ejercicio1
-Proceso 2 recibió 42 y al multiplicarlo por 3 da: 126
-root@8cca41fe2650:/workdir#
+root@fdea86ae3d0d:/workdir# mpicc -o ejercicio3 ejercicio3.c
+root@fdea86ae3d0d:/workdir# mpirun -np 6 ./ejercicio3
+Proceso 2 recibió: 100
+Proceso 4 recibió: 100
+Proceso 5 recibió: 100
+Proceso 3 recibió: 100
+Proceso 0 recibió: 100
+Proceso 1 recibió: 100
+root@fdea86ae3d0d:/workdir# mpirun -np 3 ./ejercicio3
+Proceso 0 recibió: 100
+Proceso 1 recibió: 100
+Proceso 2 recibió: 100
+root@fdea86ae3d0d:/workdir#
