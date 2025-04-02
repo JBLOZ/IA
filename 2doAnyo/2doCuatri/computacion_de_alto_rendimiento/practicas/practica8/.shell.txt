@@ -1,13 +1,6 @@
-root@fdea86ae3d0d:/workdir# mpicc -o ejercicio3 ejercicio3.c
-root@fdea86ae3d0d:/workdir# mpirun -np 6 ./ejercicio3
-Proceso 2 recibió: 100
-Proceso 4 recibió: 100
-Proceso 5 recibió: 100
-Proceso 3 recibió: 100
-Proceso 0 recibió: 100
-Proceso 1 recibió: 100
-root@fdea86ae3d0d:/workdir# mpirun -np 3 ./ejercicio3
-Proceso 0 recibió: 100
-Proceso 1 recibió: 100
-Proceso 2 recibió: 100
+root@fdea86ae3d0d:/workdir# mpicc -o ejercicio4 ejercicio4.c
+root@fdea86ae3d0d:/workdir# mpirun -np 4 ./ejercicio4
+Suma de ranks: 6
+root@fdea86ae3d0d:/workdir# mpirun -np 7 ./ejercicio4
+Suma de ranks: 21
 root@fdea86ae3d0d:/workdir#
