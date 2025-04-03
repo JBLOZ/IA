@@ -1,6 +1,5 @@
-root@fdea86ae3d0d:/workdir# mpicc -o ejercicio4 ejercicio4.c
-root@fdea86ae3d0d:/workdir# mpirun -np 4 ./ejercicio4
-Suma de ranks: 6
-root@fdea86ae3d0d:/workdir# mpirun -np 7 ./ejercicio4
-Suma de ranks: 21
-root@fdea86ae3d0d:/workdir#
+root@ce6bfd6aadd1:/workdir# mpirun -np 4 ./ejercicio5_mod
+Proceso 0: Tiempo = 0.000342
+Proceso 1: Tiempo = 2.000478
+Proceso 2: Tiempo = 0.000349
+Proceso 3: Tiempo = 2.00049
