@@ -231,7 +231,7 @@ class DeterministicAnnealing:
 
 ##  Exercise 3: Testing the Algorithm
 
-Generate synthetic data using the function implemented in Exercise 1 and apply the Deterministic Annealing algorithm to cluster the data. You should try at least the following configurations:
+Generate synthetic data using the function implemented in Exercise 1 and apply the Deterministic Annealing algorithm to cluster the data. You should try at least the following configurations, also, it is encouraged to create more experiments to test the algorithm, with more or less dispersion, more or less clusters, etc.
 
 1. Generate data with 3 clusters and apply the algorithm with 6 clusters.
 2. Generate data with 3 clusters and apply the algorithm with 2 clusters.
@@ -261,7 +261,10 @@ def calcular_entropia_por_punto(self):
         """
 
 ```
-Now re-discuss the previous experiments using the entropy as a metric to evaluate the quality of the clustering. You are encouraged to create more experiments to test the algorithm.
+Now re-discuss the previous experiments using the entropy as a metric to evaluate the quality of the clustering. You are encouraged to create more experiments to test the algorithm. Also, you can help yourself with plots to visualize the results or how the entropy changes with the iterations of the while loop. 
+**Bonus**: If you visualize the entropy per point, by changing the size of the points, making the size of the points proportional to the entropy (bigger size = higher entropy) and discuss what is happening, you will be rewarded with bonus points. 
+
+
 
 ##  Exercise 5: Automated Clustering
 
@@ -277,3 +280,5 @@ name: entropy_data
 ---
 Visualization of the entropy as a function of the number of clusters
 ```
+
+Here we are asking you is to explain the elbow method and how to implement it. And then, use it to find the optimal number of clusters for the data generated in Exercise 1. Obiously, you will have to discuss the results and the elbow point.
