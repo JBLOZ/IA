@@ -1,0 +1,72 @@
+{
+  "prompt": {
+    "prompt": "¿Cómo ha cambiado la enseñanza de la lengua española en las escuelas a lo largo de las últimas décadas? Me gustaría explorar qué metodologías se utilizan ahora y cómo han influido en la percepción del idioma entre los jóvenes.",
+    "prompt_type": "Open QA",
+    "topic": "Education"
+  },
+  "evaluation_a": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 3,
+      "justification": ""
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 5,
+      "justification": ""
+    }
+  },
+  "evaluation_b": {
+    "localization": {
+      "rating": 2,
+      "justification": "La respuesta está bien redactada y en español correcto, pero es demasiado genérica y no se adapta específicamente al contexto y a las particularidades del sistema educativo español, omitiendo referencias locales clave."
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 3,
+      "justification": ""
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 5,
+      "justification": ""
+    }
+  },
+  "comparison": {
+    "preference": 3,
+    "preference_label": "Response A is slightly better than Response B",
+    "justification": "Response A provides more context-specific details about the evolution of Spanish teaching, including notable references to the local educational trends such as the rise of the communicative approach and the integration of digital technology. Although both responses are accurate and well-structured, Response B is deemed too generic and less localized, making Response A slightly better in addressing the nuances of the question."
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "prompt": {
+    "prompt": "¿Cómo ha influido la biodiversidad de la Península Ibérica en la medicina tradicional española? Me gustaría conocer qué plantas autóctonas se siguen utilizando y cómo han evolucionado sus aplicaciones a lo largo del tiempo.",
+    "prompt_type": "Open QA",
+    "topic": "Life Sciences & Biology"
+  },
+  "evaluation_a": {
+    "localization": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "instruction_following": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "truthfulness": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "response_length": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "structure_writing_tone": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "harmlessness": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "overall_satisfaction": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    }
+  },
+  "evaluation_b": {
+    "localization": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "instruction_following": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "truthfulness": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "response_length": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "structure_writing_tone": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "harmlessness": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    },
+    "overall_satisfaction": {
+      "rating": 1,
+      "justification": "Error evaluating: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+    }
+  },
+  "comparison": {
+    "preference": 4,
+    "preference_label": "No preference (due to evaluation error)",
+    "justification": "Error during comparison: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'temperature' is not supported with this model.\", 'type': 'invalid_request_error', 'param': 'temperature', 'code': 'unsupported_parameter'}}"
+  }
+}
