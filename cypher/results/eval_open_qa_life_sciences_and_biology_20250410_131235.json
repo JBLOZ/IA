@@ -1,0 +1,72 @@
+{
+  "prompt": {
+    "prompt": "¿Cómo ha influido la biodiversidad de la Península Ibérica en la medicina tradicional española? Me gustaría conocer qué plantas autóctonas se siguen utilizando y cómo han evolucionado sus aplicaciones a lo largo del tiempo.",
+    "prompt_type": "Open QA",
+    "topic": "Life Sciences & Biology"
+  },
+  "evaluation_a": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 3,
+      "justification": ""
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 5,
+      "justification": ""
+    }
+  },
+  "evaluation_b": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 3,
+      "justification": ""
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 5,
+      "justification": ""
+    }
+  },
+  "comparison": {
+    "preference": 4,
+    "preference_label": "No preference, but chose Response A because of its clarity",
+    "justification": "Both responses provide accurate and relevant information on the influence of Iberian biodiversity on traditional Spanish medicine. However, Response A features a more organized structure with distinct sections, including a dedicated conclusion that neatly summarizes the evolution of plant applications, which enhances its overall presentation."
+  }
+}
