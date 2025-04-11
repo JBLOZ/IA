@@ -11,7 +11,7 @@ from responseEvaluator import ResponseEvaluator
 #####################################################################
 
 # Tu clave de API de OpenAI (si está vacía, se buscará en variables de entorno)
-API_KEY = "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"
+API_KEY = ""
 
 # Modo del servicio: "generate" para generar prompts o "evaluate" para evaluar respuestas
 SERVICE_MODE = "evaluate"  # Opciones: "generate" o "evaluate"
