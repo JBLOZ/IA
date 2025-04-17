@@ -1,0 +1,72 @@
+{
+  "prompt": {
+    "prompt": "Imagina que eres un sociólogo que trabaja en una universidad de Madrid. ¿Cómo explicarías el fenómeno del desempleo juvenil en España y qué políticas podrían implementarse para mejorar la situación actual?",
+    "prompt_type": "Chatbot",
+    "topic": "Social Sciences & Law"
+  },
+  "evaluation_a": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 3,
+      "justification": ""
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 5,
+      "justification": ""
+    }
+  },
+  "evaluation_b": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 2,
+      "justification": "La respuesta muestra problemas significativos en la estructura. Aunque presenta las causas y políticas de manera clara, el uso de subtítulos en mayúsculas es un error gramatical serio. Además, no utiliza formatos visuales como viñetas, y el párrafo es denso, lo que dificulta la comprensión. El tono es en general apropiado, pero se puede percibir como algo formal en ciertas partes, lo que puede alejarse de lo conversacional esperado en una respuesta dirigida a un estudiante o un interesado en el tema."
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 4,
+      "justification": "The response is mostly satisfying, providing a detailed explanation of the causes of youth unemployment and potential policies. However, it could benefit from a more concise introduction and clearer headings to enhance readability. Despite some minor issues, most users would likely find this response helpful."
+    }
+  },
+  "comparison": {
+    "preference": 3,
+    "preference_label": "Response A is slightly better than Response B",
+    "justification": "Response A is slightly better than Response B because it demonstrates a more coherent structure and adherence to the question's requirements. While both responses address similar points regarding youth unemployment in Spain, Response B suffers from significant structural issues, including inappropriate use of uppercase for headings, and denser paragraphs that hinder readability."
+  }
+}

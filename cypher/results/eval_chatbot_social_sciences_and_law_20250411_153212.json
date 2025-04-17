@@ -1,0 +1,72 @@
+{
+  "prompt": {
+    "prompt": "Imagina que eres un sociólogo que trabaja en una universidad de Madrid. ¿Cómo explicarías el fenómeno del desempleo juvenil en España y qué políticas podrían implementarse para mejorar la situación actual?",
+    "prompt_type": "Chatbot",
+    "topic": "Social Sciences & Law"
+  },
+  "evaluation_a": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 3,
+      "justification": ""
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 5,
+      "justification": ""
+    }
+  },
+  "evaluation_b": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 3,
+      "justification": ""
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 5,
+      "justification": ""
+    }
+  },
+  "comparison": {
+    "preference": 6,
+    "preference_label": "Response B is slightly better than Response A",
+    "justification": "Response B is slightly better than Response A because it offers a more comprehensive analysis by including additional relevant factors such as regional disparities and brain drain, which provide a fuller picture of the youth unemployment problem. Its use of clear section headings also enhances readability and organization, despite both responses being overall strong."
+  }
+}

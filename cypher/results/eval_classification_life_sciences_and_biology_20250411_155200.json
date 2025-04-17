@@ -1,0 +1,73 @@
+{
+  "prompt": {
+    "prompt": "Clasifica los siguientes ecosistemas según su ubicación en España: el bosque de laurisilva de La Gomera, las marismas de Doñana, los humedales de La Albufera, los prados de montaña en los Pirineos, y los bosques de pinos en la Sierra de Guadarrama.",
+    "prompt_type": "Classification",
+    "topic": "Life Sciences & Biology",
+    "reference_text": "La biodiversidad en España es una de las más ricas de Europa, gracias a su variada geografía y clima. En el archipiélago canario, por ejemplo, se encuentra el bosque de laurisilva, un ecosistema único que alberga especies endémicas. La reserva natural de Doñana, situada en Andalucía, se caracteriza por sus marismas y es un importante refugio para aves migratorias. Por otro lado, La Albufera, en Valencia, es famosa por sus extensos humedales que son vitales para la fauna y el control de la calidad del agua. En la península, los Pirineos ofrecen prados de montaña que son hogar de una gran variedad de flora y fauna adaptada a las condiciones de alta montaña. Finalmente, la Sierra de Guadarrama, cerca de Madrid, presenta bosques de pinos que son esenciales para la conservación del suelo y la regulación del clima local. La preservación y clasificación de estos ecosistemas es fundamental para la conservación de la biodiversidad en el país."
+  },
+  "evaluation_a": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 3,
+      "justification": ""
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 5,
+      "justification": ""
+    }
+  },
+  "evaluation_b": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 2,
+      "justification": "La respuesta presenta un tono mayormente adecuado y es clara, pero se observa una falta de separación visual entre las ideas y no utiliza listas con viñetas, lo que afecta la presentación visual. Además, no se utilizan subtítulos, y el texto se siente algo denso al estar todo en un solo bloque. La ausencia de encabezados y el uso de formato sería beneficioso para mejorar la calidad de la respuesta."
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 5,
+      "justification": ""
+    }
+  },
+  "comparison": {
+    "preference": 4,
+    "preference_label": "No preference, but I chose Response A because it has slightly better structure and writing style compared to Response B.",
+    "justification": "Response A is slightly better than Response B because it presents the information in a clearer manner with distinct sections for each ecosystem, enhancing readability. Response B, while providing accurate information, has a denser structure that lacks visual separation between ideas, diminishing its overall clarity."
+  }
+}

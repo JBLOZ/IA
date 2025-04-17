@@ -11,14 +11,14 @@ from responseEvaluator import ResponseEvaluator
 #####################################################################
 
 # Tu clave de API de OpenAI (si está vacía, se buscará en variables de entorno)
-API_KEY = ""
+API_KEY = "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"
 
 # Modo del servicio: "generate" para generar prompts o "evaluate" para evaluar respuestas
-SERVICE_MODE = "evaluate"  # Opciones: "generate" o "evaluate"
+SERVICE_MODE = "generate"  # Opciones: "generate" o "evaluate"
 
 # ------ Configuración para modo "generate" ------
 # Categoría del prompt a generar (dejar en blanco para aleatorio)
-PROMPT_CATEGORY = "Open QA"  # Opciones: "Rewrite", "Classification", "Summarization", "Extraction", 
+PROMPT_CATEGORY = "Classification"  # Opciones: "Rewrite", "Classification", "Summarization", "Extraction", 
                              # "Closed QA", "Brainstorming", "Chatbot", "Creative Writing", "Open QA"
 
 # Tema del prompt (dejar en blanco para aleatorio)
@@ -29,44 +29,13 @@ PROMPT_TOPIC = ""  # Opciones: "Business & Management", "Computer Science & Tech
 
 # ------ Configuración para modo "evaluate" ------
 # Ruta al archivo JSON con el prompt generado (sólo para modo "evaluate")
-PROMPT_FILE = "results\open_qa_education_20250410_132634.json"
+PROMPT_FILE = ""
 
 # Respuesta A a evaluar (texto completo)
 RESPONSE_A = """
-La enseñanza de la lengua española en las escuelas ha evolucionado notablemente en las últimas décadas, adaptándose a nuevos enfoques pedagógicos y a las necesidades de los estudiantes. A continuación, te presento algunos cambios clave en metodologías y sus efectos en la percepción del idioma entre los jóvenes:
-
-1. **Enfoque comunicativo**: A partir de los años 80 y 90, se comenzó a privilegiar un enfoque más comunicativo, en lugar de la enseñanza centrada en la gramática. Esto significa que se busca que los estudiantes utilicen el español en contextos auténticos y cotidianos, lo que mejora su fluidez y confianza al hablar.
-
-2. **Aprendizaje basado en proyectos**: Esta metodología permite a los alumnos trabajar en proyectos que integre el uso del idioma en distintas áreas, fomentando un aprendizaje más significativo y contextual. Por ejemplo, pueden investigar sobre la cultura hispana, realizar presentaciones o crear contenidos multimedia en español.
-
-3. **Tecnología educativa**: La incorporación de herramientas digitales y recursos en línea ha cambiado la forma en que los estudiantes interactúan con la lengua. Plataformas de aprendizaje, aplicaciones de idiomas y foros en línea les ofrecen oportunidades de practicar el español de manera interactiva y colaborativa.
-
-4. **Diversidad e inclusión**: Se ha hecho un esfuerzo por incluir una variedad de dialectos y variantes del español en el currículo, reconociendo que es una lengua diversa y rica. Esto no solo beneficia a estudiantes de diferentes orígenes, sino que también enriquece la experiencia de aprendizaje.
-
-5. **Fomento de la creatividad**: Se alienta a los estudiantes a utilizar su creatividad, por ejemplo, a través de la escritura de relatos, poesía o la creación de videos. Esto no solo mejora su habilidad lingüística, sino también su interés y conexión emocional con el idioma.
-
-En cuanto a la percepción del español entre los jóvenes, estos cambios han tendido a generar una relación más positiva y activa con la lengua. Muchos estudiantes sienten que el español no solo es una materia escolar, sino una herramienta valiosa para la comunicación y la identidad cultural. Además, el acceso a contenidos en español a través de redes sociales, música y cine ha fortalecido su interés y motivación por aprender.
-
-Sin embargo, es importante considerar que todavía existen retos, como la falta de recursos en algunas instituciones y la necesidad de formación continua para los docentes en nuevas metodologías. En resumen, la enseñanza del español ha avanzado para ser más dinámica y relevante, afectando la manera en que los jóvenes perciben y utilizan la lengua en su vida diaria.
 """
 
-# Respuesta B a evaluar (texto completo)
 RESPONSE_B = """
-La enseñanza de la lengua española en las escuelas ha experimentado una serie de cambios significativos a lo largo de las últimas décadas, adaptándose a las necesidades cambiantes de la sociedad y a los avances en la investigación lingüística y educativa. Aquí te explico algunos de los cambios más destacados en las metodologías y su impacto en la percepción del idioma entre los jóvenes:
-
-1. **Enfoque comunicativo**: Anteriormente, la enseñanza del español se centraba mucho en la gramática y la literatura, a menudo de manera descontextualizada. Hoy, sin embargo, las metodologías se inclinan más hacia un enfoque comunicativo, donde se da prioridad a la habilidad de comunicarse eficazmente en situaciones reales. Esto incluye actividades de conversación, debates y proyectos que fomentan el uso práctico del idioma.
-
-2. **Diversificación de materiales**: Actualmente, se utilizan una variedad mucho más amplia de materiales didácticos, incluidos recursos multimedia como videos, música, podcasts y juegos interactivos. Estos recursos no solo hacen la clase más dinámica, sino que también ayudan a los estudiantes a percibir el idioma como relevante y útil en contextos modernos.
-
-3. **Aprendizaje basado en tareas**: Esta metodología se centra en que los estudiantes adquieran el idioma al realizar tareas significativas que reflejen situaciones de la vida real. Este enfoque busca mejorar la fluidez y la competencia comunicativa de los alumnos, haciéndoles ver el idioma como una herramienta valiosa para lograr objetivos específicos.
-
-4. **Educación bilingüe y plurilingüismo**: En algunas regiones, la enseñanza del español se imparte junto con otras lenguas, promoviendo el plurilingüismo. Esta tendencia ayuda a los estudiantes a valorar el español como parte de su identidad cultural y lingüística, pero también los prepara para interactuar en un mundo globalizado.
-
-5. **Fomento de la creatividad y la crítica**: Las clases de español hoy en día suelen integrar actividades que fomentan la creatividad, como la escritura de blogs, guiones o producción de medios. Además, se promueve el análisis crítico de textos, lo cual ayuda a desarrollar una percepción más profunda y crítica del idioma y su uso.
-
-6. **Uso de tecnologías digitales**: Las plataformas digitales y las aplicaciones de aprendizaje de idiomas han transformado la enseñanza del español al ofrecer herramientas personalizadas y accesibles para el aprendizaje fuera del aula. Estas tecnologías permiten a los estudiantes interactuar con el idioma de formas innovadoras, lo que puede aumentar su motivación y cambiar su percepción, haciéndoles ver el español como un idioma moderno y accesible.
-
-En conjunto, estas metodologías han ayudado a transformar la manera en que los jóvenes perciben el idioma español, haciéndolo más relevante, accesible y útil para sus vidas cotidianas. Además, estos cambios han contribuido a generar un entorno de aprendizaje más inclusivo y participativo, donde los estudiantes se sienten más motivados y comprometidos.
 """
 
 # Directorio donde se guardarán los resultados
@@ -84,7 +53,7 @@ class CypherRLHFService:
 
     def __init__(self, api_key: str = None, 
                  generator_model: str = "gpt-4o-mini", 
-                 evaluator_model: str = "o3-mini",
+                 evaluator_model: str = "gpt-4o-mini",
                  output_dir: str = "results"):
         """
         Inicializa el servicio con los parámetros necesarios.
