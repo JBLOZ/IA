@@ -1,0 +1,6 @@
+{
+  "prompt": "Clasifica los siguientes ecosistemas según su ubicación en España: el bosque de laurisilva de La Gomera, las marismas de Doñana, los humedales de La Albufera, los prados de montaña en los Pirineos, y los bosques de pinos en la Sierra de Guadarrama.",
+  "prompt_type": "Classification",
+  "topic": "Life Sciences & Biology",
+  "reference_text": "La biodiversidad en España es una de las más ricas de Europa, gracias a su variada geografía y clima. En el archipiélago canario, por ejemplo, se encuentra el bosque de laurisilva, un ecosistema único que alberga especies endémicas. La reserva natural de Doñana, situada en Andalucía, se caracteriza por sus marismas y es un importante refugio para aves migratorias. Por otro lado, La Albufera, en Valencia, es famosa por sus extensos humedales que son vitales para la fauna y el control de la calidad del agua. En la península, los Pirineos ofrecen prados de montaña que son hogar de una gran variedad de flora y fauna adaptada a las condiciones de alta montaña. Finalmente, la Sierra de Guadarrama, cerca de Madrid, presenta bosques de pinos que son esenciales para la conservación del suelo y la regulación del clima local. La preservación y clasificación de estos ecosistemas es fundamental para la conservación de la biodiversidad en el país."
+}

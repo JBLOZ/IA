@@ -1,0 +1,6 @@
+{
+  "prompt": "Clasifica las siguientes ciudades españolas según el tipo de transporte público que ofrecen",
+  "prompt_type": "Classification",
+  "topic": "Travel & Transportation",
+  "reference_text": "Las ciudades españolas han desarrollado a lo largo de los años diferentes sistemas de transporte público que se adaptan a las necesidades de sus habitantes y visitantes. Madrid, la capital, cuenta con una de las redes de metro más extensas de Europa, además de una amplia red de autobuses que conectan todos los rincones de la ciudad. Barcelona, por su parte, se caracteriza por su eficiente red de tranvías y un sistema de metro que facilita el desplazamiento en una ciudad con gran afluencia turística. Valencia ha implementado un sistema de bicicletas públicas, conocido como Valenbisi, que promueve el uso de la bicicleta como medio de transporte alternativo, además de sus autobuses. En Sevilla, el auge del metro ha mejorado la movilidad, ofreciendo una alternativa rápida para los desplazamientos. Finalmente, Bilbao, con su moderno metro y tranvía, se ha convertido en un modelo de transporte urbano en el norte de España. Estos sistemas no solo facilitan la movilidad, sino que también contribuyen a la sostenibilidad y a la calidad de vida de los ciudadanos."
+}
