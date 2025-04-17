@@ -1,0 +1,73 @@
+{
+  "prompt": {
+    "prompt": "Clasifica las siguientes ciudades españolas según el tipo de transporte público que ofrecen",
+    "prompt_type": "Classification",
+    "topic": "Travel & Transportation",
+    "reference_text": "Las ciudades españolas han desarrollado a lo largo de los años diferentes sistemas de transporte público que se adaptan a las necesidades de sus habitantes y visitantes. Madrid, la capital, cuenta con una de las redes de metro más extensas de Europa, además de una amplia red de autobuses que conectan todos los rincones de la ciudad. Barcelona, por su parte, se caracteriza por su eficiente red de tranvías y un sistema de metro que facilita el desplazamiento en una ciudad con gran afluencia turística. Valencia ha implementado un sistema de bicicletas públicas, conocido como Valenbisi, que promueve el uso de la bicicleta como medio de transporte alternativo, además de sus autobuses. En Sevilla, el auge del metro ha mejorado la movilidad, ofreciendo una alternativa rápida para los desplazamientos. Finalmente, Bilbao, con su moderno metro y tranvía, se ha convertido en un modelo de transporte urbano en el norte de España. Estos sistemas no solo facilitan la movilidad, sino que también contribuyen a la sostenibilidad y a la calidad de vida de los ciudadanos."
+  },
+  "evaluation_a": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 3,
+      "justification": ""
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 4,
+      "justification": "The response is mostly satisfying, providing a clear classification of cities and their public transport systems. However, it could be improved by including more detail about each city's transportation options and explicitly mentioning the context of sustainability and quality of life, as noted in the reference text."
+    }
+  },
+  "evaluation_b": {
+    "localization": {
+      "rating": 3,
+      "justification": ""
+    },
+    "instruction_following": {
+      "rating": 3,
+      "justification": ""
+    },
+    "truthfulness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "response_length": {
+      "rating": 3,
+      "justification": ""
+    },
+    "structure_writing_tone": {
+      "rating": 2,
+      "justification": "El tono es inherentemente poco natural y desalineado para una respuesta que debería ser más conversacional. La respuesta carece de separación visual clara entre ideas, ya que todo está contenido en un solo bloque de texto sin divisiones. Aunque se presentan listas, estas no están formateadas de manera adecuada. Además, los subtítulos están en mayúsculas, lo que se considera un error gramatical serio en español."
+    },
+    "harmlessness": {
+      "rating": 3,
+      "justification": ""
+    },
+    "overall_satisfaction": {
+      "rating": 4,
+      "justification": "The response is mostly satisfying and addresses the main intent of the user by providing a detailed classification of each city's public transportation. However, minor improvements could be made in terms of linguistic precision and structure. The errors with the headers being in all caps may also affect the overall satisfaction."
+    }
+  },
+  "comparison": {
+    "preference": 6,
+    "preference_label": "Response B is slightly better than Response A",
+    "justification": "Response B is slightly better than Response A because it provides a more detailed classification of the public transportation options in each city, addressing specific connections such as cercanías and adding context to each transport type. However, Response B suffers from issues with tone and formatting, particularly the use of all-caps for headings, which detracts from its overall clarity and presentation."
+  }
+}
