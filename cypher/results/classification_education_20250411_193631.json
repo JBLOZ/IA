@@ -1,0 +1,6 @@
+{
+  "prompt": "Clasifica los siguientes niveles del sistema educativo en España según su orden jerárquico: Educación Infantil, Educación Primaria, Educación Secundaria Obligatoria (ESO), Bachillerato, Formación Profesional y Educación Universitaria.",
+  "prompt_type": "Classification",
+  "topic": "Education",
+  "reference_text": "El sistema educativo en España se organiza en diversas etapas que buscan garantizar la formación integral de los estudiantes. La Educación Infantil se ofrece desde los 0 hasta los 6 años y no es obligatoria. Seguidamente, los niños ingresan a la Educación Primaria, que abarca desde los 6 hasta los 12 años y es obligatoria. Después, los estudiantes pasan a la Educación Secundaria Obligatoria (ESO), que dura cuatro años y es esencial para obtener el título de educación secundaria. Al finalizar la ESO, los jóvenes pueden optar por el Bachillerato, que es un programa de dos años que permite el acceso a la universidad, o por la Formación Profesional, que se centra en la capacitación para el trabajo en sectores específicos. Finalmente, aquellos que eligen continuar su educación pueden ingresar a la Educación Universitaria, donde pueden obtener títulos de grado, máster y, en algunos casos, doctorados. Este sistema busca adaptarse a las necesidades de cada estudiante y ofrecer múltiples opciones para su futuro académico y profesional."
+}

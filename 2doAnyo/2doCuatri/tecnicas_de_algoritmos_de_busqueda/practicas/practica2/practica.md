@@ -103,13 +103,7 @@ def generar_datos_gaussianos(n_muestras=100, n_clusters=3, centros=None):
 
 After generating the data, plot the points using different colors for each cluster. And the result should be like this:
 
-```{figure} ./images/datos_sinteticos.png
----
-width: 800px
-name: gaussian_data
----
-Visualización de datos generados con distribuciones gaussianas
-```
+![Visualización de datos generados con distribuciones gaussianas](./ejercicio1.png)
 
 
 ## Exercise 2: Implementing Deterministic Annealing
@@ -273,12 +267,47 @@ The criteria will be given by the elbow method, which is a heuristic used in clu
 
 The elbow point indicates the optimal number of clusters, as adding more clusters beyond this point does not significantly improve the explained variance.
 
-```{figure} ./images/automated_entropy.png
----
-width: 800px
-name: entropy_data
----
-Visualization of the entropy as a function of the number of clusters
-```
+![Visualization of the entropy as a function of the number of clusters](./ejercicio5.png)
 
 Here we are asking you is to explain the elbow method and how to implement it. And then, use it to find the optimal number of clusters for the data generated in Exercise 1. Obiously, you will have to discuss the results and the elbow point.
+
+## Exercise 6: Image Segmentation
+In this exercise, we will apply the Deterministic Annealing algorithm to segment an image. The goal is to cluster the pixels of the image into different segments based on their color values. We will provide you the part that handles the image loading and visualization, and you will have to implement the segmentation using the algorithm you implemented in Exercise 2. 
+
+```{code-block} python
+
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+from scipy import ndimage
+# Fijamos las semillas para reproducibilidad
+np.random.seed(42)
+# 1. Cargar una imagen
+image = np.array(Image.open('imagen.jpg'))
+
+# 2. Preprocesamiento (opcional)
+# Aplicar un filtro de mediana para reducir el ruido, cuando decimos ruido nos referimos a que haya demasiada variación en los colores de los píxeles
+# en la imagen. Esto puede ayudar a mejorar la segmentación.
+image_filtered = ndimage.median_filter(image, size=10) # ndimage.median_filter es una función de SciPy que aplica un filtro de mediana a la imagen. Le pasamos la imagen y el tamaño del filtro (10x10 píxeles en este caso). Esto significa que cada píxel en la imagen filtrada es reemplazado por la mediana de los píxeles en una vecindad de 10x10 píxeles alrededor de él.
+# 2.1 Mostramos la imagen original y la imagen filtrada
+plt.figure(figsize=(10, 5))
+plt.subplot(121), plt.imshow(image), plt.title('Original')
+plt.subplot(122), plt.imshow(image_filtered), plt.title('Filtrada')
+plt.show()
+# 3. Reformatear la imagen para clustering
+print("Shape de la imagen original:", image.shape)
+pixel_values = image_filtered.reshape((-1, 3))
+print("Shape de la imagen reformateada:", pixel_values.shape)
+pixel_values = np.float32(pixel_values)
+
+# 4. Aplicar Deterministic Annealing
+# ...
+# 5. Visualizar los resultados
+plt.figure(figsize=(15, 5))
+plt.subplot(131), plt.imshow(image), plt.title('Original')
+plt.subplot(132), plt.imshow(segmented_image), plt.title('Segmentada con DA')
+plt.show()
+```
+
+![Segmentación de la imagen utilizando el algoritmo de Deterministic Annealing](./ejercicio6.png)
+````
