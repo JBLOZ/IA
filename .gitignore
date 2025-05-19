@@ -12,7 +12,7 @@ __pycache__/
 *.tmp
 Currículum-EN-SAR.docx
 Currículum-EN-SAR.pdf
-
+**/venv/
 # Logs
 logs
 *.log
