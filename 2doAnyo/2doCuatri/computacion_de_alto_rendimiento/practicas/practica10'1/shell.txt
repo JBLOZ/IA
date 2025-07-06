@@ -1,0 +1,22 @@
+scala> :load /app/spark-shell.scala
+Loading /app/spark-shell.scala...
+import org.apache.spark.SparkContext._
+registros: org.apache.spark.rdd.RDD[String] = /app/registros/*.txt MapPartitionsRDD[1] at textFile at /app/spark-shell.scala:26
+eventosClave: scala.collection.immutable.Set[String] = Set(PAUSA_NO_PROGRAMADA, REINICIO_SISTEMA, CALIBRACION_AUTOMATICA, ALERTA_SOBRECALENTAMIENTO, CARGA_EXCESIVA)
+pares: org.apache.spark.rdd.RDD[(String, Int)] = MapPartitionsRDD[2] at flatMap at /app/spark-shell.scala:27
+conteos: org.apache.spark.rdd.RDD[(String, Int)] = ShuffledRDD[3] at reduceByKey at /app/spark-shell.scala:26
+resultado: Array[(String, Int)] = Array((ALERTA_SOBRECALENTAMIENTO,92), (CALIBRACION_AUTOMATICA,70), (PAUSA_NO_PROGRAMADA,71), (CARGA_EXCESIVA,79), (REINICIO_SISTEMA,88))
+Conteo de eventos:
+ALERTA_SOBRECALENTAMIENTO    92
+CALIBRACION_AUTOMATICA       70
+PAUSA_NO_PROGRAMADA          71
+CARGA_EXCESIVA               79
+REINICIO_SISTEMA             88
+
+# posteriormente podemos escribir 
+scala> resultado.foreach(println)
+(ALERTA_SOBRECALENTAMIENTO,92)
+(CALIBRACION_AUTOMATICA,70)
+(PAUSA_NO_PROGRAMADA,71)
+(CARGA_EXCESIVA,79)
+(REINICIO_SISTEMA,88)
