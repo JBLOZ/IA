@@ -1,0 +1,43 @@
+# SOLUCION PRACTICA 4   
+
+from scipy.optimize import linprog
+
+def solve_lineal(c, A, b):
+    result = linprog(c, A_ub=A, b_ub=b, bounds=(0, None))
+    print(f"Valor óptimo: {result.fun}")
+    print(f"Valores de las variables: {result.x}\n")
+
+def ejercicio_0():
+    print("Ejercicio 0")
+    c = [-3, -2]
+    A = [[1, 1], 
+         [2, 1]]
+    b = [4, 5]
+    solve_lineal(c, A, b)
+
+def ejercicio_1():
+    print("Ejercicio 1")
+    c = [-5, -4]
+    A = [[2, 1],
+         [1, 2]]
+    b = [100, 120]
+    solve_lineal(c, A, b)
+
+def ejercicio_2():
+    print("Ejercicio 2")
+    c =  [ 4, 6, 8, 5, 3, 7, 6, 4, 5]
+    A = [[ 1, 1, 1, 0, 0, 0, 0, 0, 0],
+        [ 0, 0, 0, 1, 1, 1, 0, 0, 0],
+        [ 0, 0, 0, 0, 0, 0, 1, 1, 1],
+        [-1, 0, 0,-1, 0, 0,-1, 0, 0],
+        [ 0,-1, 0, 0,-1, 0, 0,-1, 0],
+        [ 0, 0,-1, 0, 0,-1, 0, 0,-1]]
+    b = [120,180,200,-100,-150,-250]
+    solve_lineal(c, A, b)
+
+
+
+if __name__ == '__main__':
+    ejercicio_0()
+    ejercicio_1()
+    ejercicio_2()

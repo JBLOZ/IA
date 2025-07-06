@@ -1,0 +1,26 @@
+root@effcb89dd838:/workdir# mpirun -np 5 ./ejercicio1
+Tiempo de ejecución: 0.000015 segundos
+Medias locales calculadas:
+Proceso 0: 65.80
+Proceso 1: 47.60
+Proceso 2: 41.60
+Proceso 3: 53.60
+Proceso 4: 56.60
+
+Alertas (media > 50):
+Proceso 0 con media 65.80
+Proceso 3 con media 53.60
+Proceso 3 con media 53.60
+Proceso 4 con media 56.60
+root@effcb89dd838:/workdir# mpirun -np 5 ./ejercicio1
+Tiempo de ejecución: 0.000016 segundos
+Medias locales calculadas:
+Proceso 0: 39.20
+Proceso 1: 38.60
+Proceso 2: 33.80
+Proceso 3: 59.60
+Proceso 4: 35.40
+
+Alertas (media > 50):
+Proceso 1 con media 53.20
+Proceso 3 con media 59.60

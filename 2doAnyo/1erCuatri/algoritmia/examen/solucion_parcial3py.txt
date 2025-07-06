@@ -1,0 +1,124 @@
+import pickle
+
+
+class Turno:
+    def __init__(self, P, C):
+        self.P = P  # Matriz de preferencias (N x T)
+        self.C = C  # Vector de capacidades (T elementos)
+        self.N = len(P)  # Número de alumnos
+        self.T = len(C)  # Número de turnos
+        self.current_x = [-1] * self.N  # Asignación actual (inicialmente sin asignar)
+        self.current_v = 0  # Valor de preferencias acumulado en la asignación actual
+        self.turno_usos = [0] * self.T  # Contador de alumnos asignados a cada turno
+        self.best_x = None  # Asignación óptima
+        self.best_v = 0     # Valor óptimo de preferencias
+        self.count = 0
+
+    def cota_optimista(self, i):
+        return sum(max(self.P[j]) for j in range(i, self.N))
+
+
+    def voraz(self):
+        asignacion = [-1] * self.N  # Inicialmente sin asignar
+        valor_total = 0             # Valor acumulado
+        turnos_disponibles = self.C[:]  # Copia de las capacidades disponibles
+
+        for alumno in range(self.N):
+            mejor_turno = -1
+            mejor_valor = -1
+
+            for turno in range(self.T):
+                if self.P[alumno][turno] > mejor_valor and turnos_disponibles[turno] > 0:
+                    mejor_turno = turno
+                    mejor_valor = self.P[alumno][turno]
+
+            # Si se encontró un turno válido, asignar al alumno
+            if mejor_turno != -1:
+                asignacion[alumno] = mejor_turno
+                valor_total += mejor_valor
+                turnos_disponibles[mejor_turno] -= 1
+
+        return asignacion, valor_total
+
+    def v_atras(self, alumno):
+        self.count += 1
+
+        # Caso base: todos los alumnos han sido procesados
+        if alumno == self.N:
+            if self.current_v > self.best_v:  # Actualizar la mejor solución encontrada
+                self.best_v = self.current_v
+                self.best_x = self.current_x[:]
+            return
+
+        # Cálculo de la cota optimista
+        cota = self.current_v + self.cota_optimista(alumno)
+        if cota <= self.best_v:  # Poda: si la cota no mejora la mejor solución, detener
+            return
+
+        # Probar asignar al alumno a cada turno disponible
+        for turno in range(self.T):
+            # Verificar si el turno tiene capacidad y el alumno puede asistir
+            if self.turno_usos[turno] < self.C[turno] and self.P[alumno][turno] > 0:
+                # Realizar la asignación
+                self.current_x[alumno] = turno
+                self.current_v += self.P[alumno][turno]
+                self.turno_usos[turno] += 1
+
+                # Llamar recursivamente para el siguiente alumno
+                self.v_atras(alumno + 1)
+
+                # Deshacer la asignacion (vuelta atras)
+                self.current_x[alumno] = -1
+                self.current_v -= self.P[alumno][turno]
+                self.turno_usos[turno] -= 1
+
+        # Opción de no asignar al alumno a ningún turno
+        self.v_atras(alumno + 1)
+
+    def resuelve(self):
+        self.best_x, self.best_v = self.voraz()
+        self.v_atras(0)
+
+
+def load_instance(case, show = False):
+    with open("Instancias/Inst_{}-P".format(case), "rb") as fp:
+        P = pickle.load(fp)
+
+    with open("Instancias/Inst_{}-C".format(case), "rb") as fp:
+        C = pickle.load(fp)
+    
+    N, T, M = len(P), len(C), max(max(P))
+
+    if show:
+        print("N={} \t T={} \t M={}".format(N,T,M))
+        print("Matriz de preferencias (P):")
+        for i, fila in enumerate(P, start=1):
+            print(f"Alumno {i}: {fila}")
+        
+        print("\nCapacidades de los turnos (C):")
+        for i, capacidad in enumerate(C, start=1):
+            print(f"Turno {i}: {capacidad}")
+
+    return N, T, M, P, C
+
+def main(case):
+    N, T, M, P, C = load_instance(case, show=False)
+
+    # TODO Resuelve el problema utilizando vuelta atrás
+    t = Turno(P, C)
+    t.resuelve()
+
+    # Obtener y mostrar los resultados
+    print()
+    print("======== {} =========".format(case))
+    #print()
+    #print("Count: {}".format(t.count))
+    #print("\nAsignación óptima (best_x):", t.best_x)
+    print("Valor óptimo de preferencias (best_v):", t.best_v)
+
+if __name__ == "__main__":
+    main('0')
+    main('1')
+    main('2')
+    main('3')
+    main('4')
