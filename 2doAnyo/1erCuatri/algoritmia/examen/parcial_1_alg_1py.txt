@@ -1,0 +1,52 @@
+import numpy as np 
+import random
+import time
+import matplotlib.pyplot as plt
+def diagonal(matriz):
+    d=matriz.shape
+    for i in range(d[0]):
+        for j in range(d[0]):
+            if matriz[i][j] != matriz[j][i]:
+                return 'falso'
+    return 'verdadero'
+
+def cronometrar(matriz):
+    inicio =time.time()
+    diagonal(matriz)
+    fin = time.time()
+    return fin - inicio 
+
+ejecuciones=100
+lista_mejor=[]
+lista_peor=[]
+tamanyos_array=[]
+for tam in range(1,100):
+    tiempos_mejor=0
+    tiempos_peor=0
+    tamanyos_array.append(tam)
+    Diag=np.empty((tam,tam))
+    for _ in range(ejecuciones):
+        M = np.random.randint(1,tam*2,(tam,tam))
+        for i in range(tam):
+            for j in range(tam):
+                if i == j:
+                    Diag[i][j] =random.randint(1,tam*2)
+                else:
+                    Diag[i][j]=0
+        tiempos_peor += cronometrar(Diag)
+        tiempos_mejor += cronometrar(M)
+    lista_mejor.append(tiempos_mejor / ejecuciones)
+    lista_peor.append(tiempos_peor / ejecuciones)
+
+factor=10000000
+n=np.linspace(1,100,100)
+peor=n**2/factor
+mejor=np.ones(len(tamanyos_array)) /factor
+plt.plot(tamanyos_array,lista_mejor,label='mejor empírica', color='green')
+plt.plot(tamanyos_array,lista_peor,label='peor empírica', color='red')
+plt.plot(n,peor,label='peor teórica',color='orange')
+plt.plot(tamanyos_array,mejor,label='mejor teórica',color='blue')
+plt.legend()
+plt.grid(True)
+plt.savefig('Examen.pdf')
+plt.show()

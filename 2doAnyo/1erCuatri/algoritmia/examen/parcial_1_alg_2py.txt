@@ -1,0 +1,93 @@
+import numpy as np
+from time import time
+import json
+import matplotlib.pyplot as plt
+
+
+def dividir_y_sumar(arr):
+    """
+    Calcula la suma de los elementos de un array usando el paradigma
+    de Divide y Vencerás.
+    """
+    # CASO BASE: Si el array tiene un solo elemento, esa es su suma.
+    if len(arr) == 1:
+        return arr[0]
+
+    # CASO BASE ADICIONAL: Si el array está vacío, su suma es 0.
+    if len(arr) == 0:
+        return 0
+
+    # 1. DIVIDIR: Encontrar el punto medio y dividir el array en dos.
+    medio = len(arr) // 2  # Usar // para división entera
+    mitad_izquierda = arr[:medio]
+    mitad_derecha = arr[medio:]
+
+    # 2. CONQUISTAR: Llamar recursivamente a la función sobre las dos mitades.
+    #    La función resolverá la suma de cada sub-array.
+    suma_izquierda = dividir_y_sumar(mitad_izquierda)
+    suma_derecha = dividir_y_sumar(mitad_derecha)
+
+    # 3. COMBINAR: El resultado total es simplemente la suma de los resultados
+    #    de las dos mitades.
+    return suma_izquierda + suma_derecha
+
+
+def tempo(arr):
+    inicio = time()
+    dividir_y_sumar(arr=arr)
+    return time() - inicio
+
+
+# Cambiar el rango para evitar overflow
+sizes = np.linspace(1, 50, 100, dtype=int)
+eje_y = []
+
+tiempos = []
+for size in sizes:
+    for i in range(100):
+        tiempos.append(tempo(np.random.randint(0,10,size=(size))))
+
+    eje_y.append(np.mean(tiempos))
+
+    tiempos = []
+
+# Usar la complejidad correcta O(n) en lugar de O(2^n)
+func = sizes  # O(n) en lugar de np.power(2, sizes)
+factor_k = np.mean(eje_y) / np.mean(func)
+func2_regulada = []
+
+for num in func:
+    func2_regulada.append(num*factor_k)
+
+
+
+plt.figure(figsize=(10,6))
+
+# Plotear la función teórica y los datos empíricos
+plt.plot(sizes, eje_y, label='Tiempos empíricos', marker='o')
+plt.plot(sizes, func2_regulada, label='O(n) ajustada', linestyle='--')
+
+plt.ylabel('Tiempo (seg)')
+plt.xlabel('n')
+plt.legend()
+plt.grid(True)
+plt.savefig('figura1.pdf')
+plt.show()
+
+# ANÁLISIS DE COMPLEJIDAD USANDO EL TEOREMA MAESTRO:
+# 
+# Recurrencia: T(n) = 2·T(n/2) + O(1)
+# Donde:
+# - a = 2 (número de llamadas recursivas)
+# - b = 2 (factor de reducción: n/2)
+# - f(n) = O(1) (trabajo de dividir y combinar)
+#
+# Aplicando el Teorema Maestro:
+# 1. Calculamos n^(log_b(a)) = n^(log_2(2)) = n^1 = n
+# 2. Comparamos f(n) = O(1) con n^1 = n
+# 3. Como O(1) < O(n), aplicamos el Caso 1
+# 4. Resultado: T(n) = Θ(n)
+#
+# Por tanto, la complejidad es O(n), no O(2^n). Aunque hace 2 llamadas recursivas, cada una procesa la mitad del problema,
+# resultando en que cada elemento se visita exactamente una vez.
+

@@ -1,0 +1,14 @@
+from scipy.optimize import linprog
+
+def solve_lineal(c, A, b):
+    result = linprog(c, A_ub=A, b_ub=b, bounds=(0, None))
+    return result
+
+def parcial_4():
+    # TODO
+
+    return solve_lineal(c, A, b)
+
+
+if __name__ == '__main__':
+    parcial_4()
