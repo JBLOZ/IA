@@ -84,9 +84,9 @@
 	commentstyle=\color{colorcomment}\itshape,
 	stringstyle=\color{colorstring},
 	identifierstyle=\color{black},
-	numbers=left,
-	numberstyle=\tiny\color{colornumber},
-	numbersep=5pt,
+	% numbers=left,
+	% numberstyle=\tiny\color{colornumber},
+	% numbersep=5pt,
 	morekeywords={*,std, string, cout, cin, endl, vector, list, map, set, nullptr, auto, size_t},
 	keywordsprefix=\#,
 	morekeywords=[2]{\#include, \#define, \#ifdef, \#endif, \#ifndef},
@@ -114,9 +114,9 @@
 	identifierstyle=\color{black},
 	% --- Palabras clave de Python (divididas en grupos para evitar errores) ---
 	keywords=[1]{ % Grupo 1: Palabras reservadas del lenguaje
-		False, None, True, and, as, assert, async, await, break, class, continue, 
-		def, del, elif, else, except, finally, for, from, global, if, import, 
-		in, is, lambda, nonlocal, not, or, pass, raise, return, try, while, 
+		False, None, True, and, as, assert, async, await, break, class, continue,
+		def, del, elif, else, except, finally, for, from, global, if, import,
+		in, is, lambda, nonlocal, not, or, pass, raise, return, try, while,
 		with, yield
 	},
 	morekeywords=[2]{ % Grupo 2: Funciones y tipos comunes
@@ -131,13 +131,13 @@
 	keywordstyle=[2]\color{colorkeyword}\bfseries,
 	keywordstyle=[3]\color{colorkeyword}\bfseries,
 	% --- Estilos específicos de Python ---
-	morestring=[m][\itshape\color{colorcomment}]{"""}{"""},
-	morestring=[m][\itshape\color{colorcomment}]{'''}{'''},
+	morestring=[m][\itshape\color{colorcomment}]{"}{"""},
+	morestring=[m][\itshape\color{colorcomment}]{'}{'''},
 	keywordsprefix=@,
 	keywordstyle=[4]\color{colorpreproc}, % Usamos el grupo 4 para decoradores
 	% --- Configuración general ---
-	numbers=left,
-	numberstyle=\tiny\color{colornumber},
+	% numbers=left,
+	% numberstyle=\tiny\color{colornumber},
 	numbersep=5pt,
 	breaklines=true,
 	keepspaces=true,
