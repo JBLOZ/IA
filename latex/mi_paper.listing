@@ -1,0 +1,6 @@
+def hello():
+^^I^^I^^I^^I"""Un docstring de ejemplo."""
+^^I^^I^^I^^Imessage = "Hola Mundo!"
+^^I^^I^^I^^Iprint(message)
+^^I^^I
+^^I^^Ihello()
