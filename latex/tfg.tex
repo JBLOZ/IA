@@ -1,0 +1,231 @@
+% !TeX program = xelatex
+% ¡Recuerda compilar con XeLaTeX o LuaLaTeX!
+\documentclass{article}
+
+% --- Cargar nuestro fichero de estilo ---
+% Se asume que paper_style.sty está disponible o se usan paquetes estándar.
+\usepackage{paper_style}
+
+% --- PAQUETES PARA EL CONTENIDO DEL DOCUMENTO ---
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+% --- Configuración de la página ---
+\geometry{a4paper, margin=1in}
+
+% --- Información del Paper ---
+\title{Informe Técnico Detallado: El Modelo de Razonamiento Jerárquico (HRM)}
+\author{
+	Jordi Blasco Lozano \\
+	\small Universidad de Alicante
+}
+\date{\today}
+
+% --- Comienzo del Documento ---
+\begin{document}
+	
+	\maketitle
+	
+	\begin{abstract}
+		\noindent Este informe técnico detalla el Modelo de Razonamiento Jerárquico (HRM), una novedosa arquitectura de inteligencia artificial que se presenta como una alternativa a los modelos de lenguaje de gran tamaño (LLMs) para tareas que requieren razonamiento complejo. Se analizan sus fundamentos, inspirados en la computación cortical del cerebro humano, su arquitectura dual, su metodología de entrenamiento y su rendimiento en benchmarks clave. Finalmente, se discute el análisis crítico de la comunidad y se proponen vías de investigación futuras.
+	\end{abstract}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{Introducción al Razonamiento Jerárquico: Un Nuevo Paradigma Frente a las Arquitecturas Actuales}
+	
+	\subsection{El Desafío del Razonamiento Complejo en la IA}
+	El razonamiento, definido como el proceso de concebir y ejecutar secuencias de acciones complejas orientadas a la consecución de un objetivo, sigue siendo uno de los desafíos más críticos y persistentes en el campo de la inteligencia artificial.\textsuperscript{1} A pesar de los notables avances logrados por los modelos de lenguaje de gran tamaño (LLMs), las tareas que exigen una planificación deliberada, una manipulación simbólica precisa o una búsqueda exhaustiva con capacidad de retroceso (backtracking) continúan representando una frontera formidable para las arquitecturas actuales.\textsuperscript{3}
+	
+	\subsection{Análisis de las Limitaciones: La Profundidad Computacional Fija de los Transformers y la Fragilidad del Chain-of-Thought (CoT)}
+	El estado del arte actual se apoya fundamentalmente en dos pilares: la arquitectura Transformer y la técnica de prompting de Cadena de Pensamiento (Chain-of-Thought o CoT). Sin embargo, ambos presentan limitaciones intrínsecas que el Modelo de Razonamiento Jerárquico (HRM) busca superar.
+	
+	\subsubsection{La Arquitectura Transformer}
+	A pesar de su éxito revolucionario, la arquitectura Transformer es, paradójicamente, ``superficial'' en su capacidad computacional.\textsuperscript{3} Su profundidad está fijada por el número de capas, lo que la sitúa en clases de complejidad computacional como AC0 o TC0. Esta característica estructural le impide, en teoría, resolver problemas que requieren un tiempo de ejecución polinomial y, por consiguiente, la arquitectura no es Turing-completa.\textsuperscript{3} Esta limitación se manifiesta empíricamente en tareas complejas como la resolución de Sudokus de alta dificultad, donde el rendimiento de los modelos Transformer se satura y no mejora sustancialmente, incluso al aumentar drásticamente el número de capas.\textsuperscript{3}
+	
+	\subsubsection{La Técnica Chain-of-Thought (CoT)}
+	Para mitigar la limitación de profundidad, los LLMs recurren al CoT, una técnica que externaliza el proceso de razonamiento en una secuencia de pasos intermedios expresados en lenguaje natural.\textsuperscript{4} Aunque ha demostrado ser efectiva para mejorar ciertas capacidades de razonamiento, esta estrategia adolece de debilidades fundamentales:
+	\begin{itemize}
+		\item \textbf{Fragilidad:} La descomposición de la tarea en pasos lingüísticos es inherentemente frágil. Un único error en la cadena puede desviar por completo el proceso y conducir a una conclusión incorrecta.\textsuperscript{1}
+		\item \textbf{Dependencia de la Escala:} El CoT es una habilidad emergente que solo funciona de manera fiable en modelos de escala masiva, típicamente con más de 100 mil millones de parámetros, y requiere vastos conjuntos de datos para su entrenamiento.\textsuperscript{1}
+		\item \textbf{Alta Latencia:} La generación secuencial de tokens para cada paso del ``pensamiento'' es un proceso lento, lo que resulta en una alta latencia de inferencia, un inconveniente significativo para aplicaciones en tiempo real.\textsuperscript{1}
+		\item \textbf{Razonamiento Engañoso:} Se ha observado que el razonamiento verbalizado por el modelo no siempre refleja el proceso computacional interno que llevó a la respuesta. Esto genera un problema de confianza e interpretabilidad, ya que una justificación aparentemente lógica puede enmascarar un proceso de inferencia defectuoso.\textsuperscript{7}
+	\end{itemize}
+	
+	\subsection{Principios Fundamentales del HRM: Inspiración en la Computación Cortical}
+	Frente al paradigma dominante de ``escalar es todo lo que necesitas'', Sapient Intelligence, la organización detrás del HRM, propone un cambio de enfoque: en lugar de depender de la fuerza bruta computacional, se debe innovar en la arquitectura, inspirándose en los principios de eficiencia y profundidad computacional perfeccionados por el cerebro humano a lo largo de miles de millones de años de evolución.\textsuperscript{11} El HRM se fundamenta en tres principios clave observados en la computación cortical\textsuperscript{3}:
+	\begin{itemize}
+		\item \textbf{Procesamiento Jerárquico:} El cerebro organiza la información en una jerarquía de áreas corticales. Las áreas de nivel superior, como la corteza prefrontal, integran información a lo largo de escalas temporales extensas para formar representaciones abstractas y planes estratégicos. En contraste, las áreas de nivel inferior se especializan en el procesamiento sensorial y motor inmediato y detallado.
+		\item \textbf{Separación Temporal:} Estos niveles jerárquicos operan en escalas de tiempo intrínsecas distintas, un fenómeno reflejado en los ritmos neuronales (por ejemplo, las ondas lentas theta, 4–8 Hz, y las rápidas gamma, 30–100 Hz). Esta separación temporal es crucial, ya que permite que la planificación abstracta de alto nivel guíe de manera estable los cálculos rápidos y detallados de bajo nivel, sin que estos últimos desestabilicen el proceso global.
+		\item \textbf{Conectividad Recurrente:} El cerebro se caracteriza por sus extensas conexiones recurrentes y bucles de retroalimentación. Estos circuitos permiten un refinamiento iterativo de las representaciones neuronales, lo que da lugar a soluciones más precisas y sensibles al contexto a cambio de un mayor tiempo de procesamiento.
+	\end{itemize}
+	
+	\subsection{Tabla Comparativa: HRM vs. Transformer vs. LLM con CoT}
+	La siguiente tabla resume las diferencias conceptuales entre los tres enfoques.
+	
+	\begin{table}[h!]
+		\centering
+		\caption{Comparativa de Paradigmas de Razonamiento en IA.}
+		\label{tab:comparativa_ia}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{Característica} & \textbf{HRM} & \textbf{Transformer (Base)} & \textbf{LLM con CoT} \\
+			\midrule
+			Paradigma & Interno, iterativo & Feed-forward, paralelo & Externo, secuencial \\
+			Profundidad & Dinámica, ilimitada & Fija, limitada & Extendida artificialmente \\
+			Eficiencia Datos & Muy alta & Baja & Muy baja \\
+			Pre-entrenamiento & No requerido & Requerido & Requerido \\
+			Latencia & Potencialmente baja & Baja & Alta \\
+			Base Teórica & Neurociencia & Procesamiento secuencias & Habilidad emergente \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	La emergencia del HRM no es solo la presentación de una nueva arquitectura, sino una crítica fundamental al paradigma de escalado que ha dominado la investigación en IA. El hecho de que un modelo de solo 27 millones de parámetros, entrenado con un millar de ejemplos, pueda superar a gigantes de cientos de miles de millones de parámetros en tareas específicas de razonamiento\textsuperscript{1}, sugiere que la estructura computacional puede ser tan importante, o incluso más, que el tamaño bruto.
+	
+	\section{Deconstrucción de la Arquitectura del Hierarchical Reasoning Model}
+	
+	\subsection{La Estructura Dual: El Módulo de Alto Nivel (H) como Planificador Abstracto}
+	El Módulo de Alto Nivel (H) es una red recurrente diseñada para la planificación lenta y abstracta.\textsuperscript{1} Su función principal es establecer la estrategia general o el contexto para la resolución de un problema. Opera en una escala de tiempo más lenta, análoga a lo que la psicología cognitiva denomina ``Sistema 2'': el pensamiento deliberado, lento y analítico.\textsuperscript{11}
+	
+	\subsection{El Módulo de Bajo Nivel (L): Ejecutor de Cómputos Rápidos y Detallados}
+	Complementando al módulo H, el Módulo de Bajo Nivel (L) es otra red recurrente, pero optimizada para ejecutar cálculos rápidos y detallados.\textsuperscript{1} Este módulo opera bajo la dirección del estado actual del módulo H. Por cada paso lento que da el módulo H, el módulo L ejecuta múltiples pasos computacionales a alta velocidad.\textsuperscript{3} Su funcionamiento es análogo al ``Sistema 1'' del pensamiento: rápido, automático e intuitivo.\textsuperscript{11}
+	
+	\subsection{Interdependencia y Dinámica Temporal: Cómo la Separación de Escalas Temporales Permite la Estabilidad}
+	La clave de la arquitectura no reside solo en la existencia de los dos módulos, sino en su interacción dinámica y la estricta separación de sus escalas temporales. La dinámica del modelo se desarrolla a lo largo de N ciclos de alto nivel. Cada uno de estos ciclos se compone, a su vez, de T pasos de tiempo de bajo nivel.\textsuperscript{3} Durante los T pasos de un ciclo, el estado oculto del módulo H, \(z_H\), permanece constante, guiando las operaciones del módulo L. Mientras tanto, el módulo L actualiza su propio estado oculto, \(z_L\), en cada uno de sus T pasos.\textsuperscript{13}
+	
+	\subsection{Convergencia Jerárquica: El Proceso Iterativo Hacia un Equilibrio Computacional}
+	La interacción entre los módulos H y L da lugar a un proceso denominado ``convergencia jerárquica''.\textsuperscript{4} Dentro de un único ciclo de alto nivel, el módulo L itera hasta alcanzar un ``equilibrio local''.\textsuperscript{21} Una vez que L ha convergido, H ejecuta un único paso de actualización para revisar su plan estratégico. Este bucle iterativo permite al modelo realizar de forma implícita procesos complejos como la búsqueda en árbol y el backtracking.\textsuperscript{3}
+	
+	\section{Mecanismos de Cómputo y ``Razonamiento Latente''}
+	
+	\subsection{El Flujo de Procesamiento en un Único ``Forward Pass''}
+	Una de las características más notables del HRM es su capacidad para resolver tareas de razonamiento complejas en una única pasada hacia adelante (forward pass).\textsuperscript{1} El modelo recibe una entrada completa y, a través de la dinámica interna de sus ciclos recurrentes, su estado converge hacia una representación que codifica la solución.
+	
+	\subsection{``Pensar en Silencio'': El Proceso de Refinamiento Interno vs. la Externalización Lingüística del CoT}
+	Este modelo operativo introduce el concepto de ``razonamiento latente'' o ``pensar en silencio''.\textsuperscript{21} A diferencia de los modelos con CoT, que necesitan ``pensar en voz alta'' generando una cadena de tokens\textsuperscript{4}, todo el proceso computacional del HRM ocurre en el espacio latente de alta dimensión de sus estados ocultos (\(z_H\) y \(z_L\)).\textsuperscript{22}
+	
+	\subsection{El ``Outer Loop Refinement Process'': Un Análisis Profundo del Bucle de Refinamiento Iterativo}
+	Un análisis crítico independiente ha revelado que un mecanismo de refinamiento iterativo externo es un componente crucial.\textsuperscript{23} Este mecanismo, denominado ``outer loop refinement process'', funciona de la siguiente manera:
+	\begin{enumerate}
+		\item Se ejecuta una pasada completa del modelo HRM, que produce una predicción de salida provisional.
+		\item Esta predicción se retroalimenta como parte de la entrada para la siguiente pasada del modelo.
+		\item El proceso se repite varias veces, permitiendo que el modelo refine iterativamente su propia salida.\textsuperscript{23}
+	\end{enumerate}
+	
+	\subsection{Visualización de los Pasos Intermedios del Razonamiento}
+	A pesar de que el razonamiento del HRM es latente, no es una caja negra impenetrable. El repositorio de código fuente incluye herramientas que permiten decodificar y observar las salidas intermedias generadas al final de cada segmento del bucle de refinamiento externo, proporcionando una ventana a la interpretabilidad del modelo.\textsuperscript{25}
+	
+	\section{Metodología de Entrenamiento y Optimización}
+	
+	\subsection{Eficiencia de Datos Extrema: Aprendizaje con Muestras Mínimas y Sin Pre-entrenamiento}
+	El HRM puede alcanzar un rendimiento de vanguardia con conjuntos de datos de entrenamiento de solo \textasciitilde1000 ejemplos originales por tarea, sin necesidad de pre-entrenamiento.\textsuperscript{1} Sin embargo, esto depende críticamente de una aumentación de datos masiva, donde cada puzle original puede ser aumentado hasta 1000 veces.\textsuperscript{23}
+	
+	\subsection{Supervisión Profunda (Deep Supervision) para la Estabilidad del Entrenamiento}
+	El HRM emplea ``supervisión profunda''.\textsuperscript{3} El entrenamiento se estructura en ``segmentos''. En cada segmento \(m\), se calcula una pérdida \(L_m\) y los parámetros se actualizan. El estado oculto final del segmento \(m\), \(z_m\), se ``desconecta'' del grafo computacional antes de ser usado en el segmento \(m+1\), impidiendo que los gradientes retropropagen entre segmentos.\textsuperscript{3}
+	
+	\subsection{Aproximación de Gradiente de 1 Paso: Evitando la Complejidad de BPTT}
+	La desconexión de gradientes crea una ``aproximación de gradiente de 1 paso'', que evita la necesidad de usar Backpropagation Through Time (BPTT) a lo largo de toda la secuencia.\textsuperscript{21} Esto mantiene la huella de memoria constante, O(1), independientemente del número de segmentos.\textsuperscript{3}
+	
+	\subsection{Análisis Detallado del Tiempo de Cómputo Adaptativo (ACT)}
+	El HRM incorpora un mecanismo de Tiempo de Cómputo Adaptativo (ACT), que permite al modelo ajustar dinámicamente el número de segmentos de refinamiento usando Q-learning. Al final de cada segmento, una ``Q-head'' predice los valores Q para las acciones ``continuar'' o ``detener''.\textsuperscript{13}
+	
+	\section{Evaluación de Rendimiento y Análisis Comparativo en Benchmarks}
+	
+	\subsection{Rendimiento en Tareas de Razonamiento Inductivo: Abstraction and Reasoning Corpus (ARC-AGI)}
+	En el benchmark ARC-AGI, el HRM ha demostrado un rendimiento sobresaliente, alcanzando una puntuación del 40.3\% en la versión 1 y 5\% en la versión 2, superando a modelos mucho más grandes.\textsuperscript{1,11}
+	
+	\subsection{Dominio en Puzzles de Búsqueda Simbólica: Sudoku-Extreme y Maze-Hard}
+	En tareas que requieren búsqueda algorítmica como Sudoku-Extreme y Maze-Hard, el HRM alcanza una precisión casi perfecta, mientras que los LLMs de vanguardia con CoT fallan por completo (0\% de precisión).\textsuperscript{1,3}
+	
+	\subsection{Tabla de Resultados: Comparativa Cuantitativa del HRM}
+	\begin{table}[h!]
+		\centering
+		\caption{Rendimiento del HRM vs. otros modelos.}
+		\label{tab:rendimiento}
+		\begin{tabular}{@{}lcccc@{}}
+			\toprule
+			\textbf{Modelo} & \textbf{Parámetros} & \textbf{ARC-AGI-1} & \textbf{Sudoku-Extreme} & \textbf{Maze-Hard} \\
+			\midrule
+			HRM & \textasciitilde 27M & 40.3\% & \textasciitilde 100\% & \textasciitilde 100\% \\
+			OpenAI o3-mini-high & $>$100B & 34.5\% & 0\% & 0\% \\
+			Claude 3.7 8K & $>$100B & 21.2\% & 0\% & 0\% \\
+			DeepSeek R1 & $>$100B & $<$34.5\% & 0\% & 0\% \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{Análisis Crítico y Discusión de la Comunidad Científica}
+	
+	\subsection{El Estudio de Ablación de ARC Prize: Cuestionando los Pilares del Rendimiento del HRM}
+	El equipo de ARC Prize replicó los resultados del HRM, confirmando una puntuación impresionante del 32\% en su conjunto de datos semi-privado, pero sus estudios de ablación recontextualizaron las contribuciones del modelo.\textsuperscript{23}
+	
+	\subsection{¿Arquitectura o Proceso de Entrenamiento? El Impacto Real del ``Outer Loop'' y la Aumentación de Datos}
+	El análisis de ARC Prize arrojó tres hallazgos principales\textsuperscript{23}:
+	\begin{itemize}
+		\item \textbf{Impacto Mínimo de la Arquitectura Jerárquica:} Reemplazar el núcleo H-L por un Transformer estándar de tamaño similar, manteniendo el resto del pipeline, resultó en un rendimiento comparable.
+		\item \textbf{El ``Outer Loop'' como Motor Principal:} El ``outer loop refinement process'' fue el principal responsable de las ganancias de rendimiento.
+		\item \textbf{Rol Crítico de la Aumentación y la Memorización:} La aumentación de datos fue crítica, y gran parte del rendimiento en ARC provenía de la memorización efectiva de las tareas de entrenamiento y sus variantes.
+	\end{itemize}
+	
+	\subsection{Tabla de Ablación: Rendimiento del HRM vs. un Transformer de Parámetros Equivalentes}
+	\begin{table}[h!]
+		\centering
+		\caption{Rendimiento conceptual según arquitectura y bucles de refinamiento.}
+		\label{tab:ablacion}
+		\begin{tabular}{@{}lcc@{}}
+			\toprule
+			\textbf{Arquitectura} & \textbf{Nº Bucles Externos} & \textbf{Puntuación ARC-AGI-1 (Aprox.)} \\
+			\midrule
+			HRM & 1 & Base \\
+			Transformer Baseline & 1 & Ligeramente inferior a HRM \\
+			HRM & > 1 & Aumento significativo \\
+			Transformer Baseline & > 1 & Aumento significativo (comparable a HRM) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{Recontextualización de las Aportaciones del HRM a la Luz de Nuevas Evidencias}
+	Estos hallazgos no invalidan la eficacia del sistema HRM, pero sí desplazan el foco de su innovación. La contribución principal podría ser el pipeline de entrenamiento de refinamiento iterativo, que parece ser agnóstico a la arquitectura del núcleo computacional que utiliza.\textsuperscript{24}
+	
+	\section{Aplicaciones Potenciales y el Futuro de las Arquitecturas Inspiradas en el Cerebro}
+	
+	\subsection{Oportunidades en Dominios con Datos Escasos}
+	El HRM es adecuado para dominios donde los datos son escasos, como\textsuperscript{11}:
+	\begin{itemize}
+		\item \textbf{Salud:} Apoyo al diagnóstico de enfermedades raras.
+		\item \textbf{Pronóstico Climático:} Precisión del 97\% en pronósticos subestacionales a estacionales (S2S).
+		\item \textbf{Robótica:} Su tamaño compacto lo hace ideal para ser un ``cerebro de decisión'' embarcado (on-device).
+	\end{itemize}
+	
+	\subsection{El HRM como Alternativa a la Ley de Escalado: Hacia una IA más Eficiente y Accesible}
+	El HRM ofrece un camino hacia sistemas de razonamiento potentes que priorizan la ``elegancia arquitectónica'' sobre la ``fuerza bruta computacional'', lo que podría democratizar el acceso a la IA de vanguardia y reducir su huella ambiental y económica.\textsuperscript{11,20}
+	
+	\subsection{El ``Renacimiento Recurrente'': El Papel del HRM en las Futuras Tendencias Arquitectónicas}
+	El HRM es parte de una tendencia emergente que reevalúa arquitecturas recurrentes y basadas en estado como alternativas a los Transformers, como el Universal Transformer, Mamba, RWKV y RecurrentGemma.\textsuperscript{14,15}
+	
+	\section{Conclusión y Vías de Exploración para un TFG}
+	
+	\subsection{Síntesis de las Contribuciones, Fortalezas y Debilidades del HRM}
+	\begin{itemize}
+		\item \textbf{Contribuciones Clave:} Demostración de que un modelo pequeño puede alcanzar un rendimiento de vanguardia en tareas de razonamiento, desafiando el paradigma de escalado.
+		\item \textbf{Fortalezas:} Eficiencia en el uso de datos, rendimiento excepcional en búsqueda simbólica y potencial para aplicaciones de baja latencia.
+		\item \textbf{Debilidades y Controversias:} La atribución de su éxito (arquitectura vs. pipeline de entrenamiento) es el principal punto de controversia.
+	\end{itemize}
+	
+	\subsection{Recomendaciones para el Proyecto de Fin de Grado (TFG)}
+	Se proponen varias líneas de investigación viables para un TFG:
+	\begin{itemize}[leftmargin=*]
+		\item \textbf{Línea 1 (Replicación y Verificación Empírica):} Replicar los hallazgos del estudio de ablación de ARC Prize para verificar empíricamente si el rendimiento de la arquitectura HRM y un Transformer es comparable bajo el mismo pipeline de entrenamiento.
+		\item \textbf{Línea 2 (Exploración Arquitectónica del ``Núcleo''):} Experimentar reemplazando el núcleo computacional con otras arquitecturas recurrentes (Mamba, RWKV, LSTM) para investigar la universalidad del enfoque de entrenamiento de refinamiento.
+		\item \textbf{Línea 3 (Aplicación y Generalización a Nuevos Dominios):} Aplicar el modelo a nuevos dominios de razonamiento algorítmico, como la resolución de problemas de programación de nivel introductorio o el análisis de finales de partidas de ajedrez.
+		\item \textbf{Línea 4 (Análisis de Interpretabilidad y Visualización):} Desarrollar nuevas técnicas para analizar y visualizar los estados ocultos de los módulos a lo largo de los bucles de refinamiento para responder preguntas sobre qué conceptos aprende el modelo en cada paso.
+	\end{itemize}
+	
+\end{document}
