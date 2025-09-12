@@ -16,13 +16,14 @@
 \usepackage{enumitem}
 \usepackage{float}
 
-% --- Configuración de la página ---
+% --- Configuración de la página ----
 \geometry{a4paper, margin=1in}
 
 % --- Información del Paper ---
 \title{Informe: \\ Introducción a la Consola de Administración de AWS}
 \author{
 	Jordi Blasco Lozano \\
+	\small Infraestructuras y Servicios Cloud \\
 	\small Universidad de Alicante
 }
 \date{\today}
@@ -42,7 +43,7 @@
 
 	\section{Primeros Pasos y Navegación Básica}
 
-	La consola de administración de AWS es una interfaz web que permite a los usuarios gestionar y configurar todos los servicios que ofrece Amazon. Para acceder a ella tube que entrar en la tarea de lanzar un laboratorio y clicar en ``start lab'' y posteriormente en el circulo verde donde pone ``WSL''
+	La consola de administración de AWS es una interfaz web que permite a los usuarios gestionar y configurar todos los servicios que ofrece Amazon. Para acceder a ella tube que entrar en la tarea de lanzar un laboratorio y clicar en ``start lab'' y posteriormente en el circulo verde donde pone ``AWS''
 
 	\begin{figure}[h!]
 	\centering
@@ -52,7 +53,7 @@
 
 	\section{Exploración de Servicios}
 
-	Una vez dentro de la consola, se puede acceder a una amplia variedad de servicios. Se accede a los servicios clicando en ``⣿'' y luego si buscamos los servicios que queramos podemos marcar los servicios favoritos para un acceso rápido dándole a la estrellita que aparece al lado del nombre del servicio.
+	Una vez dentro de la consola, se puede acceder a una amplia variedad de servicios. Se accede a los servicios clicando en el botón de 9 puntos al lado del logo de AWS. Si buscamos los servicios que queramos podemos marcar los servicios favoritos para un acceso rápido dándole a la estrellita que aparece al lado del nombre del servicio.
 
 	\begin{figure}[h!]
 		\centering
@@ -121,7 +122,7 @@
 
 	\section{Exploración de la Consola de Costes y Facturación}
 
-	Como AWS es un servicio de pago por uso, es fundamental entender cómo se facturan los servicios. La consola de Costes y Facturación proporciona herramientas para ver y analizar los costes, configurar alertas de presupuesto y revisar facturas detalladas. Se accede a ella directamente desde el widget del panel de consola de WSL.
+	Como AWS es un servicio de pago por uso, es fundamental entender cómo se facturan los servicios. La consola de Costes y Facturación proporciona herramientas para ver y analizar los costes, configurar alertas de presupuesto y revisar facturas detalladas. Se accede a ella directamente desde el widget del panel de consola de AWS.
 
 	\begin{figure}[h!]
 	\centering
@@ -133,7 +134,7 @@
 
 	\section{Tarea final}
 
-	Para acabar haremos uso del servicio EC2, este servicio nos permite crear y gestionar instancias de servidores virtuales en la nube. Crearemos una instancia t2.micro con Amazon Linux 2, que es elegible para el nivel gratuito de AWS. Una vez lanzada la instancia, nos conectaremos a ella mediante SSH utilizando un par de claves que he creado previamente. Para el comando utilizaré el comando proporcionado por AWS en la sección de conectarse a una instancia. Para hacer esto he tenido que buscar el servicio y darle a lanzar una instancia, después de esto se le debe de asignar un nombre y descargarte la clave ``.pem'' para poder acceder a ella mediante ssh, todos los valores de configuration se pueden dejar por defecto. Finalmente damos privilegios y accedemos por ssh desde nuestro terminal mediante los comandos que nos proporciona wsl en el apartado de ``conectarse a una instancia'' 
+	Para acabar haremos uso del servicio EC2, este servicio nos permite crear y gestionar instancias de servidores virtuales en la nube. Crearemos una instancia t3.micro con Amazon Linux, que son las configuraciones gratuitas y por defecto que ofrece Amazon. Una vez lanzada la instancia, nos conectaremos a ella mediante SSH utilizando un par de claves que he creado previamente. Para el comando utilizaré el comando proporcionado por AWS en la sección de conectarse a una instancia. Para hacer esto he tenido que buscar el servicio y darle a lanzar una instancia, después de esto se le debe de asignar un nombre y descargarte la clave ``.pem'' para poder acceder a ella mediante ssh, todos los valores de configuration se pueden dejar por defecto. Finalmente damos privilegios y accedemos por ssh desde nuestro terminal mediante los comandos que nos proporciona AWS en el apartado de ``conectarse a una instancia'' 
 
 
 	\begin{figure}[H]
