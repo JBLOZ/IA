@@ -16,8 +16,7 @@
 \usepackage{enumitem}
 \usepackage{float}
 
-% --- Configuración de la página ----
-\geometry{a4paper, margin=1in}
+
 
 % --- Información del Paper ---
 \title{Informe: \\ Introducción a la Consola de Administración de AWS}
@@ -143,10 +142,32 @@
 	\caption{Panel de instancias de EC2 con la instancia creada}
 	\end{figure}
 
-	\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\textwidth]{tarea_final_2.png}
-	\caption{Terminal de conexión a la instancia mediante SSH}
-	\end{figure}
+
+
+\begin{lstlisting}[style=consola, language=bash, caption={Salida de la terminal Windows Power Shell.}]
+	PS C:\Users\jordi\Documents\UNI\IA\3erAnyo\1erCuatri\infraestructuras_y_servicios_cloud\practicas\practica_1> chmod 400 "pc.pem"
+	PS  :\Users\jordi\Documents\UNI\IA\3erAnyo\1erCuatri\infraestructuras_y_servicios_cloud\practicas\practica_1> ssh -i "pc.pem" ec2-user@ec2-54-224-198-6.compute-1.amazonaws.com
+	The authenticity of host 'ec2-54-224-198-6.compute-1.amazonaws.com (54.224.198.6)' can't be established.
+	ED25519 key fingerprint is SHA256:70rYgLmu9wMm8ZWmCWcRWc7jPC/YBu6/XO29SwU94qk.
+	This key is not known by any other names.
+	Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+	Warning: Permanently added 'ec2-54-224-198-6.compute-1.amazonaws.com' (ED25519) to the list of known hosts.
+	,     #_
+	~\_  ####_        Amazon Linux 2023
+	~~  \_#####\
+	~~   \###|
+	~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+	~~       V~' '->
+		~~~         /
+		~~._.   _/
+			_/ _/
+		_/m/'
+	[ec2-user@ip-172-31-27-182 ~]$ ls
+	[ec2-user@ip-172-31-27-182 ~]$ mkdir hola
+	[ec2-user@ip-172-31-27-182 ~]$ ls
+	hola
+	[ec2-user@ip-172-31-27-182 ~]$
+
+\end{lstlisting}
 
 \end{document}
