@@ -33,8 +33,13 @@
 	\maketitle
 
 	\begin{abstract}
-	\noindent 
+	\noindent En esta práctica veremos como lanzar un servidor Apache con un html dentro de una instancia, como replicar instancias gracias a las AMIs, como configurar un balanceador de carga para redirigir el trafico entre varias instancias y todo esto siguiendo unas pautas y un orden para poder llegar a tener el siguiente esquema como sistema en funcionamiento.
 	\end{abstract}
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{esquema.png}
+	\end{figure}
+
 
 	\tableofcontents
 
@@ -46,14 +51,12 @@
 
 	\subsection{Configuración de red}
 
-		\noindent Para poder acceder a nuestro servidor mediante una url debemos de configurar la instancia de forma que permita accesos http y https. Esto lo podemos hacer desde el panel de configuración de ``lanzar una instancia''. 
-
-
+		Para poder acceder a nuestro servidor mediante una url debemos de configurar la instancia de forma que permita accesos http y https. Esto lo haremos mediante la creación de un grupo de seguridad personalizado en el cual permitamos accesos http y https desde cualquier lugar.
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=0.95\textwidth]{configuracion_IC2.png}
-	\caption{panel de lanzar una instancia}
+	\includegraphics[width=0.95\textwidth]{crear_grupo_seguridad.png}
+	\caption{panel de crear grupo de seguridad}
 	\end{figure}
 
 	\begin{figure}[H]
@@ -161,7 +164,7 @@ Sep 17 17:20:09 ip-172-31-30-24.ec2.internal httpd[27040]: Server configured, li
 \newpage
 
 
-\section{Creación de la segunda instancia}
+\section{Clonación de la Instancia base mediante AMI}
 
 	Para este apartado debemos de crear una imagen AMI a partir de la instancia base que ya tenemos ejecutando. Esta imagen que usaremos ya tiene instalado httpd, tiene dentro el index.html y el servidor Apache encendido y habilitado. De esta forma no tendremos que conectarnos a ella mediante ssh a no ser que queramos modificar algo.
 
@@ -198,8 +201,97 @@ Sep 17 17:20:09 ip-172-31-30-24.ec2.internal httpd[27040]: Server configured, li
 	\includegraphics[width=0.95\textwidth]{index2.png}
 	\caption{http://54.152.142.228/}
 	\end{figure}
+\newpage
+
+\section{Configuración de Alta Disponibilidad}
+	Para aumentar la disponibilidad de nuestra web es imprescindible usar balanceadores de carga para hacer efectivo el aumento de recursos/instancias. Un balanceador de carga nos permite redirigir el trafico de forma uniforme a las instancias que tengamos ejecutando. 
+	
+
+\subsection{Grupo de seguridad}
+
+	Igual que hemos hecho para las instancias, para el balanceador necesitaremos un nuevo grupo de seguridad en el que permitamos entradas http desde cualquier lugar. Como la entrada será a partir de nuestro balanceador, modificaremos también el grupo de seguridad de nuestras instancias para dejar de permitir cualquier entrada http y en su lugar permitiremos la entrada del grupo de seguridad del balanceador. De esta forma lo he hecho yo.
+
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{grupo_de_seguridad_balanceador.png}
+	\caption{Grupo de seguridad del balanceador}
+	\includegraphics[width=0.95\textwidth]{editar_reglas_grupo_seguridad.png}
+	\caption{Grupo de seguridad de las instancias editado}
+	\end{figure}
+
+\subsection{Grupo de destino}
+
+	El balanceador de carga necesita aún que agrupemos nuestras instancias para que pueda redirigir el trafico correctamente donde queramos, y esto se hace con un grupo de destino como muestro a continuación.
+
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{grupo_de_destino.png}
+	\caption{Grupo de destino}
+	\end{figure}
+
+	Elegimos el tipo de destino instancias y posteriormente insertamos nuestras instancias dentro del grupo, cuando tengamos el grupo de destino y el grupo de seguridad correctamente configurados podremos comenzar a crear nuestro balanceador de carga.
 
 
+\subsection{Creación del balanceador de carga}
 
+Para crear el balanceador de carga necesitamos entrar a la opción de balanceador de carga de aplicaciones. Al seleccionarla debemos de tener 3 cosas muy claras para configurar bien el balanceador, lo primero sería que debemos de asegurarnos que el esquema sea el de expuesto a internet para poder conectarnos desde cualquier lugar. Lo segundo sería volver al panel de instancias y fijarse en la zona del servidor en el que se estén ejecutando, para que dentro del panel de ``crear balanceador'' elegir la Zona de disponibilidad y subred de estas instancias. Lo último que queda por configurar sería ajustar el grupo de seguridad y el de destino del balanceador, lo hacemos simplemente eligiendo los grupos que hemos creado antes. Cuando le demos a crear ya tendremos ejecutando el balanceador de carga correctamente.
+
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{agentes_de_escucha.png}
+	\caption{Configuración de direccionamiento}
+	\end{figure}
+
+\section{Pruebas de Alta Disponibilidad}
+
+	Para las pruebas de Alta Disponibilidad debemos de saber a que instancia estamos accediendo, la forma saberlo será desde el mismo index.html de cada página, por lo que, accederemos a nuestras instancias mediante ssh y cambiaremos el mensaje que se muestra para indicar que instancia se esta mostrando. Para comprobarlo modificaremos un momento el grupo de seguridad para poder acceder a cada instancia individualmente.
+
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.475\textwidth]{PrimeraInstancia.png}
+	\includegraphics[width=0.475\textwidth]{SegundaInstancia.png}
+	\caption{Nuevos dos index.html}
+	\end{figure}
 	 
+
+
+\subsection{Prueba de balanceo de carga}
+	Al acceder a la URL del balanceador de carga, que se encuentra en el apartado de Nombre de DNS, podemos observar como cada vez que recargamos la página se va alternando el texto de ``esta es la primera o segunda instancia''
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.475\textwidth]{index_balanceo_1.png}
+	\includegraphics[width=0.475\textwidth]{index_balanceo_2.png}
+	\caption{Index balanceador}
+	\end{figure}
+
+\subsection{Prueba de fallo de instancia}
+	Si detenemos la primera instancia vemos como la pagina web al principio cuando accede a la instancia detenida nos da error 503 pero después de unos segundos recargando todo el trafico se redirige a la segunda instancia y la página sigue funcionando como si no hubiera pasado nada. Si volvemos a a iniciarla vuelve a alternarse al darle al bóton de recargar después de pasar unos segundos.
+
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{imagen_detenida.png}
+	\caption{Imagen detenida}
+	\end{figure}
+
+\newpage
+
+\subsection{Prueba de escalabilidad}
+
+	Para probar la escalabilidad del sistema necesitamos crear una nueva instancia a partir de la AMI anterior y modificar el texto del index para poder verificar correctamente que se esta ejecutando la tercera instancia. Primero creamos la instancia con el grupo de seguridad y AMI pertinente. Nos conectamos mediante ssh y cambiamos el mensaje del html. Después agregamos la instancia nueva dándole a registrar destinos y guardando el grupo de destino. Comprobamos el estado del destino dentro de los detalles del grupo y cuando pase de estar inicializando a `Healthy' podemos probar de nuevo si al refrescar la página el servidor se encuentra disponible.
+
+
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{registrar_destinos.png}
+	\caption{Registrar destinos}
+	\end{figure}
+
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{tercera_instancia_disponible.png}
+	\caption{Index tercera instancia}
+	\end{figure}
+
+	
+
 \end{document}
