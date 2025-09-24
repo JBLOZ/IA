@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Inferencia de IA</title>
+    </head>
+    <body>
+        <h1>Inferencia de modelo de IA segura</h1>
+        <p>Ingresa una característica para que el modelo en la red privada haga una predicción:</p>
+        <input type="number" id="featureInput" placeholder="Ingresa un número">
+        <button onclick="predict()">Predecir</button>
+        <h3>Resultado:</h3>
+        <p id="result">El resultado aparecerá aquí.</p>
+        <script>
+            async function predict() {
+                const feature = document.getElementById('featureInput').value;
+                const resultElement = document.getElementById('result');
+                resultElement.innerText = "Cargando...";
+                try {
+                    const response = await fetch('/api/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ features: [parseFloat(feature)] })
+                    });
+                    const data = await response.json();
+                    resultElement.innerText = `Predicción: ${data.prediction.toFixed(2)}`;
+                } catch (error) {
+                    resultElement.innerText = 'Error al conectar con la API del front-end.';
+                }
+            }
+        </script>
+    </body>
+</html>
