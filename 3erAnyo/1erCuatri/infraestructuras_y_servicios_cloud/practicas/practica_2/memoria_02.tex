@@ -15,11 +15,12 @@
 \usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{float}
-
+\usepackage{soul}
+\usepackage{xcolor}
 
 
 % --- Información del Paper ---
-\title{Informe: \\ Introducción a la Consola de Administración de AWS}
+\title{Informe: \\ Práctica 2: Alta disponibilidad}
 \author{
 	Jordi Blasco Lozano \\
 	\small Infraestructuras y Servicios Cloud \\
@@ -51,8 +52,8 @@
 
 	\subsection{Configuración de red}
 
-		Para poder acceder a nuestro servidor mediante una url debemos de configurar la instancia de forma que permita accesos http y https. Esto lo haremos mediante la creación de un grupo de seguridad personalizado en el cual permitamos accesos http y https desde cualquier lugar.
-
+		Para poder acceder a nuestro servidor mediante una url debemos de configurar la instancia de forma que permita accesos http y https. Esto lo haremos mediante la creación de un grupo de seguridad personalizado en el cual permitamos accesos http y https desde cualquier lugar. 
+		
 	\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.95\textwidth]{crear_grupo_seguridad.png}
@@ -68,7 +69,7 @@
 
 	\subsection{Instalación de dependencias}
 
-		Una vez tengamos la instancia creada deberemos de conectarnos a ella por ssh. Cuando estemos dentro de la instancia instalaremos httpd mediante el comando sudo yum install httpd. httpd es un servidor web Apache que utilizaremos para desplegar nuestro index.html.
+		Una vez tengamos la instancia creada deberemos de conectarnos a ella por ssh. Cuando estemos dentro de la instancia instalaremos httpd mediante el comando  \fbox{sudo yum install httpd}. httpd es un servidor web Apache que utilizaremos para desplegar nuestro \textbf{index.html.}
 
 
 \begin{lstlisting}[style=consola, language=bash, caption={Terminal, dependencias}]
@@ -105,7 +106,7 @@ Complete!
 
 \subsection{Archivo index.html}
 
-	La pagina web que queremos desplegar aun no se encuentra dentro de la instancia. Para que Apache cargue este archivo debemos de hacer dos cosas, la primera es navegar hasta /var/www/html, que es donde httpd debe de encontrar el archivo index.html; la segunda es crear este archivo y usar nano para pegarlo. Posteriormente si no estamos seguros de haber usado nano bien podemos hacer cut para mostrar que se haya escrito correctamente. Aquí se muestra como lo he realizado.
+	La pagina web que queremos desplegar aun no se encuentra dentro de la instancia. Para que Apache cargue este archivo debemos de hacer dos cosas, la primera es navegar hasta \fbox{/var/www/html}, que es donde httpd debe de encontrar el archivo \textbf{index.html}; la segunda es crear este archivo y usar nano para pegarlo. Posteriormente si no estamos seguros de haber usado nano bien podemos hacer \fbox{cat} para mostrar que se haya escrito correctamente. Aquí se muestra como lo he realizado.
 
 
 \begin{lstlisting}[style=consola, language=bash, caption={Terminal, index.html}]
@@ -121,7 +122,7 @@ Complete!
 \newpage
 \subsection{Comandos de start y habilitación}
 
-	Después de haber creado el archivo html debemoos de utilizar los comandos de systemctl para iniciar y habilitar el servidor Apache. Finalmente podemos comprobar si esta habilitado usando el comando para status de esta forma. 
+	Después de haber creado el archivo html debemos de utilizar los comandos de \fbox{systemctl} para iniciar y habilitar el servidor Apache. Finalmente podemos comprobar si esta habilitado usando el comando para status de esta forma. 
 
 \begin{lstlisting}[style=consola, language=bash, caption={Terminal, systemctl}]
 [ec2-user@ip-172-31-30-24 html]$ sudo systemctl start httpd
@@ -151,7 +152,7 @@ Sep 17 17:20:09 ip-172-31-30-24.ec2.internal httpd[27040]: Server configured, li
 
 \subsection{Acceso al index.html}
 
-	Para poder acceder al index mediante un navegador debemos de acceder al panel de nuestra instancia y localizar la ip publica que nos proporcionan, después de esto escribimos http://[ip publica].
+	Para poder acceder al index mediante un navegador debemos de acceder al panel de nuestra instancia y localizar la ip publica que nos proporcionan, después de esto escribimos \fbox{http://[ip publica]}.
 
 	\begin{figure}[H]
 	\centering
@@ -170,7 +171,7 @@ Sep 17 17:20:09 ip-172-31-30-24.ec2.internal httpd[27040]: Server configured, li
 
 \subsection{Creación de la AMI}
 
-	Para crear la AMI seleccionamos la instancia de la cual queremos hacer la imagen y le damos a ``Crear imagen'' escribimos un nombre y la guardamos.
+	Para crear la AMI seleccionamos la instancia de la cual queremos hacer la imagen y le damos a \fbox{Crear imagen} escribimos un nombre y la guardamos.
 
 	
 
@@ -181,7 +182,7 @@ Sep 17 17:20:09 ip-172-31-30-24.ec2.internal httpd[27040]: Server configured, li
 	\end{figure}
 
 \subsection{Instancia a partir de la AMI}
-	Una vez que tengamos la AMI debemos de lanzar una instancia nueva a partir de esta para probar su correcto funcionamiento. Esto lo haremos accediendo al menu de ``lanzar instancia'', para esta instancia y en el apartado de 
+	Una vez que tengamos la AMI debemos de lanzar una instancia nueva a partir de esta para probar su correcto funcionamiento. Esto lo haremos accediendo al menu de \fbox{lanzar instancia}, para esta instancia y en el apartado de \fbox{Imagen de maquina de Amazon} presionamos \fbox{mis AMI} y seleccionamos la AMI que hayamos creado antes. Finalmente seleccionamos el grupo de seguridad que creamos para la primera instancia y le damos a \fbox{lanzar instancia}.
 
 	
 	\begin{figure}[H]
@@ -194,7 +195,7 @@ Sep 17 17:20:09 ip-172-31-30-24.ec2.internal httpd[27040]: Server configured, li
 
 \subsection{Acceso Index de la segunda instancia}
 
-	Desde el menu de instancias ya nos aparecerán las dos instancias. Y desde la configuración podremos acceder al ip publico de esta nueva instancia y comprobar si se muestra nuestro index.
+	Desde el menu de instancias ya nos aparecerán las dos instancias. Y desde la configuración podremos acceder al ip publico de esta nueva instancia tal como lo hemos hecho con la anterior instancia y comprobar si se muestra nuestro index.
 
 	\begin{figure}[H]
 	\centering
@@ -209,7 +210,7 @@ Sep 17 17:20:09 ip-172-31-30-24.ec2.internal httpd[27040]: Server configured, li
 
 \subsection{Grupo de seguridad}
 
-	Igual que hemos hecho para las instancias, para el balanceador necesitaremos un nuevo grupo de seguridad en el que permitamos entradas http desde cualquier lugar. Como la entrada será a partir de nuestro balanceador, modificaremos también el grupo de seguridad de nuestras instancias para dejar de permitir cualquier entrada http y en su lugar permitiremos la entrada del grupo de seguridad del balanceador. De esta forma lo he hecho yo.
+	Igual que hemos hecho para las instancias, para el balanceador necesitaremos un nuevo grupo de seguridad en el que permitamos entradas http desde cualquier lugar. Como la entrada será a partir de nuestro balanceador, modificaremos también el grupo de seguridad de nuestras instancias para eliminar la opción de permitir cualquier entrada http y en su lugar permitir la entrada del grupo de seguridad del balanceador. De esta forma lo he hecho yo.
 
 	\begin{figure}[H]
 	\centering
@@ -229,12 +230,12 @@ Sep 17 17:20:09 ip-172-31-30-24.ec2.internal httpd[27040]: Server configured, li
 	\caption{Grupo de destino}
 	\end{figure}
 
-	Elegimos el tipo de destino instancias y posteriormente insertamos nuestras instancias dentro del grupo, cuando tengamos el grupo de destino y el grupo de seguridad correctamente configurados podremos comenzar a crear nuestro balanceador de carga.
+	Elegimos el tipo de destino \textbf{instancias} y posteriormente insertamos nuestras instancias dentro de este grupo, cuando tengamos el grupo de destino y el grupo de seguridad correctamente configurados podremos comenzar a crear nuestro balanceador de carga.
 
 
 \subsection{Creación del balanceador de carga}
 
-Para crear el balanceador de carga necesitamos entrar a la opción de balanceador de carga de aplicaciones. Al seleccionarla debemos de tener 3 cosas muy claras para configurar bien el balanceador, lo primero sería que debemos de asegurarnos que el esquema sea el de expuesto a internet para poder conectarnos desde cualquier lugar. Lo segundo sería volver al panel de instancias y fijarse en la zona del servidor en el que se estén ejecutando, para que dentro del panel de ``crear balanceador'' elegir la Zona de disponibilidad y subred de estas instancias. Lo último que queda por configurar sería ajustar el grupo de seguridad y el de destino del balanceador, lo hacemos simplemente eligiendo los grupos que hemos creado antes. Cuando le demos a crear ya tendremos ejecutando el balanceador de carga correctamente.
+Para crear el balanceador de carga necesitamos entrar a la opción de \textbf{balanceador de carga de aplicaciones}. Al seleccionarla debemos de tener 3 cosas muy claras para configurar bien el balanceador, lo primero sería que debemos de asegurarnos que el esquema sea el de \textbf{expuesto a internet} para poder conectarnos desde cualquier lugar. Lo segundo sería volver al panel de instancias y fijarse en la zona del servidor en el que se estén ejecutando, para que dentro del panel de \fbox{crear balanceador} elegir la Zona de disponibilidad y subred de estos servidores. Lo último que queda por configurar sería ajustar el grupo de seguridad y el de destino del balanceador, lo hacemos simplemente eligiendo los grupos que hemos creado antes. Cuando le demos a crear ya tendremos ejecutando el balanceador de carga correctamente.
 
 	\begin{figure}[H]
 	\centering
@@ -244,7 +245,7 @@ Para crear el balanceador de carga necesitamos entrar a la opción de balanceado
 
 \section{Pruebas de Alta Disponibilidad}
 
-	Para las pruebas de Alta Disponibilidad debemos de saber a que instancia estamos accediendo, la forma saberlo será desde el mismo index.html de cada página, por lo que, accederemos a nuestras instancias mediante ssh y cambiaremos el mensaje que se muestra para indicar que instancia se esta mostrando. Para comprobarlo modificaremos un momento el grupo de seguridad para poder acceder a cada instancia individualmente.
+	Para las pruebas de Alta Disponibilidad debemos de saber a que instancia estamos accediendo, la forma saberlo será desde el mismo \textbf{index.html} de cada página, por lo que, accederemos a nuestras instancias mediante ssh y cambiaremos el mensaje que se muestra para indicar que instancia se esta mostrando. Para comprobarlo modificaremos un momento el grupo de seguridad para poder acceder a cada instancia individualmente.
 
 	\begin{figure}[H]
 	\centering
@@ -256,7 +257,7 @@ Para crear el balanceador de carga necesitamos entrar a la opción de balanceado
 
 
 \subsection{Prueba de balanceo de carga}
-	Al acceder a la URL del balanceador de carga, que se encuentra en el apartado de Nombre de DNS, podemos observar como cada vez que recargamos la página se va alternando el texto de ``esta es la primera o segunda instancia''
+	Al acceder a la URL del \textbf{balanceador de carga}, que se encuentra en el apartado de \fbox{Nombre de DNS}, podemos observar como cada vez que recargamos la página se va alternando el texto de ``esta es la primera o segunda instancia''
 	\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.475\textwidth]{index_balanceo_1.png}
@@ -265,7 +266,7 @@ Para crear el balanceador de carga necesitamos entrar a la opción de balanceado
 	\end{figure}
 
 \subsection{Prueba de fallo de instancia}
-	Si detenemos la primera instancia vemos como la pagina web al principio cuando accede a la instancia detenida nos da error 503 pero después de unos segundos recargando todo el trafico se redirige a la segunda instancia y la página sigue funcionando como si no hubiera pasado nada. Si volvemos a a iniciarla vuelve a alternarse al darle al bóton de recargar después de pasar unos segundos.
+	Si detenemos la primera instancia vemos como la pagina web al principio cuando accede a la instancia detenida nos da error 503 pero después de unos segundos recargando todo el tráfico se redirige a la segunda instancia y la página sigue funcionando como si no hubiera pasado nada. Si volvemos a a iniciarla vuelve a alternarse al darle al botón de recargar después de pasar unos segundos.
 
 	\begin{figure}[H]
 	\centering
@@ -277,7 +278,7 @@ Para crear el balanceador de carga necesitamos entrar a la opción de balanceado
 
 \subsection{Prueba de escalabilidad}
 
-	Para probar la escalabilidad del sistema necesitamos crear una nueva instancia a partir de la AMI anterior y modificar el texto del index para poder verificar correctamente que se esta ejecutando la tercera instancia. Primero creamos la instancia con el grupo de seguridad y AMI pertinente. Nos conectamos mediante ssh y cambiamos el mensaje del html. Después agregamos la instancia nueva dándole a registrar destinos y guardando el grupo de destino. Comprobamos el estado del destino dentro de los detalles del grupo y cuando pase de estar inicializando a `Healthy' podemos probar de nuevo si al refrescar la página el servidor se encuentra disponible.
+	Para probar la escalabilidad del sistema necesitamos crear una nueva instancia a partir de la AMI anterior y modificar el texto del index para poder verificar correctamente que se esta ejecutando la tercera instancia. Primero creamos la instancia con el grupo de seguridad y AMI pertinente. Nos conectamos mediante ssh y cambiamos el mensaje del html. Después agregamos la instancia nueva dándole a \fbox{registrar destinos} y guardando el grupo de destino. Comprobamos el \textbf{estado} del destino dentro de los \textbf{detalles del grupo} y cuando pase de estar `inicializando' a `Healthy' podemos probar de nuevo si al refrescar la página el servidor se encuentra disponible.
 
 
 	\begin{figure}[H]

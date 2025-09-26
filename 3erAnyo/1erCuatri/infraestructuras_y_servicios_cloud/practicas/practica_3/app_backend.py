@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import joblib
 import os
 import boto3
-app = Flask(__name__)
+app = Flasck(__name__)
 S3_BUCKET = 'tu-nombre-de-bucket-unico' # ¡Cambia esto!
 S3_MODEL_KEY = 'backend/modelo.pkl'
 MODEL_LOCAL_PATH = 'modelo.pkl'
