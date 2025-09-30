@@ -1,45 +1,42 @@
 from flask import Flask, request, jsonify
 import joblib
-import os
-import boto3
-app = Flasck(__name__)
-S3_BUCKET = 'baqueet-p3'
-S3_MODEL_KEY = 'backend/modelo.pkl'
+
+# Corregido: Flask en lugar de Flasck
+app = Flask(__name__)
+
+# La ruta donde el script user-data descargó el modelo
 MODEL_LOCAL_PATH = 'modelo.pkl'
-
-
-def download_model_from_s3():
-    try:
-        s3 = boto3.client('s3')
-        s3.download_file(S3_BUCKET, S3_MODEL_KEY, MODEL_LOCAL_PATH)
-        return True
-    except Exception as e:
-        print(f"Error descargando el modelo: {e}")
-        return False
-    
-
-model_downloaded = download_model_from_s3()
 model = None
-if model_downloaded:
+
+# Cargamos el modelo directamente al iniciar, ya que user-data lo ha descargado
+try:
+    print("Cargando modelo desde:", MODEL_LOCAL_PATH)
     model = joblib.load(MODEL_LOCAL_PATH)
-
-
-
+    print("Modelo cargado exitosamente.")
+except Exception as e:
+    print(f"Error al cargar el modelo: {e}")
+    # La aplicación se ejecutará, pero el endpoint de predicción devolverá un error.
 
 @app.route('/predict', methods=['POST'])
 def predict():
-
-    if not model:
-        return jsonify({"error": "Modelo no disponible"}), 500
+    # Comprobamos si el modelo se cargó correctamente al inicio
+    if model is None:
+        return jsonify({"error": "Modelo no disponible o no se pudo cargar al inicio."}), 500
     
     try:
         data = request.get_json(force=True)
+        # Asumiendo que 'features' es una lista de valores, ej: [5.1, 3.5, 1.4, 0.2]
         features = data['features']
+        
         prediction = model.predict([features])
+        
         return jsonify({"prediction": prediction.tolist()[0]})
     
+    except KeyError:
+        return jsonify({"error": "La clave 'features' no se encontró en el JSON."}), 400
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
-    
+        return jsonify({"error": f"Ocurrió un error en la predicción: {str(e)}"}), 400
+
 if __name__ == '__main__':
+    # Escucha en todas las interfaces de red en el puerto 5000
     app.run(host='0.0.0.0', port=5000)
