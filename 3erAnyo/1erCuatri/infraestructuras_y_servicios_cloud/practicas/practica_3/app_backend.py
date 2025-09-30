@@ -3,7 +3,7 @@ import joblib
 import os
 import boto3
 app = Flasck(__name__)
-S3_BUCKET = 'tu-nombre-de-bucket-unico' # ¡Cambia esto!
+S3_BUCKET = 'baqueet-p3'
 S3_MODEL_KEY = 'backend/modelo.pkl'
 MODEL_LOCAL_PATH = 'modelo.pkl'
 
