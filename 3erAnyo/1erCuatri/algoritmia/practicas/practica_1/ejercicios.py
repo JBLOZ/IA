@@ -62,13 +62,12 @@ def ejecutar_pruebas_empiricas(tamaños, num_repeticiones=10000):
 def generar_graficas(tamaños, tiempos_empiricos):
     
 
-    constante1 = (tiempos_empiricos[-1]) / (tamaños[-1] * np.log2(tamaños[-1]))
+    constante = (tiempos_empiricos[-1]) / (tamaños[-1] * np.log2(tamaños[-1]))
 
-    constante2 = (tiempos_empiricos[-5]) / (tamaños[-5] * np.log2(tamaños[-5]))
+    
 
-    constante = (constante1 + constante2) / 2
+    tiempos_teoricos = tamaños * np.log2(tamaños) * constante
 
-    tiempos_teoricos = constante * tamaños * np.log2(tamaños)
 
     print(f"Valor de correlacion entre empirico y teorico n^2 = {np.corrcoef(tiempos_teoricos, tiempos_empiricos)[0,1]:.8f}")
     
