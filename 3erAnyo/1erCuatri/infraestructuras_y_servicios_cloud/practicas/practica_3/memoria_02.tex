@@ -15,11 +15,12 @@
 \usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{float}
-
+\usepackage{soul}
+\usepackage{xcolor}
 
 
 % --- Información del Paper ---
-\title{Informe: \\ Introducción a la Consola de Administración de AWS}
+\title{Informe: \\ Práctica 3: Redes Virtuales y Seguridad de Acceso}
 \author{
 	Jordi Blasco Lozano \\
 	\small Infraestructuras y Servicios Cloud \\
@@ -34,7 +35,12 @@
 
 	\begin{abstract}
 	\noindent 
-	
+	\end{abstract}
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{esquema.png}
+	\end{figure}
+
 
 	\tableofcontents
 
@@ -42,31 +48,8 @@
 
 	\section{Creación de la instancia base}
 
-	\end{abstract}
-	\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\textwidth]{esquema.png}
-	\end{figure}
-
 		
-
 	\subsection{Configuración de red}
 
-		
-	
-\newpage
 
-	\subsection{Instalación de dependencias}
-
-		Una vez tengamos la instancia creada deberemos de conectarnos a ella por ssh. Cuando estemos dentro de la instancia instalaremos httpd mediante el comando sudo yum install httpd. httpd es un servidor web Apache que utilizaremos para desplegar nuestro index.html.
-
-
-\begin{lstlisting}[style=consola, language=bash, caption={Terminal, dependencias}]
-
-
-\end{lstlisting}
-
-\subsection{Archivo index.html}
-
-
-\newpage
+\end{document}
