@@ -1,6 +1,7 @@
 /dock/
 /2doAnyo/run.bat
 /2doAnyo/build.bat
+IA/3erAnyo/1erCuatri/infraestructuras_y_servicios_cloud/practicas/practica_3/40model_amazon.pt
 **/.vs/
 **/.vscode/
 .DS_Store
@@ -21,6 +22,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
