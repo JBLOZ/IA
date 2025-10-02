@@ -210,7 +210,7 @@
 	\end{figure}
 
 	\subsubsection{Front User Data}
-	El siguiente .sh el user data que voy a utilizar, se configura en la parte final de detalles avanzados al crear la instancia. En él instalaremos todas las dependencias que necesite nuestra aplicación back, crearemos los directorios para alojar los archivos, descargaremos los archivos del S3 y desplegaremos el servidor ejecutando el archivo python. Todo esto se hará automáticamente cuando se inicie la instancia.
+	El siguiente .sh el user data que voy a utilizar, se configura en la parte final de detalles avanzados al crear la instancia. En él instalaremos todas las dependencias que necesite nuestra aplicación back, crearemos los directorios para alojar los archivos, descargaremos los archivos del S3 y desplegaremos el servidor ejecutando el archivo python. Todo esto se hará automáticamente cuando se inicie la instancia. 
 
 	\begin{lstlisting}[style=python-style, caption= back user data sh]
 	#!/bin/bash
@@ -267,7 +267,7 @@
 
 	\subsection{Instancia frontend}
 
-	Por el otro lado la instancia del frontend contará con el mismo par de llaves y la misma VPC, elegiremos una de las subredes públicas y habilitaremos la opción de asignar IP pública, elegiremos el grupo de seguridad del frontend y cargaremos nuestro User Data.
+	Por el otro lado la instancia del frontend contará con el mismo par de llaves y la misma VPC, elegiremos una de las subredes públicas y habilitaremos la opción de asignar IP pública, elegiremos el grupo de seguridad del frontend y cargaremos nuestro User Data. 
 
 		
 	\begin{figure}[H]
@@ -281,7 +281,7 @@
 	\newpage
 	\subsubsection{Front User Data}
 
-	Para este otro user data debemos de hacer una modificación y pegar la ip privada del backend en la sentencia sed que remplaza la string de \verb|IP_PRIVADA_DEL_BACKEND| (que se encuentra dentro del código javascript) por nuestra ip privada. Haciéndolo de este modo nos olvidamos de estar modificando el archivo dentro del bucket S3. El sh hará lo mismo que el anterior, descargar dependencias he instalarlas, descargar el código del S3 y ejecutarlo.
+	Para este otro user data debemos de hacer una modificación y pegar la ip privada del backend en la sentencia sed que remplaza la string de \verb|IP_PRIVADA_DEL_BACKEND| (que se encuentra dentro del código javascript) por nuestra ip privada. Haciéndolo de este modo nos olvidamos de estar modificando el archivo dentro del bucket S3. El sh hará lo mismo que el anterior, descargar dependencias he instalarlas, descargar el código del S3 y ejecutarlo. Como vemos en los User Data usamos siempre ``vget'' en vez de ``aws s3'', esto lo hacemos porque solamente hemos permitido la acción de GetObject en la política del S3.
 	
 	\begin{lstlisting}[style=python-style, caption= front user data sh]
 	#!/bin/bash
@@ -339,12 +339,24 @@
  	\begin{lstlisting}[style=consola, language=bash, caption={front logs}]
 	[   39.309930] cloud-init[1633]: Cloud-init v. 22.2.2 finished at Wed, 01 Oct 2025 21:42:02 +0000. Datasource DataSourceEc2.  Up 39.29 seconds
 	[   39.687491] cloud-init[1633]: Servidor front-end escuchando en el puerto 80 \end{lstlisting}
+
 	\section{Mejora de la aplicación}
 
+	Para mejorar la aplicación se me occurrió la idea de lanzar otro tipo de servicio cambiando unicamente la parte de código de front y el modelo. Quería lanzar un modelo barato de ejecutar y a la vez más util que la regresión lineal, asi que se me occurrió usar un modelo de analisis de sentimientos que te digera si una frase de un comentario de cualquier tipo era buena o mala. Para hacer esto simplemente vamos a dejar la estructura del proyecto tal como está y unicamente cambiaremos los archivos del S3.
 
 	\subsection{Frontend}
+	Para el frontend usaremos un html más bonito con ayuda de la IA y el javascript le cambiamos unicamente el mensaje de error.
+
+			
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{index_html2.png}
+	\caption{index html}
+	\end{figure}
 
 	\subsection{Backend}
+
+	Para el backend debemos de buscar en internet el modelo de analisis, encontré uno muy ligero de 28 mb en total entre los dos 
 
 
 	\section{Pruebas}
