@@ -10,10 +10,10 @@ app.use(express.json());
 app.post('/api/predict', async (req, res) => {
     try {
         const response = await axios.post(BACKEND_API_URL, req.body);
-res.json(response.data);
+        res.json(response.data);
     } catch (error) {
-    console.error('Error al conectar con el backend:', error.message);
-    res.status(500).json({ error: 'No se pudo conectar con el servicio de IA.' });
+        console.error('Error al conectar con el backend:', error.message);
+        res.status(500).json({ error: 'No se pudo conectar con el servicio de análisis de sentimientos.' });
     }
 });
 app.listen(PORT, () => {

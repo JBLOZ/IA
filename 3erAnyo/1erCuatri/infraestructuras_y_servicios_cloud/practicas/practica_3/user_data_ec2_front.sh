@@ -38,7 +38,7 @@ fi
 
 # 5. Reemplazar la IP del backend en el archivo de la aplicación
 echo "Reemplazando la IP del backend"
-sed -i 's/IP_PRIVADA_DEL_BACKEND/10.0.142.191/g' app_front.js
+sed -i 's/IP_PRIVADA_DEL_BACKEND/10.0.131.80/g' app_front.js
 echo "IP reemplazada."
 
 # 6. Ejecutar el servidor de Node.js en segundo plano
