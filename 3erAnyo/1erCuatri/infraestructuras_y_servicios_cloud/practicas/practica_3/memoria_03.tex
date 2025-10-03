@@ -209,7 +209,7 @@
 	\caption{Configuración ec2 back}
 	\end{figure}
 
-	\subsubsection{Front User Data}
+	\subsubsection{Back User Data}
 	El siguiente .sh el user data que voy a utilizar, se configura en la parte final de detalles avanzados al crear la instancia. En él instalaremos todas las dependencias que necesite nuestra aplicación back, crearemos los directorios para alojar los archivos, descargaremos los archivos del S3 y desplegaremos el servidor ejecutando el archivo python. Todo esto se hará automáticamente cuando se inicie la instancia. 
 
 	\begin{lstlisting}[style=python-style, caption= back user data sh]
@@ -281,7 +281,7 @@
 	\newpage
 	\subsubsection{Front User Data}
 
-	Para este otro user data debemos de hacer una modificación y pegar la ip privada del backend en la sentencia sed que remplaza la string de \verb|IP_PRIVADA_DEL_BACKEND| (que se encuentra dentro del código javascript) por nuestra ip privada. Haciéndolo de este modo nos olvidamos de estar modificando el archivo dentro del bucket S3. El sh hará lo mismo que el anterior, descargar dependencias he instalarlas, descargar el código del S3 y ejecutarlo. Como vemos en los User Data usamos siempre ``vget'' en vez de ``aws s3'', esto lo hacemos porque solamente hemos permitido la acción de GetObject en la política del S3.
+	Para este otro user data debemos de hacer una modificación y pegar la ip privada del backend en la sentencia sed que remplaza la string de \verb|IP_PRIVADA_DEL_BACKEND| (que se encuentra dentro del código javascript) por nuestra ip privada. Haciéndolo de este modo nos olvidamos de estar modificando el archivo dentro del bucket S3. El sh hará lo mismo que el anterior, descargar dependencias he instalarlas, descargar el código del S3 y ejecutarlo. Como vemos en los User Data usamos siempre ``wget'' en vez de ``aws s3'', esto lo hacemos porque solamente hemos permitido la acción de GetObject en la política del S3.
 	
 	\begin{lstlisting}[style=python-style, caption= front user data sh]
 	#!/bin/bash
@@ -342,7 +342,7 @@
 
 	\section{Mejora de la aplicación}
 
-	Para mejorar la aplicación se me occurrió la idea de lanzar otro tipo de servicio cambiando unicamente la parte de código de front y el modelo. Quería lanzar un modelo barato de ejecutar y a la vez más util que la regresión lineal, asi que se me occurrió usar un modelo de analisis de sentimientos que te digera si una frase de un comentario de cualquier tipo era buena o mala. Para hacer esto simplemente vamos a dejar la estructura del proyecto tal como está y unicamente cambiaremos los archivos del S3.
+	Para mejorar la aplicación se me ocurrió la idea de lanzar otro tipo de servicio cambiando unicamente la parte de código de front y el modelo. Quería lanzar un modelo barato de ejecutar y a la vez más util que la regresión lineal, asi que se me ocurrió usar un modelo de análisis de sentimientos que te dijera si una frase de un comentario de cualquier tipo era buena o mala. Para hacer esto simplemente vamos a dejar la estructura del proyecto tal como está y unicamente cambiaremos los archivos del S3.
 
 	\subsection{Frontend}
 	Para el frontend usaremos un html más bonito con ayuda de la IA y el javascript le cambiamos unicamente el mensaje de error.
@@ -350,23 +350,60 @@
 			
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=0.95\textwidth]{index_html2.png}
+	\includegraphics[width=0.55\textwidth]{prueba1.png}
 	\caption{index html}
 	\end{figure}
 
 	\subsection{Backend}
 
-	Para el backend debemos de buscar en internet el modelo de analisis, encontré uno muy ligero de 28 mb en total entre los dos 
+	Para el backend busqué en internet el siguiente modelo de análisis de comentarios \href{https://github.com/sentiment-analysis-spanish/sentiment-spanish}{sentiment-spanish}, es muy ligero de 28 mb en total, contiende dos modelos uno para vectorizar las frases y el otro para clasificar este conjunto de vectores en positivos o negativos. Para poder ejecutarlo correctamente modificaré \verb|app_backend.py| y incluiré el código de dentro del repositorio que se usa para la predicción. También debemos de incluir en el user data del back las librerías nuevas que se van a usar, en nuestro caso: \verb|python3-devel, gcc, scikit-learn==0.23.2, numpy y pandas|. La carpeta /back-end quedaría con esta estructura final.
+
+	\begin{lstlisting}[style=consola, language=bash, caption={/back-end}]
+ /app/
+  ├─ app_backend.py
+  └─ saved_model/
+    ├─ classifier_naive_bayes_compressed.pbz2
+    └─ ngram_vectorized_compressed.pbz2\end{lstlisting}
 
 
 	\section{Pruebas}
 
+	En esta sección comprobaremos que las instancias funcionen y que los accesos al bucket estén controlados y restringidos.
+
 	\subsection{Accesos al bucket}
 
-	\subsection{Prueba de despliegue 1}
+	Para poder comprobar rápidamente si tenemos acceso a los archivos del bucket podemos ir a nuestro S3 y copiar los links de cada archivo que tengamos y pegarlos en el navegador. Como es lógico los archivos que tendremos dentro de nuestra carpeta /back-end al no conectarnos mediante el endpoint y estar fuera de la subred privada serán inaccesibles mientras que los que tengamos dentro de la carpeta /frontend podremos visualizarlos.
 
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{acceso_denegado_back.png}
+	\caption{acceso denegado back}
+	\includegraphics[width=0.95\textwidth]{acceso_publico_front.png}
+	\caption{acceso público front}
+	\end{figure}
+
+	\newpage
+
+	\subsection{Prueba de despliegue 1}
+	Para poder conectarnos a nuestro frontend debemos de buscar la ip pública de nuestra instancia, una vez encontrada nos podremos conectar y probar nuestra aplicación.
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{prediccion_completada.png}
+	\caption{predicción}
+	\end{figure}
 
 	\subsection{Prueba de despliegue 2}
+
+	Para la aplicación de analisis de sentimiento debemos de hacer lo mismo, buscar la ip publica y conectarnos. El analisis de sentimiento según creador del modelo falla en un 10\%, yo lo he probado con estos casos y me ha funcionado bien. Seguramente el alto error de fallo se deba a que es un modelo bastante pequeño.
+
+	\begin{figure}[H]
+
+	\includegraphics[width=0.5\textwidth]{prueba2.png}
+	\includegraphics[width=0.5\textwidth]{prueba3.png}
+	\caption{predicciones}
+	\end{figure}
+
+
 
 
 
