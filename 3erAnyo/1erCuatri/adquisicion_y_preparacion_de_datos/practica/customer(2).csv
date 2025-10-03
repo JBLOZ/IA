@@ -1,0 +1,21 @@
+customer_key;customer_name;customer_address;customer_city;customer_state;customer_zip;customer_type;customer_income;customer_birth_date;customer_marital;customer_sex
+1;Jensen;1607 Shady Lane;Birmingham;Alabama;53994;Employed;$180.000;marzo 27, 1956;Married;M
+2;Antoni;3859 Shady Lane;Blueridge;Kentucky;11250;Employed;$45.000;abril 18, 1936;Coresident;F
+3;Laplante;1923 Shady Lane;Charleston;South Carolina;51226;Employed;$94.000;enero 2, 1937;Married;M
+4;Rivera;9369 Shady Lane;Laramie;Wyoming;84658;Employed;$93.000;agosto 20, 1959;Coresident;F
+5;Turner;7593 Shady Lane;Flagstaff;Arizona;73123;Employed;$93.000;diciembre 30, 1978;Married;M
+6;Valdez;5332 Shady Lane;Tonopah;Nevada;47693;Employed;$62.000;junio 8, 1992;Single;F
+7;Haines;4116 Shady Lane;Des Moines;Iowa;93237;Military;$119.000;mayo 17, 1996;Married;M
+8;Bennett;3100 Shady Lane;Flagstaff;Arizona;13656;Self Employed;$35.000;noviembre 7, 1964;Coresident;F
+9;Edholm;7808 Shady Lane;Tonopah;Nevada;20954;Employed;$93.000;febrero 3, 1949;Single;M
+10;Tenet;3997 Shady Lane;Red Bluff;California;39547;Employed;$62.000;marzo 31, 1980;Single;F
+11;Cluster;8640 Shady Lane;Boston;Massachusetts;27954;Military;$119.000;octubre 19, 1978;Married;M
+12;Ilgen;7143 Shady Lane;Steamboat Springs;Colorado;20565;Self Employed;$33.000;julio 8, 1988;Single;F
+13;Davis;8765 Shady Lane;Lexington;Kentucky;70521;Employed;$61.000;junio 2, 1963;Married;M
+14;Jarrett;8778 Shady Lane;Stamford;Connecticut;10851;Employed;$87.000;diciembre 5, 1945;Married;F
+15;Deardorff;8151 Shady Lane;Kona;Hawaii;13227;Employed;$44.000;agosto 2, 1957;Single;M
+16;Galt;5016 Shady Lane;Ashton;Delaware;92805;Employed;$117.000;julio 2, 1962;Married;F
+17;Rasmussen;1789 Shady Lane;Anchorage;Alaska;73176;Employed;$43.000;septiembre 8, 1958;Married;M
+18;Edholm;297 Shady Lane;Miami;Florida;98058;Employed;$60.000;diciembre 11, 1995;Coresident;F
+19;Wadsworth;7863 Shady Lane;Augusta;Maine;56382;Employed;$55.000;junio 30, 1993;Single;M
+20;Youpa;2254 Shady Lane;Augusta;Georgia;84174;Employed;$100.000;noviembre 23, 1942;Single;F
