@@ -68,7 +68,6 @@ def generar_graficas(tamaños, tiempos_empiricos):
 
     tiempos_teoricos = tamaños * np.log2(tamaños) * constante
 
-
     print(f"Valor de correlacion entre empirico y teorico n^2 = {np.corrcoef(tiempos_teoricos, tiempos_empiricos)[0,1]:.8f}")
     
     plt.figure(figsize=(10, 6))
