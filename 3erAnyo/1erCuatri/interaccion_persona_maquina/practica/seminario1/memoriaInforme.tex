@@ -39,26 +39,25 @@
 
 	\begin{abstract}
 	\noindent 
-	La página web \textbf{futbol11.com} es una plataforma de juegos de fútbol diarios que ha ganado gran popularidad con \textbf{9.17M de visitas mensuales} y se posiciona como el \#3,718 globalmente. Sin embargo, el análisis de usabilidad mediante las heurísticas de Nielsen y la evaluación de accesibilidad según los criterios WCAG 2.2 revelan múltiples problemas críticos que afectan significativamente la experiencia del usuario, especialmente para personas con discapacidades.
+	La página web \textbf{futbol11.com} es una plataforma de juegos de fútbol diarios que ha ganado gran popularidad con 9.17M de visitas mensuales. Sin embargo, el análisis de usabilidad mediante las heurísticas de Nielsen y la evaluación de accesibilidad según los criterios WCAG 2.2 revelan múltiples problemas críticos que afectan significativamente la experiencia del usuario, especialmente para personas con discapacidades.
 	\end{abstract}
 
-	\newpage
+	
 	\tableofcontents
 	\newpage
 
-	\section{Metodología de Evaluación}
+	\section{Tecnicas de evaluación}
 	
 	\subsection{Evaluación Heurística}
 	\noindent
-	Se aplicaron las \textbf{10 heurísticas de usabilidad de Jakob Nielsen} para identificar problemas de diseño de interacción, clasificando cada problema según su severidad (Leve, Media, Grave).
+	Hemos aplicado las \textbf{10 heurísticas de usabilidad de Jakob Nielsen} para identificar problemas de diseño de interacción, clasificando cada problema según su severidad (Leve, Media, Grave).
 
 	\subsection{Evaluación de Accesibilidad}
 	\noindent
-	Se utilizaron múltiples enfoques para evaluar el cumplimiento de las \textbf{Web Content Accessibility Guidelines (WCAG) 2.2}:
+	Utilizamos múltiples enfoques para evaluar el cumplimiento de las \textbf{Web Content Accessibility Guidelines (WCAG) 2.2}:
 	\begin{enumerate}
-		\item \textbf{Evaluación automática}: Utilizando herramientas especializadas
-		\item \textbf{Evaluación manual}: Revisión experta de criterios específicos
-		\item \textbf{Evaluación con lectores de pantalla}: Simulación de uso real
+		\item \textbf{Evaluación automática y manual}: Revisión de criterios específicos utilizando herramientas especializadas y valoración humana.
+		\item \textbf{Evaluación con lectores de pantalla}: Simulación de uso real.
 	\end{enumerate}
 
 	\section{Análisis de Problemas de Usabilidad}
@@ -110,7 +109,7 @@
 	\textbf{Ejemplo Concreto}: Los diferentes juegos (Futbol11, Connections, Top10) presentan diseños de interface distintos, patrones de navegación inconsistentes y diferentes ubicaciones para elementos similares.
 	
 	\noindent
-	\textbf{Severidad}: Media
+	\textbf{Severidad}: Leve
 	
 	\noindent
 	\textbf{Propuesta de Mejora}: Crear un sistema de diseño unificado con componentes reutilizables, patrones de navegación estándar y una identidad visual coherente en todos los juegos.
@@ -123,7 +122,7 @@
 	\textbf{Ejemplo Concreto}: Al introducir nombres de jugadores, el sistema no ofrece sugerencias automáticas ni previene errores ortográficos comunes, lo que resulta en respuestas incorrectas por problemas de escritura más que de conocimiento.
 	
 	\noindent
-	\textbf{Severidad}: Grave
+	\textbf{Severidad}: Media
 	
 	\noindent
 	\textbf{Propuesta de Mejora}: Implementar autocompletado inteligente, corrección ortográfica automática y sugerencias contextuales basadas en la entrada parcial del usuario.
@@ -162,7 +161,7 @@
 	\textbf{Ejemplo Concreto}: La presencia de múltiples anuncios, elementos decorativos innecesarios y una densidad de información excesiva interfiere con la concentración requerida para los juegos cronometrados.
 	
 	\noindent
-	\textbf{Severidad}: Media
+	\textbf{Severidad}: Grave
 	
 	\noindent
 	\textbf{Propuesta de Mejora}: Simplificar la interfaz eliminando elementos no esenciales, optimizar la colocación de anuncios y crear espacios de respiro visual que mejoren la concentración del usuario.
@@ -175,7 +174,7 @@
 	\textbf{Ejemplo Concreto}: Cuando un usuario introduce una respuesta incorrecta, el sistema simplemente la marca como errónea sin proporcionar pistas sobre por qué falló o cómo corregirla.
 	
 	\noindent
-	\textbf{Severidad}: Grave
+	\textbf{Severidad}: Media
 	
 	\noindent
 	\textbf{Propuesta de Mejora}: Diseñar mensajes de error constructivos que expliquen específicamente qué salió mal y ofrezcan sugerencias para la corrección, incluyendo alternativas válidas cuando sea apropiado.
@@ -195,9 +194,22 @@
 
 	\section{Análisis de Problemas de Accesibilidad}
 
+	\noindent
+	Hemos utilizado Skynet para hacer el analisis atomatico de la accesibilidad sobre la web, hemos obtenido un score de 0\% con 71 fallos según WCAG 2.2 los cuales los describiremos acontinuación. También se explicarán los criterios utilizados personalmente mediante herramientas de valoración manual como 'Accessibility Insights' para la valoración del criterio 3.2.2 entre otros.
+
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{skynet.png}
+	\caption{Análisis de skynet}
+	\end{figure}
+
+
 	\subsection{Evaluación según WCAG 2.2}
 
-	\subsubsection{Principio 1: Perceptible}
+	\vspace{0.3cm}
+	\noindent
+	$\bullet$ \textbf{Principio 1: Perceptible}
+	\vspace{0.3cm}
 	
 	\noindent
 	\textbf{Criterio 1.1.1 - Contenido no textual}
@@ -231,7 +243,10 @@
 	\noindent
 	\textbf{Recomendación}: Ajustar los contrastes para cumplir con la ratio mínima de 4.5:1 para texto normal y 3:1 para texto grande.
 
-	\subsubsection{Principio 2: Operable}
+	\vspace{0.3cm}
+	\noindent
+	$\bullet$ \textbf{Principio 2: Operable}
+	\vspace{0.3cm}
 	
 	\noindent
 	\textbf{Criterio 2.1.1 - Teclado}
@@ -265,13 +280,16 @@
 	\noindent
 	\textbf{Recomendación}: Establecer un orden de tabulación coherente que siga el flujo visual esperado de la página.
 
-	\subsubsection{Principio 3: Comprensible}
+	\vspace{0.3cm}
+	\noindent
+	$\bullet$ \textbf{Principio 3: Comprensible}
+	\vspace{0.3cm}
 	
 	\noindent
 	\textbf{Criterio 3.2.2 - Al recibir el foco}
 	
 	\noindent
-	\textbf{Problema}: Algunos elementos cambian de contexto inesperadamente al recibir el foco, especialmente en dispositivos móviles.
+	\textbf{Problema}: La publicidad al recibir el foco cambia de contenido inesperadamente, especialmente en dispositivos móviles.
 	
 	\noindent
 	\textbf{Severidad}: Media
@@ -280,7 +298,7 @@
 	\textbf{Impacto}: Desorientación y pérdida de control para usuarios de tecnologías asistivas.
 	
 	\noindent
-	\textbf{Recomendación}: Eliminar cambios automáticos de contexto al recibir el foco, requiriendo acción explícita del usuario.
+	\textbf{Recomendación}: Eliminar cambios automáticos al recibir el foco, requiriendo acción explícita del usuario.
 	
 	\vspace{0.5cm}
 	
@@ -299,7 +317,10 @@
 	\noindent
 	\textbf{Recomendación}: Proporcionar etiquetas claras, placeholder text descriptivo e instrucciones específicas para cada campo.
 
-	\subsubsection{Principio 4: Robusto}
+	\vspace{0.3cm}
+	\noindent
+	$\bullet$ \textbf{Principio 4: Robusto}
+	\vspace{0.3cm}
 	
 	\noindent
 	\textbf{Criterio 4.1.2 - Nombre, función, valor}
@@ -309,7 +330,6 @@
 	
 	\noindent
 	\textbf{Severidad}: Grave
-	
 	\noindent
 	\textbf{Impacto}: Lectores de pantalla no pueden comunicar efectivamente la funcionalidad de elementos críticos.
 	
@@ -317,8 +337,11 @@
 	\textbf{Recomendación}: Implementar atributos ARIA apropiados y asegurar que todos los elementos personalizados sean interpretables por tecnologías asistivas.
 
 	\section{Evaluación con Lectores de Pantalla}
+	\noindent Hemos elegido una aplicación de juegos la cual los lectores de pantalla no son aplicables en algunos juegos que requieren de prestar atencion visual, pero la mayoria de juegos podrian perfectamente presentar información en formato audio como cuando hay equipos, banderas, etc... Todos estos elementos podrían ser perfectamente accesibles pero como veremos acontinuación no lo son.
+	
+	
 
-	\subsection{Experiencia con NVDA (Windows)}
+	\subsection{Experiencia con el Narrador de Windows}
 	
 	\noindent
 	\textbf{Problemas Identificados}:
@@ -337,27 +360,8 @@
 		\item \textbf{Navegación por landmarks}: La página no utiliza elementos semánticos HTML5 apropiados, dificultando la navegación rápida por secciones.
 	\end{enumerate}
 
-	\section{Impacto en la Experiencia del Usuario}
-
-	\subsection{Usuarios con Discapacidades Visuales}
-	\begin{itemize}
-		\item \textbf{Barrera de acceso}: Aproximadamente 16\% de la población global experimenta algún tipo de discapacidad significativa, y los problemas identificados excluyen efectivamente a este segmento de usuarios.
-		\item \textbf{Pérdida de funcionalidad}: Los juegos basados en identificación visual sin alternativas textuales son completamente inaccesibles.
-	\end{itemize}
-
-	\subsection{Usuarios con Discapacidades Motoras}
-	\begin{itemize}
-		\item \textbf{Limitaciones de navegación}: La dependencia de interacciones precisas con mouse/touch sin alternativas de teclado crea barreras significativas.
-		\item \textbf{Problemas de tiempo}: Los juegos cronometrados sin opciones de pausa penalizan a usuarios que requieren más tiempo para interactuar.
-	\end{itemize}
-
-	\subsection{Usuarios con Discapacidades Cognitivas}
-	\begin{itemize}
-		\item \textbf{Sobrecarga de información}: La falta de diseño simplificado y la ausencia de ayuda contextual dificulta la comprensión.
-		\item \textbf{Memoria de trabajo}: La dependencia excesiva en recordar información específica sin ayudas visuales o contextuales.
-	\end{itemize}
-
-	\section{Recomendaciones Prioritarias}
+	
+	\section{Propuestas de mejora}
 
 	\subsection{Acciones Inmediatas (Alta Prioridad)}
 	\noindent
@@ -385,19 +389,16 @@
 		\item Crear versiones alternativas de juegos que no dependan exclusivamente de elementos visuales.
 		\item Desarrollar API de accesibilidad para integraciones futuras con tecnologías asistivas avanzadas.
 	\end{enumerate}
-
+\newpage
 	\section{Conclusiones}
 
 	\noindent
-	Futbol11.com presenta \textbf{problemas significativos tanto en usabilidad como en accesibilidad} que afectan negativamente la experiencia de una gran parte de sus \textbf{9.17M de usuarios mensuales}. Los problemas identificados no solo limitan el acceso a usuarios con discapacidades, sino que también reducen la eficiencia y satisfacción de todos los usuarios.
+	Futbol11.com presenta problemas significativos tanto en usabilidad como en accesibilidad que afectan negativamente la experiencia de una gran parte de sus 9.17M de usuarios mensuales. Los problemas identificados no solo limitan el acceso a usuarios con discapacidades, sino que también reducen la eficiencia y satisfacción de todos los usuarios. A lo largo de este análisis, se ha evidenciado que la aplicación de las heurísticas de Nielsen revela deficiencias en aspectos fundamentales como la visibilidad del estado del sistema, el control del usuario y la prevención de errores, lo que genera frustración y una curva de aprendizaje pronunciada para los visitantes frecuentes. \\
 
 	\noindent
-	La \textbf{falta de cumplimiento con las pautas WCAG 2.2} representa un riesgo legal y ético, especialmente considerando que el 94\% de las webs de las Administraciones Públicas españolas no cumple plenamente la directiva europea de accesibilidad, estableciendo un precedente preocupante en el sector digital español.
+	En el ámbito de la accesibilidad, el cumplimiento parcial de los principios WCAG 2.2, particularmente en percepción, operabilidad y comprensión, subraya la necesidad de una revisión integral para garantizar la inclusión universal. Por ejemplo, la ausencia de texto alternativo en imágenes y el contraste insuficiente no solo excluyen a usuarios con discapacidades visuales, sino que también impactan en la legibilidad general de la interfaz bajo condiciones variables de iluminación o en dispositivos móviles. Las evaluaciones con lectores de pantalla como Narrador de Windows y VoiceOver confirman que la navegación y la retroalimentación sonora son inadecuadas, lo que impide una interacción fluida y equitativa para un público diverso. \\
 
 	\noindent
-	Sin embargo, la popularidad de la plataforma y su base de usuarios comprometida (con una \textbf{tasa de rebote de solo 17.94\%} y \textbf{10.25 páginas por visita}) demuestran el potencial para mejoras significativas que beneficiarían tanto a la experiencia del usuario como al alcance del mercado.
-
-	\noindent
-	La implementación de las recomendaciones propuestas no solo mejoraría el cumplimiento normativo, sino que también posicionaría a futbol11.com como líder en accesibilidad digital en el sector de juegos deportivos online, creando una ventaja competitiva sostenible y expandiendo significativamente su audiencia potencial.
+	Las propuestas de mejora delineadas, desde acciones inmediatas como la implementación de ARIA y mejoras en el contraste hasta iniciativas a largo plazo como pruebas con usuarios reales, representan un camino viable hacia una plataforma más inclusiva y eficiente. Adoptar un enfoque centrado en el usuario no solo elevaría el cumplimiento normativo, sino que también potenciaría la retención de usuarios y la reputación de futbol11.com en un mercado competitivo de juegos en línea. En última instancia, este estudio resalta la importancia de integrar la usabilidad y accesibilidad desde las fases iniciales del diseño, alineándose con los estándares internacionales de interacción persona-máquina para fomentar experiencias digitales equitativas y satisfactorias.
 
 \end{document}
