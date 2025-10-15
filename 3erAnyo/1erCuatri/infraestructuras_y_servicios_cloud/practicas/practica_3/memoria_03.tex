@@ -153,7 +153,11 @@
 	\\\\
 	Nos dirigiremos dentro de nuestro bucket a permisos, desbloquearemos el permiso de accesos públicos y editaremos la política para que la acción GetObject se permita utilizar dentro de baqueet-p3/back-end/ solamente desde nuestra vpce anterior añadiendo la condición de StringEquals. Posteriormente hacemos lo mismo con la carpeta del front-end pero sin usar ninguna condición. De este modo queda la carpeta back-end restringida y accesible únicamente mediante el subnet privado y la carpeta front-end abierta a todo el mundo.
 	\\\\
+<<<<<<< HEAD
 	Otra forma de hacerlo sin usar roles sería usando la ip privada de la instancia y hacer que se permita el acceso solamente si coincide la ip de la política con la ip de la instancia. Esto no es muy util en nuestro caso ya que estaríamos cambiando la política todo el rato y no podríamos usar de manera correcta los UserData de las instancias, al ejecutar primero la instancia sin saber la IP privada no habría tiempo físico para cambiarla en el bucket. 
+=======
+	Otra forma de hacerlo sin usar roles sería usando la ip privada de la instancia y hacer que se permita el acceso solamente si coincide la ip de la política con la ip de la instancia. Esto no es muy util en nuestro caso ya que estaríamos cambiando la política todo el rato y no podríamos usar de manera correcta los UserData de las instancias.
+>>>>>>> 42fa237a0948d1ceb29232ede3f74fd9ab574339
 
 
 	
@@ -186,7 +190,11 @@
 }\end{lstlisting}
 
 	\section{Instancias}
+<<<<<<< HEAD
 	Las instancias serán desplegadas dentro de nuestra VPC, la instancia que ejecute el front será desplegada en la subnet pública mientras que la instancia que ejecute el back será ejecutada en la subnet privada. Para que sea menos tedioso el despliegue utilizaremos los User Data, es un archivo .sh que se ejecutan al crear cada instancia. Estos User Data tendrán sentencias ``echo'' para que cuando nos metamos a monitorear y comprobar los logs de cada instancia sepamos en que ha fallado de manera rápida y práctica.
+=======
+	Las instancias serán desplegadas dentro de nuestra VPC, la instancia que ejecute el front será desplegada en la subnet pública mientras que la instancia que ejecute el back será ejecutada en la subnet privada. Para que sea menos tedioso el despliegue utilizaremos los User Data, es un archivo .sh que se ejecutan al iniciar cada instancia. Estos User Data tendrán sentencias ``echo'' para que cuando nos metamos a monitorear y comprobar los logs de cada instancia sepamos en que ha fallado de manera rápida y práctica.
+>>>>>>> 42fa237a0948d1ceb29232ede3f74fd9ab574339
 
 	\subsection{Grupos de Seguridad}
 	Lo primero que tenemos que hacer antes de lanzar las instancias será crear dos grupos de seguridad, uno para el frontend el que permita  todas las entradas http y otro para el backend que unicamente permita entradas del grupo de seguridad del frontend mediante un TCP personalizado en el puerto 5000 que es el que usaremos para lanzar el back.
@@ -254,7 +262,11 @@
 	\end{lstlisting}
 
 	\subsubsection{Back Logs}
+<<<<<<< HEAD
 	Cuando nos salgan los siguientes logs dentro del monitoreo de la instancia sabremos que tenemos el servidor desplegado sin errores por el momento.
+=======
+	Cuando nos salgan los siguientes logs dentro del monitoreo de la instancia sabremos que tenemos el servidor desplegado sin errores.
+>>>>>>> 42fa237a0948d1ceb29232ede3f74fd9ab574339
 
 	\begin{lstlisting}[style=consola, language=bash, caption={back logs}]
 	[   44.966280] cloud-init[1633]:  * Serving Flask app 'app_backend'
@@ -334,7 +346,11 @@
 
 	echo "--- Script de User Data del Front-End finalizado con éxito. ---"\end{lstlisting}
 	\subsubsection{Front Logs}
+<<<<<<< HEAD
 	Cuando nos salga el siguiente log sabremos que tendremos el servidor desplegado.
+=======
+	Cuando nos salgan los siguientes logs dentro del monitoreo de la instancia sabremos que tenemos el servidor desplegado sin errores.
+>>>>>>> 42fa237a0948d1ceb29232ede3f74fd9ab574339
 
  	\begin{lstlisting}[style=consola, language=bash, caption={front logs}]
 	[   39.309930] cloud-init[1633]: Cloud-init v. 22.2.2 finished at Wed, 01 Oct 2025 21:42:02 +0000. Datasource DataSourceEc2.  Up 39.29 seconds
@@ -372,7 +388,11 @@
 
 	\subsection{Accesos al bucket}
 
+<<<<<<< HEAD
 	Para poder comprobar rápidamente si tenemos acceso a los archivos del bucket podemos ir a nuestro S3 y copiar los links de cada archivo que tengamos y pegarlos en el navegador. Como es lógico los archivos que tendremos dentro de nuestra carpeta /back-end, al no conectarnos mediante el endpoint y estar fuera de la subred privada, serán inaccesibles mientras que los que tengamos dentro de la carpeta /frontend podremos visualizarlos.
+=======
+	Para poder comprobar rápidamente si tenemos acceso a los archivos del bucket podemos ir a nuestro S3 y copiar los links de cada archivo que tengamos y pegarlos en el navegador. Como es lógico los archivos que tendremos dentro de nuestra carpeta /back-end al no conectarnos mediante el endpoint y estar fuera de la subred privada serán inaccesibles mientras que los que tengamos dentro de la carpeta /frontend podremos visualizarlos.
+>>>>>>> 42fa237a0948d1ceb29232ede3f74fd9ab574339
 
 	\begin{figure}[H]
 	\centering
@@ -394,7 +414,11 @@
 
 	\subsection{Prueba de despliegue 2}
 
+<<<<<<< HEAD
 	Para la aplicación de análisis de sentimiento debemos de hacer lo mismo, buscar la ip publica y conectarnos. El análisis de sentimiento según creador del modelo falla en un 10\%, yo lo he probado con estos casos y me ha funcionado bien. Seguramente el alto error de fallo se deba a que es un modelo bastante pequeño.
+=======
+	Para la aplicación de analisis de sentimiento debemos de hacer lo mismo, buscar la ip publica y conectarnos. El analisis de sentimiento según creador del modelo falla en un 10\%, yo lo he probado con estos casos y me ha funcionado bien. Seguramente el alto error de fallo se deba a que es un modelo bastante pequeño.
+>>>>>>> 42fa237a0948d1ceb29232ede3f74fd9ab574339
 
 	\begin{figure}[H]
 
