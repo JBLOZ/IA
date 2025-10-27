@@ -153,7 +153,6 @@ for i in range(len(lista)):
 
 print(valor,nueva)
 
-print(len(([0,3,4],[3,4,3])))
 
 def plantar(mapa):
     m, n = len(mapa), len(mapa[0])
@@ -190,3 +189,115 @@ def plantar(mapa):
         return mejor
     else:
         return float('inf'), []
+
+
+
+def subsecciencia(lista, v=0):
+
+    if len(lista) == 0:
+        return 0, []
+
+    if v == -1:
+        valor_no_cogerlo, lista_2 = subsecciencia(lista[:-1],-1)
+        no_cogerlo = valor_no_cogerlo, lista_2 + [0]
+
+        return no_cogerlo
+    
+
+    if v == 0:
+        valor_no_cogerlo, lista_2 = subsecciencia(lista[:-1],0)
+        no_cogerlo = valor_no_cogerlo, lista_2 + [0]
+
+        valor_cogerlo, lista_1 = subsecciencia(lista[:-1], 1)
+        cogerlo = lista[-1] + valor_cogerlo, lista_1 + [1]
+
+        return max(cogerlo, no_cogerlo)
+        
+    if v == 1:
+        valor_no_cogerlo, lista_2 = subsecciencia(lista[:-1],-1)
+        no_cogerlo = valor_no_cogerlo, lista_2 + [0]
+
+        valor_cogerlo, lista_1 = subsecciencia(lista[:-1], 1)
+        cogerlo = lista[-1] + valor_cogerlo, lista_1 + [1]
+
+        return max(cogerlo, no_cogerlo)
+
+
+hola = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+
+print(subsecciencia(hola))
+
+
+def acciones(precios,momento = 0):
+
+
+    if len(precios) == 0:
+        return 0, []
+    
+    if momento == 0:
+        valor_compra, lista_1 = acciones(precios[:-1],1)
+        compra = -precios[-1] + valor_compra, lista_1 + ["compra"]
+        valor_nada, lista_2 = acciones(precios[:-1],0)
+        nada = valor_nada, lista_2 + ["nada"]
+
+        return max(compra,nada)
+
+    if momento == 1:
+        valor_venta, lista_3 = acciones(precios[:-1],2)
+        venta = precios[-1] + valor_venta, lista_3 + ["venta"]
+        valor_nada, lista_2 = acciones(precios[:-1],1)
+        nada = valor_nada, lista_2 + ["nada"]
+        valor_compra, lista_1 = acciones(precios[:-1],1)
+        compra = -precios[-1] + valor_compra, lista_1 + ["compra"]
+
+        return max(compra,venta,nada)
+    
+    if momento == 2:
+        valor_nada, lista_2 = acciones(precios[:-1],0)
+        nada = valor_nada, lista_2 + ["nada"]
+        return nada
+
+
+
+precios = [1, 2, 3, 0, 2]
+
+
+print(acciones(precios))
+
+
+
+
+
+
+
+def mochila(kilos, valor, S):
+
+    if S == 0:
+        return 0, []
+    
+    if len(valor) == 0:
+        return -np.inf, []
+    
+    val_no_meter, lista_1 = mochila(kilos[:-1], valor[:-1], S)
+    no_meter = val_no_meter, lista_1 + [0]
+    
+    if kilos[-1] > S:
+        return no_meter
+    else:
+        val_meter, lista_2 = mochila(kilos[:-1], valor[:-1], S-kilos[-1])
+        meter = val_meter + valor[-1], lista_2 + [1]
+
+        return max(meter, no_meter)
+        
+
+vol = [4,3,2,5,1]
+cost = [3,2,5,4,1]
+
+valor, lista = mochila(kilos=vol,valor=cost,10)
+vacia = []
+
+for i in range(len(lista)):
+    if lista[i] == 1:
+        vacia.append(i)
+
+print(valor,vacia)

@@ -1,3 +1,250 @@
+% !TEX program = xelatex
+% ¡Recuerda compilar con XeLaTeX o LuaLaTeX!
+\documentclass{article}
+
+% --- Cargar nuestro fichero de estilo ---
+% Se asume que paper_style.sty está disponible o se usan paquetes estándar.
+\usepackage{paper_style}
+
+% --- PAQUETES PARA EL CONTENIDO DEL DOCUMENTO ---
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
 
 
-hemos creado un bot de telegram de analisis de sentimiento de una accion o etf, se ejecuta al escribir /analysis "stock" desde el bot de @stock_market_analytics_bot el cual esta abierto a todo el mundo. El bot lo que hace es pasar el nombre del stock del que queremos saber como esta el mercado mediante un trigger de telegram al inicio del flujo de n8n, cuando tenemos el mensaje lo que hacemos es descartar todos los mensajes que no contengan la palabra /analysis, cuando tengamos el json del mensaje lo pasamos mediante un bloque de codigo de javascript que lo que hace será devolvernos unicamente el texto que viene a continuacion de /analysis lo cual es lo unico que queremos del mensaje, de esta forma quitamos, el nombre de usuario y todos los demás campos que no nos interesan. Cuando tenemos este unico json con el nombre "texto":"stock" y el "id":id lo que hacemos es pasarlo a un modelo de busqueda inteligente, usando un nodo de http request y una api key de perplexity mandamos un post a https://api.perplexity.ai/search que nos devolvera las 8 notocias de un maximo de 2048 tokens por nooticia buscando lo siguiente: Last news about the stock of {{ $json.text }}, estas 8 noticias se las pasamos a nuestro agente LLM que hara uso de estas noticias para devolvernos un texto el cual nos comentará el sentimiento del mercado y que accion a medio plazo entre las siguientes nos recomienda y porque: compra fuerte, compra, holdear, vender o venta fuerte. Cuando acabe de ejecutarse el modelo el texto final se devolvera al usuario mediante un nodo de send mensaje de telegram que usará el id del usuario que hemos recogido antes para mandarle el texto que proporcione el agente. Para poder crear el trigger de telegram tuvimos que abrir el servidor local a internet, esto lo hicimos usando un tunnel de cloudflared. Tenemos un .sh que lo que hace es lanzar el tunnel desde el puerto localhost:5678 a una url que no es estatica por lo que cuando se crear el tunnel el .sh lee la url que nos proporcione cloudflared y la copia en las variables de entorno .env local, cuando las tiene copiadas lanza el contenedor usando estas variables de entorno para que el trigger de telegram funcione correctamente sin preocuparnos de estar cambiando la url cada vez que reiniciamos, de forma que tenemos un comando para iniciarlo todo directamente. 
+% --- Información del Paper ---
+\title{Seminario 2: Bot de analisis del sentimiento de mercados financieros\\ }
+\author{
+	Alejandro Martínez Riquelme \\
+	Jordi Blasco Lozano \\
+	\small Interacción Persona Máquina \\
+	\small Universidad de Alicante
+}
+\date{\today}
+
+
+% --- Comienzo del Documento ---
+\begin{document}
+	\sloppy % Relaja el ajuste de líneas para reducir overfull hboxes en frases largas
+	\maketitle
+
+	\begin{abstract}
+	\noindent 
+	En un mundo financiero cada vez más dinámico y sobrecargado de información, tomar decisiones de inversión ágiles e informadas es un desafío constante. Este proyecto presenta el desarrollo de un asistente conversacional inteligente a través de un bot de Telegram, diseñado para realizar análisis de sentimiento de mercado para cualquier acción o ETF bajo demanda. El sistema integra múltiples tecnologías como n8n, Docker y Cloudflare Tunnel para crear una solución robusta y accesible que simplifica el acceso a inteligencia de mercado.
+	\end{abstract}
+
+	
+	\tableofcontents
+	\newpage
+
+	\section{Introducción al Proyecto: Bot de Análisis de Sentimiento Bursátil}
+	
+	En un mundo financiero cada vez más dinámico y sobrecargado de información, tomar decisiones de inversión ágiles e informadas es un desafío constante. Los inversores, tanto novatos como experimentados, se enfrentan al reto de procesar grandes volúmenes de noticias, informes y opiniones para evaluar el sentimiento del mercado sobre un activo financiero. Este proceso no solo consume mucho tiempo, sino que también requiere un análisis complejo para extraer conclusiones prácticas.
+	
+	Para abordar este problema, hemos desarrollado una solución innovadora: un \textbf{asistente conversacional inteligente a través de un bot de Telegram}, diseñado para realizar análisis de sentimiento de mercado para cualquier acción o ETF bajo demanda.
+	
+	Nuestro proyecto nace de la necesidad de simplificar y automatizar el acceso a inteligencia de mercado. El objetivo principal es proporcionar a cualquier usuario una herramienta accesible desde su móvil que, con un simple comando, sea capaz de:
+	\begin{enumerate}
+		\item \textbf{Recopilar las noticias más recientes} y relevantes sobre un activo financiero específico.
+		\item \textbf{Utilizar un Modelo de Lenguaje Avanzado (LLM)} para analizar esta información y determinar el sentimiento general del mercado.
+		\item \textbf{Generar una recomendación de inversión clara y concisa} a medio plazo, categorizada en acciones como compra fuerte, compra, mantener, vender o venta fuerte.
+	\end{enumerate}
+	
+	Para lograrlo, hemos diseñado y construido una arquitectura robusta que integra múltiples tecnologías. Utilizando \textbf{n8n} como plataforma central de automatización para orquestar el flujo de trabajo, \textbf{Docker} para crear el entorno de ejecución, y un túnel de \textbf{Cloudflare} para exponer nuestro servicio local a Internet de forma segura y asi poder permitir la entrada de mensajes mediante nuestro bot de telegram.
+	
+	Este proyecto no solo resuelve un problema real, sino que también sirve como una demostración práctica de cómo la combinación de la automatización de flujos de trabajo, la inteligencia artificial conversacional y la infraestructura nos permite crear potentes aplicaciones con recursos limitados. A continuación, explicaremos en detalle cada uno de los pasos que hemos seguido para dar vida a este bot, desde la configuración del entorno hasta el diseño del flujo de inteligencia.
+	
+	\section{Configuración del Túnel y Scripts de Inicio}
+	
+	Para que nuestro bot de Telegram pueda recibir y procesar mensajes en tiempo real, es fundamental exponer el servidor local de n8n a Internet, ya que Telegram requiere una URL pública y accesible para configurar el webhook del trigger. Sin esta exposición, el trigger de Telegram no podría funcionar, ya que n8n opera por defecto en localhost:5678, un puerto interno no visible desde fuera. Elegimos Cloudflare Tunnel (cloudflared) por su simplicidad y gratuidad para entornos de desarrollo, aunque sus URLs generadas no son estáticas y cambian en cada ejecución, lo que impide hardcodearlas directamente en la configuración de n8n.
+	
+	El desafío principal radica en esta variabilidad: si intentáramos definir una URL fija en el nodo de Telegram o en el docker-compose.yml, el webhook fallaría al reiniciar el servicio. Por ello, optamos por un enfoque dinámico basado en variables de entorno (.env), que permite inyectar la URL generada automáticamente en el contenedor de n8n sin intervención manual cada vez. Este método asegura que el trigger de Telegram apunte siempre a la URL correcta, usando variables como WEBHOOK\_URL, N8N\_HOST y TUNNEL\_URL para configurar el protocolo HTTPS y el host externo.
+	
+	\subsection{Paso 1: Instalación y Preparación de Cloudflare Tunnel}
+	
+	Primero, instalamos cloudflared en nuestro sistema operativo (en este caso, Linux o WSL para compatibilidad con Docker). Este herramienta crea un túnel seguro desde nuestro puerto local (5678) hacia una URL temporal en el dominio trycloudflare.com, sin necesidad de cuenta ni configuración compleja. El comando base para iniciarlo es \texttt{cloudflared tunnel --url http://localhost:5678}, que genera una salida como ``https://xxxx.trycloudflare.com'' y la registra en un log para su captura posterior. Este túnel enruta el tráfico entrante de Telegram directamente a n8n, manteniendo la seguridad al no exponer puertos directamente en el firewall.
+	
+	\subsection{Paso 2: Creación del Script de Inicio (start-n8n.sh)}
+	
+	Para automatizar todo el proceso, creamos el script \texttt{start-n8n.sh}, que sigue un orden específico y secuencial para garantizar la integración sin errores. El script comienza deteniendo cualquier instancia previa de \texttt{cloudflared} o Docker para evitar conflictos: \texttt{pkill cloudflared 2>/dev/null} y \texttt{docker-compose down 2>/dev/null}. Luego, lanza \texttt{cloudflared} en segundo plano con redirección de salida a un archivo \texttt{tunnel.log}: \texttt{cloudflared tunnel --url http://localhost:5678 > tunnel.log 2>\&1 \&}, capturando el PID para control posterior.
+	
+	A continuación, el script espera hasta 30 segundos para que se genere la URL, monitoreando el log con un bucle: \texttt{grep -oP 'https://[a-zA-Z0-9-]+\\.trycloudflare\\.com' tunnel.log | head -1}. Una vez extraída la URL (por ejemplo, \url{https://offline-argued-drops.trycloudflare.com}), la valida y la almacena en una variable TUNNEL\_URL. Si no se obtiene en el tiempo límite, el script falla con un error y mata el proceso de \texttt{cloudflared}. Este paso es crítico porque sin la URL dinámica, el webhook de Telegram no se configuraría correctamente en n8n.
+	
+	\subsection{Paso 3: Actualización de Variables de Entorno (.env)}
+	
+	Con la URL en mano, el script actualiza el archivo .env, que sirve como fuente de variables para docker-compose.yml. Genera o sobrescribe el .env con contenido como:
+	\begin{itemize}
+		\item WEBHOOK\_URL=\$\{TUNNEL\_URL\}
+		\item N8N\_HOST=\$\{TUNNEL\_URL\} (adaptado para HTTPS)
+		\item TUNNEL\_URL=\$\{TUNNEL\_URL\}
+	\end{itemize}
+	
+	Esto inyecta la URL en el entorno de n8n, permitiendo que el nodo de Telegram use automáticamente WEBHOOK\_URL como endpoint público. El script muestra el contenido del .env para verificación antes de proceder. De esta forma, evitamos editar manualmente el .env cada reinicio, haciendo el despliegue reproducible con un solo comando: \texttt{./start-n8n.sh}.
+	
+	\subsection{Paso 4: Lanzamiento del Contenedor de n8n}
+	
+	Finalmente, con el .env actualizado, el script ejecuta \texttt{docker-compose up -d}, iniciando el contenedor de n8n con las variables cargadas. El \texttt{docker-compose.yml} define el servicio n8n con puertos expuestos en 5678, volúmenes para persistencia de datos (\texttt{/home/node/.n8n}), y variables como \texttt{N8N\_PROTOCOL=https} y \texttt{N8N\_EDITOR\_BASE\_URL=\$\{TUNNEL\_URL\}} para alinear la interfaz web y los webhooks. Una vez arriba, n8n configura internamente el webhook de Telegram apuntando a la URL del túnel, completando el ciclo de exposición. Para detener todo, usamos un script complementario \texttt{stop-n8n.sh} que hace \texttt{down} en Docker y mata \texttt{cloudflared}, limpiando logs opcionalmente.
+	
+	Esta configuración no solo resuelve la exposición dinámica, sino que también mantiene el proyecto portable y escalable, ideal para demostraciones como esta. En la siguiente sección, detallaremos la creación del bot en Telegram y su integración en el workflow de n8n.
+	
+	\section{Creación del Bot de Telegram e Integración del Trigger}
+	
+	Una vez configurado el túnel para exponer n8n a Internet, el siguiente paso esencial es crear el bot en Telegram y conectarlo al workflow mediante el nodo de trigger de Telegram, que actúa como punto de entrada para recibir mensajes del usuario. Este trigger se basa en la API de Telegram Bot, que requiere un token de autenticación para configurar un webhook que envíe actualizaciones de mensajes a nuestra URL pública (la generada por cloudflared). Sin esta integración, el bot no podría interactuar con el flujo de n8n, ya que Telegram solo notifica a endpoints accesibles externamente.[1]
+	
+	\subsection{Paso 1: Creación del Bot con BotFather}
+	
+	Para iniciar, abrimos Telegram y buscamos el usuario oficial @BotFather, que es la herramienta de Telegram para gestionar bots. Enviamos el comando \texttt{/newbot} seguido del nombre del bot (por ejemplo, ``Stock Market Analytics Bot'') y un username único terminando en ``bot'' (como \texttt{@stock\_market\_analytics\_bot}), que debe ser público y accesible para todos los usuarios. BotFather responde confirmando la creación y proporcionando un \textbf{token de API} en formato \texttt{123456789:ABCDEF...}, que actúa como clave secreta para autenticar todas las peticiones del bot. Este token no debe compartirse públicamente, ya que otorga control total sobre el bot, incluyendo la capacidad de enviar y recibir mensajes.
+	
+	\subsection{Paso 2: Configuración del Nodo de Trigger en n8n}
+	
+	Con el token en mano, accedemos a la interfaz de n8n (vía la URL del túnel) y creamos un nuevo workflow, arrastrando el nodo \textbf{Telegram Trigger} al canvas. En las credenciales del nodo, seleccionamos ``Create New'' para la autenticación de Telegram, ingresando el token de API obtenido de BotFather y configurando el tipo como ``Bot Token Authentication''. El nodo también requiere la URL del webhook, que se resuelve automáticamente usando la variable de entorno WEBHOOK\_URL del .env (injected vía docker-compose), apuntando a \texttt{https://[túnel].trycloudflare.com/webhook/[workflow-id]}, donde n8n maneja la ruta interna para actualizaciones. Al activar el workflow, n8n registra el webhook con la API de Telegram, confirmando que recibirá notificaciones push para cada mensaje enviado al bot. Esto asegura que el trigger se active solo para nuestro bot, filtrando interacciones irrelevantes por defecto.[1]
+	
+	\subsection{Paso 3: Estructura del Mensaje Entrante y Preparación para el Flujo}
+	
+	Cuando un usuario envía un mensaje al bot, como \texttt{/analysis sp500}, el trigger de Telegram recibe un JSON estructurado con la actualización completa del mensaje, que incluye metadatos del usuario y el chat para contextualizar la interacción. La estructura típica es un array de objetos con campos como \texttt{update\_id} (identificador único de la actualización), \texttt{message} (detalles del mensaje), que contiene \texttt{message\_id}, \texttt{from} (información del emisor con \texttt{id} numérico), \texttt{chat} (detalles del chat con el mismo \texttt{id}), \texttt{date} (timestamp), \texttt{text} (contenido del mensaje, e.g., ``/analysis sp500'') y \texttt{entities} (anotaciones como comandos de bot). Por ejemplo, un mensaje de prueba genera algo como:
+	
+	\begin{lstlisting}[style=consola, language=bash]
+[
+  {
+    "update_id": 177484711,
+    "message": {
+      "message_id": 20,
+      "from": {
+        "id": 1065676350,
+        "is_bot": false,
+        "first_name": "Jordi",
+        "last_name": "Blasco Lozano",
+        "username": "jbloz",
+        "language_code": "es"
+      },
+      "chat": {
+        "id": 1065676350,
+        "first_name": "Jordi",
+        "last_name": "Blasco Lozano",
+        "username": "jbloz",
+        "type": "private"
+      },
+      "date": 1761410615,
+      "text": "/analysis sp500",
+      "entities": [
+        {
+          "offset": 0,
+          "length": 9,
+          "type": "bot_command"
+        }
+      ]
+    }
+  }
+]
+	\end{lstlisting}
+	
+	Este formato detallado es útil para tracking, pero para nuestro flujo de análisis de sentimiento, necesitamos simplificarlo extrayendo solo los elementos esenciales: el texto después del comando (e.g., ``sp500'') y el ID del usuario (e.g., 1065676350) para respuestas posteriores. Por lo tanto, transformamos el JSON entrante en una estructura minimalista como:
+	
+	\begin{lstlisting}[style=consola, language=bash]
+[
+  {
+    "text": "sp500",
+    "id": 1065676350
+  }
+]
+	\end{lstlisting}
+	
+	Esta reformateación se logra en los nodos subsiguientes (filtro y código JavaScript), eliminando ruido como nombres, timestamps y entidades, para pasar datos limpios al resto del workflow sin sobrecargar el procesamiento. De esta manera, el trigger inicializa el flujo de forma eficiente, preparando el terreno para la validación y extracción de comandos específicos como \texttt{/analysis}.
+	
+	En la próxima sección, detallaremos cómo filtramos mensajes irrelevantes y refinamos el texto extraído mediante nodos de código.
+	
+	\section{Transformación y filtrado de los datos de entrada: Nodos Filter y JavaScript en n8n}
+	
+	Una vez que el trigger de Telegram recibe los mensajes enviados al bot, el siguiente paso en el workflow de n8n es limpiar y transformar los datos para quedarnos solo con la información relevante para nuestro análisis bursátil. El objetivo aquí es filtrar solo los mensajes que contengan el comando \texttt{/analysis} y extraer el texto posterior al comando (el ticker o nombre del activo) junto al identificador de usuario para personalizar las respuestas en el resto del flujo.
+	
+	\subsection{Paso 1: Nodo de Filter}
+	
+	El nodo \textbf{Filter} funciona como una puerta de acceso, permitiendo únicamente los mensajes que cumplen una condición clave: que el mensaje incluya la palabra \texttt{/analysis}. Así, si un usuario escribe cualquier otro texto o comando, el flujo lo descartará automáticamente y no avanzará a las siguientes etapas. Esta lógica reduce ruido y asegura que solo procesamos peticiones válidas y estructuradas para el análisis del sentimiento de mercado.
+	
+	\textbf{Configuración:}
+	\begin{itemize}
+		\item Campo a filtrar: \texttt{message.text} (dentro del JSON recibido).
+		\item Condición: contiene \texttt{/analysis}.
+		\item Acción: si pasa el filtro, el mensaje sigue el flujo; si no, se descarta.
+	\end{itemize}
+	
+	\subsection{Paso 2: Nodo Code (JavaScript)}
+	
+	El nodo \textbf{Code} o \textbf{Code in JavaScript} es donde transformamos el mensaje filtrado en un formato sencillo y funcional para el resto del workflow. El bloque de código que has incluido cumple tres funciones principales:
+	
+	\begin{itemize}
+		\item Toma el texto completo del mensaje (\texttt{fullText}) y el identificador del usuario (\texttt{ID}).
+		\item Localiza el comando \texttt{/analysis} y extrae únicamente el texto que viene detrás (lo que el usuario quiere analizar: un ticker, índice, etc.).
+		\item Devuelve un objeto JSON minimalista con el formato exactamente necesario para la API siguiente: el \texttt{text} limpio y el \texttt{id} para enviar la respuesta al usuario correcto.
+	\end{itemize}
+	
+	\begin{lstlisting}[style=consola, language=bash]
+const fullText = $input.item.json.message.text;
+const ID = $input.item.json.message.from.id;
+const command = "/analysis ";
+
+// Extrae todo lo que viene después de /analysis
+const textAfterCommand = fullText.includes(command) 
+? fullText.substring(fullText.indexOf(command) + command.length).trim()
+: fullText;
+
+return {
+json: {
+    text: textAfterCommand,
+    id: ID
+}
+};\end{lstlisting}
+	
+	Gracias a esto, transformamos un mensaje de entrada complejo, como el que hemos visto en el paso anterior en una salida simple y limpia como esta:
+	
+\begin{lstlisting}[style=consola, language=bash]
+[
+  {
+    "text": "sp500",
+    "id": 1065676350
+  }
+]\end{lstlisting}
+	
+	Esto prepara el mensaje para ser enviado a la API de análisis de sentimiento o cualquier otro módulo de procesamiento posterior, facilitando al máximo la integración y manteniendo limpio el flujo de trabajo en n8n.
+	
+	\section{HTTP Request para buscar noticias con Perplexity API}
+	
+	Una vez que hemos procesado el mensaje del usuario para obtener únicamente el texto relevante (el ticker o nombre del activo financiero), el siguiente paso del workflow consiste en consultar la API de Perplexity para recopilar las noticias más recientes sobre ese activo. Esta búsqueda es fundamental para que el LLM realice el análisis de sentimiento con información actualizada y relevante.
+	
+	\subsection{Perplexity, subscripción y API}
+	
+	Perplexity ofrece varias maneras de acceder a su API Pro, incluyendo un periodo de prueba de 12 meses si asocias una cuenta de PayPal, así como promociones puntuales para ciertas cuentas o estudiantes. En nuestro caso, disponemos de una suscripción Pro, que nos da acceso prioritario tanto a modelos avanzados como a la propia API. Esta suscripción incluye 5 € de crédito API cada mes, suficiente para mantener proyectos ligeros y pruebas recurrentes.
+	
+	\subsection{Acceso a la API de búsqueda}
+	
+	Con la suscripción Pro, tenemos acceso directo a la API, incluida la función más potente: la \textbf{API de búsqueda avanzada}. La documentación oficial de Perplexity proporciona un ejemplo de integración rápida mediante cURL (que podemos copiar y pegar al módulo de HTTP Request en n8n), autenticando cada llamada con nuestra clave personal. Allí mismo se detallan parámetros de uso como el límite de resultados o el máximo de tokens por noticia.
+	
+	\subsection{Ejemplo práctico de la integración en n8n}
+	
+	Creamos un módulo HTTP Request justo después del bloque de JavaScript, usando estos ajustes:
+	\begin{itemize}
+		\item \textbf{URL:} \texttt{https://api.perplexity.ai/search}
+		\item \textbf{Método:} POST
+		\item \textbf{Autenticación:} Bearer Token (clave API de Perplexity)
+		\item \textbf{Cuerpo (JSON):}
+	\end{itemize}
+	
+	\begin{lstlisting}[style=consola, language=bash]
+{
+  "query": "Last news about the stock of {{ $json.text }}",
+  "max_results": 8,
+  "max_tokens_per_page": 2048
+}\end{lstlisting}
+	
+	Aquí, \texttt{\{\{ \$json.text \}\}} toma el ticker del paso anterior para personalizar la búsqueda.
+	
+	El input a este módulo será el JSON minimalista del paso previo (por ejemplo, \texttt{\{"text": "sp500", "id": 1065676350\}}), asegurando así que la consulta esté siempre alineada con el comando que ha solicitado el usuario.
+	
+	Con esto, cada vez que el bot lo requiera, buscará siempre las 8 noticias más relevantes (máximo 2048 tokens cada una), proporcionando a nuestro agente LLM los datos actualizados y preparados para la toma de decisiones de inversión y el análisis de sentimiento.
+
+\end{document}

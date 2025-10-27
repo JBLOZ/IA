@@ -1,18 +1,67 @@
 
 import numpy as np
 
-def planificar_menu(calificaciones: list, costos: list, B: int):
+def planificar_menu(calificaciones, costos, B):
     
-    if B == 0 or len(costos) == 0:
-        return 0
+    if len(costos) == 0:
+        return 0, []
+    
+    val_no_meter, lista_1 = planificar_menu(calificaciones[:-1],costos[:-1],B)
+    no_meter = val_no_meter, lista_1 + [0]
+    
     
     if costos[-1] > B:
-        return planificar_menu(calificaciones[:-1], costos[:-1], B)
+        
+        return no_meter
     
-    meter = calificaciones[-1] + planificar_menu(calificaciones[:-1], costos[:-1], B - costos[-1])
-    no_meter = planificar_menu(calificaciones[:-1], costos[:-1], B)
+    else:
     
-    return max(meter,no_meter)
+        val_meter, lista_2 = planificar_menu(calificaciones[:-1], costos[:-1], B - costos[-1])
+        meter = calificaciones[-1] + val_meter, lista_2 + [1]
+
+        return max(meter,no_meter)
+
+
+
+
+valoraciones = [6,1,8,3]
+fichas = [950,2400,500,2000]
+
+
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def planificar_menuDP(calificaciones: list, costos: list, B: int):
 
