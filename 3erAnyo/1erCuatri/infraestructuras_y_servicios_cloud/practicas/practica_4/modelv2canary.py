@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 import time, os
 
 app = Flask(__name__)
-MODELID = "V2 - DeepLearning - Canary"
+MODELID = "V2 - Docker - DeepLearning - Canary"
 
 @app.route('/api/v1/recommendation', methods=['POST'])
 def recommendv2():
