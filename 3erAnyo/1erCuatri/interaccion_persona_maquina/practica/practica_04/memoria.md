@@ -180,15 +180,90 @@ Creamos un módulo HTTP Request justo después del bloque de JavaScript, usando 
 - **Cuerpo (JSON):**
   ```json
   {
-    "query": "Last news about the stock of {{ $json.text }}",
-    "max_results": 8,
-    "max_tokens_per_page": 2048
+    "query": [
+        "Last news about {{ $json.text }}",
+        "{{ $json.text }} financial asset forecasts",
+        "{{ $json.text }} financial asset last results"
+    ],
+    "max_results": 8
   }
   ```
-Aquí, `{{ $json.text }}` toma el ticker del paso anterior para personalizar la búsqueda.
-
-El input a este módulo será el JSON minimalista del paso previo (por ejemplo, `{"text": "sp500", "id": 1065676350}`), asegurando así que la consulta esté siempre alineada con el comando que ha solicitado el usuario.
-
-Con esto, cada vez que el bot lo requiera, buscará siempre las 8 noticias más relevantes (máximo 2048 tokens cada una), proporcionando a nuestro agente LLM los datos actualizados y preparados para la toma de decisiones de inversión y el análisis de sentimiento.
+Aquí, `{{ $json.text }}` toma el ticker del paso anterior para personalizar la búsqueda. Para enriquecer los resultados, no nos limitamos a una sola consulta, sino que realizamos tres búsquedas simultáneas sobre el mismo activo, solicitando noticias recientes, previsiones y los últimos resultados financieros. Esto proporciona un contexto mucho más rico para el análisis posterior.
 
 
+
+---
+### Formateo de Noticias y Preparación para el Análisis (Code in JavaScript4)
+
+Tras la llamada exitosa a la API de Perplexity (`HTTP Request1`), el workflow recibe un objeto JSON complejo que contiene una lista de noticias. Esta estructura, aunque rica en datos (con URLs, snippets, metadatos, etc.), no es un formato óptimo para ser analizada directamente por un Modelo de Lenguaje (LLM). Para maximizar la precisión del análisis y minimizar el consumo de tokens, es crucial "limpiar" y "condensar" esta información.
+
+Esta tarea la realiza el nodo **Code in JavaScript4**. Su función es iterar sobre el array de resultados de la búsqueda y concatenar la información esencial de cada noticia (como el título y el resumen o snippet) en un único bloque de texto plano. Este bloque de texto se formatea de manera legible, separando cada noticia para que el LLM pueda distinguirlas.
+
+Además, este nodo inicializa un contador de reintentos (`retry_count: 0`), que será clave para la lógica de corrección que veremos más adelante.
+
+El resultado es un objeto JSON que contiene el `text` (nombre del activo), las `noticias` (el texto plano con toda la información) y el `retry_count`, sirviendo como la única "fuente de verdad" para los siguientes pasos de análisis.
+
+---
+### Arquitectura de "Actor-Crítico": El Proceso de Análisis y Revisión
+
+Para asegurar una alta fiabilidad en la respuesta y evitar las "alucinaciones" (respuestas incorrectas o inventadas) de la IA, implementamos una arquitectura avanzada de dos agentes conocida como **Actor-Crítico**. En lugar de confiar en un solo agente, uno genera el análisis (el "Actor") y un segundo agente, más estricto, lo revisa (el "Crítico").
+
+#### Paso 1: El Actor - `AI Agent2` (Analista)
+
+El primer agente, **`AI Agent2`**, actúa como el "Analista". Recibe el contexto de noticias formateado del nodo anterior. Su *prompt* (instrucción) le ordena realizar el análisis completo y responder **únicamente** con un formato de texto estricto que hemos definido:
+
+```
+Compra: [X]%
+Mantener: [Y]%
+Vender: [Z]%
+Expectativa: [Alcista o Bajista]
+Resumen: [Un resumen de un párrafo de las noticias...]
+```
+Este formato simple basado en texto es fácil de generar para el modelo, pero aún puede contener errores. La salida de este nodo es un único *string* de texto.
+
+#### Paso 2: El Crítico - `AI Agent3` (Revisor)
+
+Aquí es donde entra el control de calidad. El segundo agente, **`AI Agent3`**, actúa como el "Revisor". Este nodo recibe dos entradas cruciales:
+1.  El **contexto de noticias original** (del nodo `Code in JavaScript4`).
+2.  El **análisis en texto** generado por el primer agente (la salida de `AI Agent2`).
+
+La tarea del Revisor no es generar un análisis, sino **juzgar** el análisis del Actor. Su *prompt* le instruye a comparar el resumen y los porcentajes con las noticias originales y determinar si el análisis está 100% justificado por ellas.
+
+Para que su decisión sea utilizable por el workflow, forzamos su salida a un simple "True" o "False".
+
+---
+### Flujo Condicional: El Bucle de Corrección y Fusión
+
+La salida del Revisor nos permite crear un flujo condicional para simular un "bucle de re-intento".
+
+#### Paso 1: El Nodo `If1`
+
+Este nodo lee la salida del `AI Agent3` (Revisor). Su condición es si la salida contiene "True" y si el análisis del `AI Agent2` contiene las palabras clave esperadas ("Compra:", "Mantener:", etc.). Esto crea dos ramas:
+* **Rama "True" (Éxito):** El análisis es bueno y puede continuar.
+* **Rama "False" (Error):** El análisis es malo o incompleto y necesita ser rehecho.
+
+#### Paso 2: La Rama "False" (Re-intento del Actor)
+
+Esta rama es la clave de nuestra lógica de "loop". Cuando el análisis es `false`, el flujo se dirige al nodo `Code Increment Retry`, que aumenta en uno el contador de reintentos. Después, el nodo `If Max Retry` comprueba si se ha alcanzado el límite de 3 reintentos. Si no se ha alcanzado, el flujo vuelve al `AI Agent2` para que genere un nuevo análisis. Si se alcanza el límite, el flujo termina en un error.
+
+#### Paso 3: La Fusión de Ramas
+
+La rama "True" del nodo `If1` se conecta directamente al nodo final de formateo, `Code in JavaScript5`.
+
+---
+### Formateo Final y Respuesta al Usuario
+
+#### `Code in JavaScript5` (Formateador Avanzado)
+
+Este es el nodo de código que prepara la respuesta final. Su trabajo es tomar el análisis *final y aprobado* y convertirlo en el mensaje que verá el usuario. Su lógica interna hace lo siguiente:
+
+1.  **Extracción con Regex:** Toma el `aiResponse` (el texto del análisis correcto del `AI Agent2`) y utiliza **Expresiones Regulares (`.match()`)** para extraer los valores de cada línea (ej: `Compra: (\d+)%`).
+2.  **Formateo HTML:** Finalmente, construye el mensaje de respuesta usando **etiquetas HTML** (como `<b>` para negrita) para darle estilo, incluyendo emojis (`📈` o `📉`) según la expectativa.
+
+#### `Send a text message1` (Envío por Telegram)
+
+Este es el último nodo. Recibe el `responseText` (el texto HTML) del nodo anterior y lo envía al usuario. La configuración clave aquí es:
+* **`Chat ID`:** Se obtiene dinámicamente del *primer* nodo del flujo (`Telegram Trigger`), asegurando que la respuesta siempre vuelva al usuario que hizo la petición.
+* **`Parse Mode`:** Se establece en **`HTML`** para que Telegram interprete correctamente las etiquetas `<b>` y `•` que hemos definido.
+
+Este ciclo completo asegura que el usuario reciba una respuesta no solo rápida, sino también verificada, fiable y formateada profesionalmente.
