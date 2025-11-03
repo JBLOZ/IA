@@ -94,11 +94,11 @@ Adicionalmente, desde el mismo "VPC and more" se permite añadir el NAT Gateway 
 \noindent
 \begin{minipage}[c]{0.48\textwidth}
 	
-	Para descargar los archivos y los modelos nos tendremos que conectar a un S3 que almacene estos datos. Esto lo haremos mediante del S3 endpoint que conectamos en el paso anterior. 
+	Para descargar los archivos y los modelos nos tendremos que conectar a un S3 que almacene estos datos. Esto lo haremos mediante el S3 endpoint que conectamos en el paso anterior. 
 	
 	\vspace{0.3cm}
 	
-	Subiremos los archivos siguiendo la estructura del user data proporcionado, de forma que tengamos estos tres archivos (el modelo.pkl simplemente servirá como archivo de prueba sin valor, no se ejecutará, pero si descargará):
+	Subiremos los archivos siguiendo la estructura del user data proporcionado, de forma que tengamos estos tres archivos (el modelo.pkl simplemente servirá como archivo de prueba sin valor, no se ejecutará, pero sí descargará):
 
 	\begin{itemize}
 		\item \texttt{/backend/model\_v1\_prod.py}
@@ -115,7 +115,7 @@ Adicionalmente, desde el mismo "VPC and more" se permite añadir el NAT Gateway 
 \vspace{0.5cm}
 
 \subsection{Política del bucket}
-	Como en la práctica anterior, en esta también tenemos que permitir el acceso al bucket usando la política, de forma que permita accesos de descarga unicamente si utilizamos nuestro endpoint especifico. Para esto definiremos el siguiente json:
+	Como en la práctica anterior, en esta también tenemos que permitir el acceso al bucket usando la política, de forma que permita accesos de descarga únicamente si utilizamos nuestro endpoint específico. Para esto definiremos el siguiente json:
 
 \begin{lstlisting}[style=consola, language=bash, caption={política-s3.json}]
 {
@@ -146,9 +146,9 @@ Adicionalmente, desde el mismo "VPC and more" se permite añadir el NAT Gateway 
 		
 	\section{Configuración de la seguridad}
 
-	La seguridad de esta arquitectura está estructurada en varias capas y cada componente (subred pública, subred privada, bastion, backend, ALB) tiene reglas específicas tanto en NACLs como en Security Groups, diseñadas para minimizar la superficie de ataque y garantizar que solo el tráfico necesario fluya entre los recursos.
+	La seguridad de esta arquitectura está estructurada en varias capas y cada componente (subred pública, subred privada, bastión, backend, ALB) tiene reglas específicas tanto en NACLs como en Security Groups, diseñadas para minimizar la superficie de ataque y garantizar que solo el tráfico necesario fluya entre los recursos.
 \subsection{NACL pública}
-	Para las subredes públicas (10.0.10.0/24 y 10.0.30.0/24), las NACLs permiten la entrada de peticiones HTTP (puerto 80) desde cualquier origen para el ALB, y entrada SSH (puerto 22) únicamente desde mi IP pública, facilitando la gestión y el acceso seguro. Además, se permite la entrada de puertos efímeros provenientes de las subredes privadas, para soportar las respuestas a las conexiones originadas en las instancias backend. En cuanto a la salida, la NACL pública autoriza puertos efímeros hacia cualquier destino  y la salida HTTP (puerto 80) hacia Internet para el ALB. Todo tráfico no contemplado se deniega, permitiendo sólo los flujos estrictamente necesarios.
+	Para las subredes públicas (10.0.10.0/24 y 10.0.30.0/24), las NACLs permiten la entrada de peticiones HTTP (puerto 80) desde cualquier origen para el ALB, y entrada SSH (puerto 22) únicamente desde mi IP pública, facilitando la gestión y el acceso seguro. Además, se permite la entrada de puertos efímeros provenientes de las subredes privadas, para soportar las respuestas a las conexiones originadas en las instancias backend. En cuanto a la salida, la NACL pública autoriza puertos efímeros hacia cualquier destino y la salida HTTP (puerto 80) hacia Internet para el ALB. Todo tráfico no contemplado se deniega, permitiendo sólo los flujos estrictamente necesarios.
 
 
 
@@ -182,7 +182,7 @@ Nº regla & Tráfico     & Protocolo & Puerto        & Destino            & Acci
 \caption{NACL Pública - Reglas de salida (pública-1 y pública-2)}
 \end{table}
 \subsection{NACL privada}
-Las NACLs de las subredes privadas (10.0.20.0/24 y 10.0.40.0/24) son aún más restrictivas. Permiten la entrada solamente desde las subredes públicas por el puerto 8000 (tráfico backend API), SSH desde la IP privada de la bastion para gestión, y entrada a través del endpoint de S3 para descargas. En cuanto a la salida, estas NACLs permiten puertos efímeros únicamente hacia las subredes públicas, para que las respuestas de las aplicaciones backend puedan volver correctamente al ALB, y salida por el puerto 443 hacia el endpoint S3 para acceso seguro a los datos almacenados. Todo lo demás queda explícitamente bloqueado.
+Las NACLs de las subredes privadas (10.0.20.0/24 y 10.0.40.0/24) son aún más restrictivas. Permiten la entrada solamente desde las subredes públicas por el puerto 8000 (tráfico backend API), SSH desde la IP privada del bastión para gestión, y entrada a través del endpoint de S3 para descargas. En cuanto a la salida, estas NACLs permiten puertos efímeros únicamente hacia las subredes públicas, para que las respuestas de las aplicaciones backend puedan volver correctamente al ALB, y salida por el puerto 443 hacia el endpoint S3 para acceso seguro a los datos almacenados. Todo lo demás queda explícitamente bloqueado.
 
 % NACL Privada (aplicable a privada-1: 10.0.20.0/24 y privada-2: 10.0.40.0/24)
 \begin{table}[H]
@@ -192,7 +192,7 @@ Las NACLs de las subredes privadas (10.0.20.0/24 y 10.0.40.0/24) son aún más r
 Nº regla & Tráfico     & Protocolo & Puerto        & Origen             & Acción \\
 \hline
 100      & Backend In  & TCP       & 8000          & 10.0.10.0/24 y 10.0.30.0/24 & Allow  \\
-110      & SSH         & TCP       & 22            & IP privada Bastion & Allow  \\
+110      & SSH         & TCP       & 22            & IP privada Bastión & Allow  \\
 120      & S3 Endpoint & TCP       & 443           & 0.0.0.0/0   & Allow  \\
 *        & All         & All       & All           & All                & Deny   \\
 \hline
@@ -214,7 +214,7 @@ Nº regla & Tráfico      & Protocolo & Puerto      & Destino            & Acci�
 \caption{NACL Privada - Reglas de salida (privada-1 y privada-2)}
 \end{table}
 \subsection{Segurity grups}
-A nivel de Security Group, cada recurso se configura con reglas mínimas y específicas. El ALB solamente acepta conexiones HTTP desde cualquier origen y, voy a poner también que acepte SSH desde mi IP por si necesitara conectarme. Las instancias backend restringen su entrada al puerto 8000 proveniente del SG del ALB y SSH desde el SG del bastion, evitando cualquier acceso no autorizado. Finalmente, las reglas de salida permiten el flujo de datos hacia el ALB, Internet (para descargas), y hacia el endpoint S3. El bastion está configurado para aceptar conexiones SSH únicamente desde mi IP, y permite que sus conexiones salientes alcancen las instancias backend.
+A nivel de Security Group, cada recurso se configura con reglas mínimas y específicas. El ALB solamente acepta conexiones HTTP desde cualquier origen y, voy a poner también que acepte SSH desde mi IP por si necesitara conectarme. Las instancias backend restringen su entrada al puerto 8000 proveniente del SG del ALB y SSH desde el SG del bastión, evitando cualquier acceso no autorizado. Finalmente, las reglas de salida permiten el flujo de datos hacia el ALB, Internet (para descargas), y hacia el endpoint S3. El bastión está configurado para aceptar conexiones SSH únicamente desde mi IP, y permite que sus conexiones salientes alcancen las instancias backend.
 
 
 % Security Group ALB
@@ -254,7 +254,7 @@ efímero     & TCP       & 1024-65535 & 0.0.0.0/0  & Allow  \\
 Tráfico        & Protocolo & Puerto & Origen      & Acción \\
 \hline
 API/Backend    & TCP       & 8000   & SG-ALB      & Allow  \\
-SSH            & TCP       & 22     & SG-Bastion  & Allow  \\
+SSH            & TCP       & 22     & SG-Bastión  & Allow  \\
 \hline
 \end{tabular*}
 \caption{SG Backend - Reglas de entrada}
@@ -341,15 +341,15 @@ Después instalar las dependencias cerramos la instancia y creamos la AMI a part
 
 \newpage
 \subsection{Comprobación User Data}
-A partir de esta AMI podremos crear las instancias privadas y posteriormente descargar los archivos. Descargaremos los archivos de forma manual para comprobar los comandos del user data, así si nos da error, los solucionaremos antes de tener que volver a lanzar otra instancia. Para conectarnos nos bastara con conectarnos a una instancia intermedia, la cual llamamos bastión, a esta le pasaremos nuestra clave .pem mediante otra terminal usando: \\
-\fbox{scp -i ./v2.pem ./v2.pem ubuntu@ec2-23-20-27-162.compute-1.amazonaws.com:/home/ubuntu/.} Al hacer ls en nuestra terminal del bastion ya nos saldrá la clave y podremos conectarnos a nuestra instancia privada.
+A partir de esta AMI podremos crear las instancias privadas y posteriormente descargar los archivos. Descargaremos los archivos de forma manual para comprobar los comandos del user data, así si nos da error, los solucionaremos antes de tener que volver a lanzar otra instancia. Para conectarnos nos bastará con conectarnos a una instancia intermedia, la cual llamamos bastión, a esta le pasaremos nuestra clave .pem mediante otra terminal usando: \\
+\fbox{scp -i ./v2.pem ./v2.pem ubuntu@ec2-23-20-27-162.compute-1.amazonaws.com:/home/ubuntu/.} Al hacer ls en nuestra terminal del bastión ya nos saldrá la clave y podremos conectarnos a nuestra instancia privada.
 
 \begin{lstlisting}[style=consola, language=bash, caption={salida terminal bastión}]
 ubuntu@ip-10-0-10-22:~$ ls
 v2.pem
 ubuntu@ip-10-0-10-22:~$\end{lstlisting}
 
-Ahora desde el bastion nos conectamos a la instancia privada y vamos probando las credenciales y comandos de descarga del user data. Después de probar bastantes veces me di cuenta que los comandos que se indican en la práctica para ingresar las claves de awscli, ingresaban las claves en \fbox{/home/ubuntu/.aws/credentials}, y no en \fbox{/root/.aws/credentials}, por lo que cambie las credenciales de lugar y si que me funcionó la descarga del s3. Dejo a continuación la prueba que hice:
+Ahora desde el bastión nos conectamos a la instancia privada y vamos probando las credenciales y comandos de descarga del user data. Después de probar bastantes veces me di cuenta que los comandos que se indican en la práctica para ingresar las claves de awscli, ingresaban las claves en \fbox{/home/ubuntu/.aws/credentials}, y no en \fbox{/root/.aws/credentials}, por lo que cambié las credenciales de lugar y sí que me funcionó la descarga del s3. Dejo a continuación la prueba que hice:
 
 \begin{lstlisting}[style=consola, language=bash, caption={salida terminal instancia privada}]
 ubuntu@ip-10-0-20-189:~/app$ sudo HOME=/home/ubuntu aws s3 cp s3://p4-buquet/backend/modelv1prod.py .
@@ -372,7 +372,7 @@ ubuntu@ip-10-0-20-189:~/app$ ls
 modelv1prod.py
 ubuntu@ip-10-0-20-189:~/app$\end{lstlisting}
 
-Después de comprobar lo que fallaba, simplemente introduje el translado de las credenciales de lugar en el user data justo antes de las descargas del s3. Finalmente lance una instancia para probar que todo iba bien con este user data actualizado. La prueba del user data salio como esperaba y ya podemos comenzar con el paso siguiente.
+Después de comprobar lo que fallaba, simplemente introduje el traslado de las credenciales de lugar en el user data justo antes de las descargas del s3. Finalmente lancé una instancia para probar que todo iba bien con este user data actualizado. La prueba del user data salió como esperaba y ya podemos comenzar con el paso siguiente.
 \newpage
 \begin{lstlisting}[style=consola, language=bash, caption={logs instancia}]
 [   23.650346] cloud-init[915]: Completed 673 Bytes/673 Bytes (6.4 KiB/s) with 1 file(s) remaining
@@ -396,7 +396,7 @@ ubuntu@ip-10-0-20-16:~$\end{lstlisting}
 
 \subsection{Target grups}
 
-Para esta parte debemos de tener corriendo 3 instancias con la version de python\_v\_1 y 1 instancia con la version de python\_v\_2. Esto lo haremos para crear los dos target grups, el de la V1 y el de la V2. Procederemos a crear 4 instancias privadas a partir de nuestra AMI y de nuestro user data, una vez las tengamos ejectando nos conectamos una a una y vamos ejecutando el archivo python que corresponda a cada una, a las V1 \fbox{modelv1prod.py} y a la V2 \fbox{modelv2canary.py}, lo hacemos con 'nohup' para poder cerrar la terminal y que sigan funcionando en segundo plano. Debemos de tener estas instacias corriendo escuchando en el puerto correspondiente para poder configurar el ALB con estos target grups.
+Para esta parte debemos de tener corriendo 3 instancias con la versión de python\_v\_1 y 1 instancia con la versión de python\_v\_2. Esto lo haremos para crear los dos target groups, el de la V1 y el de la V2. Procederemos a crear 4 instancias privadas a partir de nuestra AMI y de nuestro user data, una vez las tengamos ejecutando nos conectamos una a una y vamos ejecutando el archivo python que corresponda a cada una, a las V1 \fbox{modelv1prod.py} y a la V2 \fbox{modelv2canary.py}, lo hacemos con 'nohup' para poder cerrar la terminal y que sigan funcionando en segundo plano. Debemos de tener estas instancias corriendo escuchando en el puerto correspondiente para poder configurar el ALB con estos target groups.
 
 \begin{figure}[H]
 \centerline{
@@ -417,7 +417,7 @@ Configuramos los dos targets al puerto 8000 con las instancias que hemos creado,
 \end{figure}
 
 \subsection{ALB y pruebas}
-Cuando tengamos los grupos creamos la ALB de forma publica usando neustra vpc de la práctica, el SG ALB y las subredes publicas. El listener lo ponemos en el puerto 80 como indica el enunciado y ajustamos los pesos de 90\% para V1 y 10\% para V2
+Cuando tengamos los grupos creamos la ALB de forma pública usando nuestra vpc de la práctica, el SG ALB y las subredes públicas. El listener lo ponemos en el puerto 80 como indica el enunciado y ajustamos los pesos de 90\% para V1 y 10\% para V2
 
 \begin{figure}[H]
 \centerline{
@@ -425,7 +425,7 @@ Cuando tengamos los grupos creamos la ALB de forma publica usando neustra vpc de
 \caption{ALB}
 \end{figure}
 
-Cuando tengamos el ALB corriendo podemos probar nuestros endpoinds desde el nombre de dns que nos proporciona AWS. Comprobamos como una de cada diez veces aproximadamente nos sale que se está usando el modelo V2.
+Al tener el ALB corriendo podemos probar nuestros endpoinds desde el nombre de dns que nos proporciona AWS. Comprobamos como una de cada diez veces aproximadamente nos sale que se está usando el modelo V2.
 
 \begin{figure}[H]
 \centering

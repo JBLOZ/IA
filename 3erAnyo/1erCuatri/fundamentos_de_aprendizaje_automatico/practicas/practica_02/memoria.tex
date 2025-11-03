@@ -1,0 +1,82 @@
+% Memoria P2 – Fundamentos del Aprendizaje Automático
+% Tu Nombre
+% tu.email@dominio.com
+
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{paper_style}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+
+
+
+\title{Predicción de quiebra bancaria taiwanesa mediante Clasificadores Bayesianos, Estimadores No Paramétricos y k-NN}
+\author{Jordi Blasco Lozano \and 74527208D}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+He abordado la práctica 2 seleccionando el dataset “Taiwanese Bankruptcy Prediction” de UCI, aplicando los métodos estudiados en la asignatura. Explico cada proceso (preprocesado, partición, modelado, optimización y análisis de resultados) usando terminaciones verbales en primera persona, incluyendo los códigos implementados para que cada apartado sea reproducible y comprensible.
+\end{abstract}
+
+\section{Introducción}
+
+He decidido realizar la práctica usando el dataset "Taiwanese Bankruptcy Prediction" porque corresponde a un problema clásico de clasificación binaria con fuerte desbalance y datos financieros reales. Este dataset presenta características que lo hacen especialmente interesante para evaluar clasificadores:
+
+\begin{itemize}
+    \item \textbf{Alta dimensionalidad:} 95 características financieras que describen la salud económica de empresas
+    \item \textbf{Desbalance severo:} Solo el 3.23\% de las empresas están en bancarrota, lo que representa un reto significativo para los algoritmos de clasificación
+    \item \textbf{Relevancia práctica:} La predicción de quiebras empresariales tiene aplicaciones directas en análisis de riesgo crediticio y decisiones de inversión
+    \item \textbf{Datos reales:} Proviene de empresas taiwanesas reales, lo que añade complejidad y ruido natural
+\end{itemize}
+
+El objetivo principal es comparar el rendimiento de diferentes enfoques de clasificación (paramétricos vs. no paramétricos) bajo condiciones de desbalance extremo, poniendo especial énfasis en la correcta aplicación de técnicas de validación cruzada para evitar resultados optimistas y engañosos.
+
+\section{Dataset y Preprocesado}
+He descargado el dataset desde el repositorio UCI Machine Learning. El conjunto contiene 6819 empresas taiwanesas con 95 características financieras cada una. Tras el análisis exploratorio he identificado las siguientes propiedades:
+
+\subsection{Características del Dataset}
+\begin{itemize}
+    \item \textbf{Tamaño:} 6819 ejemplos con 96 columnas (95 features + 1 target)
+    \item \textbf{Tipos de datos:} 93 variables float64 (continuas) y 3 int64 (flags binarios)
+    \item \textbf{Valores faltantes:} Ninguno (100\% de datos completos)
+    \item \textbf{Distribución de clases:} 220 bancarrotas (3.23\%) vs 6599 no bancarrotas (96.77\%)
+    \item \textbf{Ratio de desbalance:} Aproximadamente 30:1 (clase mayoritaria:minoritaria)
+\end{itemize}
+
+Este desbalance extremo es un desafío fundamental que afectará significativamente al entrenamiento y evaluación de los modelos. Los clasificadores tienden naturalmente a favorecer la clase mayoritaria, lo que puede llevar a modelos con alta accuracy pero pobre capacidad de detectar bancarrotas.
+
+\subsection{Preprocesamiento}
+No he realizado normalización ni estandarización en esta fase inicial porque tanto Naive Bayes como k-NN de scikit-learn pueden manejar variables en escalas diferentes. Sin embargo, esto es un punto de mejora potencial, especialmente para k-NN que es sensible a la escala de las variables.
+
+El código para cargar y explorar el dataset incluye la configuración para evitar warnings en Windows relacionados con la detección de núcleos de CPU por parte de joblib:
+\begin{lstlisting}[style=python-style]
+import pandas as pd
+import numpy as np
+import os
+import warnings
+from sklearn.model_selection import StratifiedKFold, GridSearchCV, cross_val_predict
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# Silenciar warnings de joblib en Windows
+os.environ['LOKY_MAX_CPU_COUNT'] = '4'
+warnings.filterwarnings('ignore', category=UserWarning, module='joblib')
+
+# Cargar datos
+df = pd.read_csv('data.csv')
+print(df.info())
+print(df['Bankrupt?'].value_counts())
+print(f"\nPorcentaje de bancarrotas: {df['Bankrupt?'].mean() * 100:.2f}%")
+\end{lstlisting}
+
+
+\end{document}
