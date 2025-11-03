@@ -19,8 +19,45 @@
 % \setmonofont{Fira Code}
 
 % --- Márgenes y Colores ---
-\geometry{a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=3cm}
+\geometry{a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=3.5cm, footskip=1cm}
 \definecolor{paper_blue}{HTML}{1A73E8}
+
+% --- Configuración de numeración de secciones (sin punto) ---
+\RequirePackage{titlesec}
+\titlelabel{\thetitle\quad}
+
+% --- Paquetes para los cuadros de texto ---
+\RequirePackage{tcolorbox}
+\RequirePackage{varwidth}
+
+% --- Definición de cuadros de texto personalizados ---
+% Cuadro para información general/objetivos (fondo gris claro)
+\newtcolorbox{infobox}[1][]{
+	colback=black!5,
+	colframe=black!40,
+	boxrule=0.8pt,
+	arc=2pt,
+	left=8pt,
+	right=8pt,
+	top=8pt,
+	bottom=8pt,
+	fontupper=\small,
+	#1
+}
+
+% Cuadro para información de entrega (fondo azul claro)
+\newtcolorbox{deliverybox}[1][]{
+	colback=blue!5,
+	colframe=blue!40,
+	boxrule=0.8pt,
+	arc=2pt,
+	left=8pt,
+	right=8pt,
+	top=8pt,
+	bottom=8pt,
+	fontupper=\small,
+	#1
+}
 
 % --- Añadir el fichero de bibliografía ---
 \addbibresource{bibliografia.bib}
@@ -60,11 +97,15 @@
 	numberstyle=\tiny\color{colornumber},
 	numbersep=5pt,
 	frame=single,
+	showspaces=false,
+	showstringspaces=false,
 	rulecolor=\color{black!40},
 	framerule=0.4pt,
 	breaklines=true,
 	keepspaces=true,
-	tabsize=1
+	tabsize=1,
+	breakautoindent=false,
+	breakindent=5pt
 }
 
 % Estilo para código fuente de C++
