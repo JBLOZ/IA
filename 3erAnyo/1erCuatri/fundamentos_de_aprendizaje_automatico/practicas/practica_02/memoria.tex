@@ -78,5 +78,250 @@ print(df['Bankrupt?'].value_counts())
 print(f"\nPorcentaje de bancarrotas: {df['Bankrupt?'].mean() * 100:.2f}%")
 \end{lstlisting}
 
+\section{Particionado y Validación Cruzada}
+He implementado una estrategia de validación cruzada estratificada de 5 folds, que es crucial por varias razones:
+
+\subsection{Estratificación}
+El particionado estratificado (\texttt{StratifiedKFold}) garantiza que cada fold mantenga la proporción original de clases (96.77\% / 3.23\%). Sin estratificación, algunos folds podrían tener muy pocas o ninguna instancia de bancarrota, haciendo imposible entrenar o evaluar adecuadamente los modelos.
+
+Con 220 ejemplos positivos divididos en 5 folds, cada fold de test contendrá aproximadamente 44 bancarrotas, lo cual es suficiente para evaluar el rendimiento aunque sigue siendo un número bajo.
+
+\subsection{Importancia de cross\_val\_predict}
+Es fundamental usar \texttt{cross\_val\_predict} en lugar de entrenar sobre train y predecir sobre test manualmente, o peor aún, predecir sobre todo el dataset con un modelo entrenado en todo el dataset. Esta última práctica llevaría a métricas completamente optimistas y engañosas.
+
+\texttt{cross\_val\_predict} garantiza que:
+\begin{itemize}
+    \item Cada ejemplo se predice exactamente una vez
+    \item La predicción se hace con un modelo que NO ha visto ese ejemplo durante entrenamiento
+    \item Se obtienen predicciones para todo el dataset manteniendo la validez de la evaluación
+    \item Las métricas calculadas son una estimación realista del rendimiento en datos nuevos
+\end{itemize}
+
+Esto es especialmente crítico en problemas con desbalance, donde evaluar incorrectamente puede ocultar problemas graves del modelo.
+\begin{lstlisting}[style=python-style]
+# Preparar datos
+X = df.drop(columns=['Bankrupt?'])
+y = df['Bankrupt?']
+
+# Configurar validacion cruzada estratificada
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+\end{lstlisting}
+
+\section{Clasificadores}
+He comparado los siguientes métodos usando validación cruzada correctamente:
+\begin{itemize}
+ \item Naive Bayes Gaussiano
+ \item Regla de k-NN (k-Nearest Neighbors)
+\end{itemize}
+
+\subsection{Naive Bayes Gaussiano}
+He implementado un clasificador Naive Bayes Gaussiano, que asume que cada característica sigue una distribución normal y que todas las características son independientes entre sí dado la clase. Esta asunción de independencia ("naive") es claramente violada en datos financieros donde las variables están correlacionadas, pero el algoritmo suele funcionar razonablemente bien en la práctica.
+
+\subsubsection{Fundamento teórico}
+Naive Bayes aplica el teorema de Bayes con la asunción de independencia condicional:
+\[
+P(y|x_1, \ldots, x_n) \propto P(y) \prod_{i=1}^{n} P(x_i|y)
+\]
+
+Para cada clase $y$, estima $\mu_{y,i}$ y $\sigma^2_{y,i}$ para cada característica $i$, asumiendo:
+\[
+P(x_i|y) = \frac{1}{\sqrt{2\pi\sigma^2_{y,i}}} \exp\left(-\frac{(x_i-\mu_{y,i})^2}{2\sigma^2_{y,i}}\right)
+\]
+
+\subsubsection{Implementación}
+Utilizo \texttt{cross\_val\_predict} para obtener predicciones robustas sobre todos los datos manteniendo la separación train/test:
+\begin{lstlisting}[style=python-style]
+# Entrenar Naive Bayes con validacion cruzada
+nb = GaussianNB()
+nb_preds = cross_val_predict(nb, X, y, cv=skf)
+
+print(f"Accuracy: {accuracy_score(y, nb_preds):.4f}")
+print(classification_report(y, nb_preds))
+print(confusion_matrix(y, nb_preds))
+
+# Entrenar modelo final con todos los datos
+nb.fit(X, y)
+\end{lstlisting}
+
+\subsection{k-Nearest Neighbors}
+He implementado el algoritmo k-NN (k-Nearest Neighbors), un método no paramétrico que clasifica cada ejemplo según la clase mayoritaria entre sus k vecinos más cercanos. A diferencia de Naive Bayes, k-NN no asume ninguna distribución particular de los datos.
+
+\subsubsection{Fundamento teórico}
+Para clasificar un punto $\mathbf{x}$, k-NN:
+\begin{enumerate}
+    \item Calcula la distancia (típicamente Euclidiana) a todos los puntos del conjunto de entrenamiento
+    \item Selecciona los k puntos más cercanos
+    \item Asigna la clase mayoritaria entre esos k vecinos
+\end{enumerate}
+
+La distancia Euclidiana entre dos puntos $\mathbf{x}$ y $\mathbf{x}^\prime$ en $\mathbb{R}^{95}$ es:
+\[
+d(\mathbf{x}, \mathbf{x}^\prime) = \sqrt{\sum_{i=1}^{95} (x_i - x_i^\prime)^2}
+\]
+
+\subsubsection{Consideraciones con desbalance}
+En problemas desbalanceados, k-NN puede tener dificultades porque:
+\begin{itemize}
+    \item Los vecinos tienden a ser mayormente de la clase mayoritaria
+    \item Un k muy grande diluye la señal de la clase minoritaria
+    \item Un k muy pequeño aumenta la varianza y sensibilidad al ruido
+\end{itemize}
+
+\subsubsection{Implementación}
+Sigo el mismo esquema de validación cruzada que en Naive Bayes:
+\begin{lstlisting}[style=python-style]
+# Evaluar con el mejor k encontrado
+best_knn = KNeighborsClassifier(n_neighbors=k_optimo)
+knn_preds = cross_val_predict(best_knn, X, y, cv=skf)
+
+print(f"Accuracy: {accuracy_score(y, knn_preds):.4f}")
+print(classification_report(y, knn_preds))
+print(confusion_matrix(y, knn_preds))
+
+# Entrenar modelo final con todos los datos
+best_knn.fit(X, y)
+\end{lstlisting}
+
+\section{Optimización de Hiperparámetros}
+He utilizado GridSearchCV para encontrar el valor óptimo de k en k-NN. La elección de k es crítica: valores pequeños capturan mejor patrones locales pero son sensibles al ruido, mientras que valores grandes dan predicciones más suaves pero pueden sobre-simplificar el problema.
+
+\subsection{Elección de métrica: F1-macro vs Accuracy}
+En problemas desbalanceados, la accuracy puede ser engañosa. Un clasificador que siempre predice "no bancarrota" obtendría 96.77\% de accuracy sin aportar valor alguno. Por ello, he usado \texttt{f1\_macro} como métrica de optimización.
+
+El F1-macro es la media aritmética del F1-score de cada clase:
+\[
+\text{F1-macro} = \frac{\text{F1}_{\text{clase 0}} + \text{F1}_{\text{clase 1}}}{2}
+\]
+
+Donde para cada clase:
+\[
+\text{F1} = 2 \cdot \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}}
+\]
+
+Esta métrica trata ambas clases con igual importancia, forzando al modelo a equilibrar su rendimiento en lugar de ignorar la clase minoritaria.
+
+\subsection{Búsqueda en grid}
+He explorado valores de k $\in \{3, 5, 7, 9, 11, 15\}$, priorizando valores impares para evitar empates en votación binaria:
+\begin{lstlisting}[style=python-style]
+# Busqueda de hiperparametros con GridSearchCV
+params_knn = {'n_neighbors': [3, 5, 7, 9, 11, 15]}
+grid_knn = GridSearchCV(
+    KNeighborsClassifier(), 
+    params_knn, 
+    cv=skf, 
+    scoring='f1_macro',
+    n_jobs=-1
+)
+grid_knn.fit(X, y)
+
+print(f"Mejor k encontrado: {grid_knn.best_params_['n_neighbors']}")
+print(f"Mejor F1-score macro: {grid_knn.best_score_:.4f}")
+\end{lstlisting}
+
+\section{Resultados}
+He recogido las métricas completas para ambos clasificadores usando validación cruzada. Los resultados revelan comportamientos muy diferentes entre los dos enfoques.
+
+\subsection{Resultados de Naive Bayes Gaussiano}
+\begin{itemize}
+    \item \textbf{Accuracy:} 0.2066 (20.66\%)
+    \item \textbf{Precision clase 1 (bancarrota):} 0.03
+    \item \textbf{Recall clase 1:} 0.85
+    \item \textbf{F1-score clase 1:} 0.06
+    \item \textbf{Matriz de confusión:} Detecta 187/220 bancarrotas (85\%) pero genera 5377 falsos positivos
+\end{itemize}
+
+\textbf{Interpretación:} Naive Bayes ha adoptado una estrategia extremadamente conservadora, clasificando la mayoría de ejemplos como bancarrota. Esto resulta en un recall excelente (85\% de detección) pero una precision catastrófica (solo 3\% de las predicciones positivas son correctas). El modelo es prácticamente inútil en producción porque generaría alarmas falsas constantemente.
+
+\subsection{Resultados de k-NN (k=3)}
+\begin{itemize}
+    \item \textbf{Accuracy:} 0.9658 (96.58\%)
+    \item \textbf{Precision clase 1 (bancarrota):} 0.31
+    \item \textbf{Recall clase 1:} 0.05
+    \item \textbf{F1-score clase 1:} 0.09
+    \item \textbf{F1-macro:} 0.5337 (mejor valor en grid search)
+    \item \textbf{Matriz de confusión:} Detecta solo 11/220 bancarrotas (5\%) pero con 24 falsos positivos
+\end{itemize}
+
+\textbf{Interpretación:} k-NN muestra el problema opuesto: alta accuracy (96.58\%) pero esto es engañoso porque simplemente predice "no bancarrota" casi siempre. Solo detecta el 5\% de las bancarrotas reales. Sin embargo, cuando predice bancarrota, tiene un 31\% de probabilidad de estar en lo correcto (vs 3\% de Naive Bayes).
+
+\subsection{Comparación directa}
+
+\begin{lstlisting}[style=python-style]
+# Comparacion final
+print(f"Naive Bayes - Accuracy: {accuracy_score(y, nb_preds):.4f}")
+print(f"KNN (k={grid_knn.best_params_['n_neighbors']}) - Accuracy: {accuracy_score(y, knn_preds):.4f}")
+\end{lstlisting}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Modelo} & \textbf{Accuracy} & \textbf{Recall (clase 1)} & \textbf{Precision (clase 1)} \\
+\midrule
+Naive Bayes & 20.66\% & 85\% & 3\% \\
+k-NN (k=3) & 96.58\% & 5\% & 31\% \\
+\bottomrule
+\end{tabular}
+\caption{Comparación de rendimiento entre modelos}
+\end{table}
+
+El trade-off es claro: Naive Bayes captura mejor la clase minoritaria (alto recall) a costa de precisión, mientras que k-NN prioriza precision general pero falla detectando bancarrotas.
+
+\section{Discusión y Conclusiones}
+
+\subsection{Análisis del impacto del desbalance}
+El desbalance extremo (30:1) domina completamente el comportamiento de ambos clasificadores. Este problema ilustra perfectamente por qué accuracy no es una métrica adecuada para datos desbalanceados:
+
+\begin{itemize}
+    \item Un clasificador trivial que siempre predice "no bancarrota" obtendría 96.77\% accuracy
+    \item Naive Bayes con 20.66\% accuracy es técnicamente "peor", pero detecta 85\% de bancarrotas
+    \item k-NN con 96.58\% accuracy parece excelente, pero solo detecta 5\% de bancarrotas
+\end{itemize}
+
+\subsection{Comportamientos distintivos de cada enfoque}
+
+\subsubsection{Naive Bayes: Sesgo hacia la clase minoritaria}
+Naive Bayes, al modelar explícitamente las distribuciones de probabilidad de cada clase, parece haber encontrado que las características de bancarrota tienen distribuciones muy dispersas o solapadas con las no-bancarrotas. Esto lleva al modelo a ser excesivamente cauteloso, clasificando muchos casos normales como bancarrota.
+
+Posibles causas:
+\begin{itemize}
+    \item Violación severa de la asunción de independencia entre variables financieras
+    \item Estimaciones pobres de $\mu$ y $\sigma^2$ para la clase minoritaria (solo 220 ejemplos)
+    \item Distribuciones no-gaussianas en las características financieras
+\end{itemize}
+
+\subsubsection{k-NN: Sesgo hacia la clase mayoritaria}
+k-NN sufre el problema opuesto. Con k=3, en la mayoría de regiones del espacio de características, los 3 vecinos más cercanos son empresas sanas simplemente porque hay 30 veces más ejemplos de esta clase. Las empresas en bancarrota quedan "aisladas" o rodeadas de ejemplos negativos.
+
+Incluso con k óptimo según F1-macro (k=3), el recall es solo 5\%. Valores más grandes de k empeoran aún más la situación al diluir completamente la señal de la clase minoritaria.
+
+\subsection{Importancia de la validación cruzada correcta}
+He implementado correctamente la validación cruzada usando \texttt{cross\_val\_predict}, lo cual ha sido fundamental para obtener estas conclusiones realistas. Evaluar incorrectamente (por ejemplo, entrenando y testeando sobre todo el dataset) habría ocultado estos problemas y dado una falsa sensación de confianza.
+
+La diferencia es dramática: sin validación cruzada apropiada, los modelos mostrarían métricas artificialmente infladas que no se replicarían en producción con datos nuevos.
+
+\subsection{Mejoras futuras}
+Para abordar este problema adecuadamente, se requerirían técnicas especializadas para desbalance:
+
+\begin{enumerate}
+    \item \textbf{Resampling:} SMOTE (Synthetic Minority Over-sampling), undersampling de la clase mayoritaria
+    \item \textbf{Pesos de clase:} Penalizar más los errores en la clase minoritaria durante entrenamiento
+    \item \textbf{Métodos ensemble:} Random Forest con balanceo, XGBoost con \texttt{scale\_pos\_weight}
+    \item \textbf{Normalización:} Especialmente crítico para k-NN que es sensible a escalas
+    \item \textbf{Selección de características:} Reducir dimensionalidad podría ayudar con 95 features
+    \item \textbf{Umbrales ajustados:} Modificar el threshold de decisión para balancear precision/recall
+\end{enumerate}
+
+\subsection{Conclusión final}
+Esta práctica demuestra que en presencia de desbalance severo:
+\begin{itemize}
+    \item Los clasificadores básicos (Naive Bayes, k-NN) luchan significativamente
+    \item La accuracy como métrica única es engañosa y peligrosa
+    \item El F1-macro y el análisis detallado de matrices de confusión son esenciales
+    \item La validación cruzada correcta es crítica para evitar conclusiones erróneas
+    \item Se necesitan técnicas especializadas para problemas reales de este tipo
+\end{itemize}
+
+Ninguno de los dos modelos es actualmente viable para producción, pero han servido como baseline para entender el problema y la necesidad de enfoques más sofisticados.
 
 \end{document}
