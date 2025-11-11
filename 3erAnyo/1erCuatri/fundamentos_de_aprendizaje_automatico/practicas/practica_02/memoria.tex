@@ -1,464 +1,258 @@
-% Memoria P2 – Fundamentos del Aprendizaje Automático
-% Tu Nombre
-% tu.email@dominio.com
+%%%%%%%% ICML 2025 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
 
 \documentclass{article}
-\usepackage[utf8]{inputenc}
-\usepackage{paper_style}
+\usepackage[T1]{fontenc}
+% Recommended, but optional, packages for figures and better typesetting:
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs} % for professional tables
+
+% hyperref makes hyperlinks in the resulting PDF.
+% If your build breaks (sometimes temporarily if a hyperlink spans a page)
+% please comment out the following usepackage line and replace
+% \usepackage{icml2025} with \usepackage[nohyperref]{icml2025} above.
 \usepackage{hyperref}
+
+
+% Attempt to make hyperref and algorithmic work together better:
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Use the following line for the initial blind version submitted for review:
+% \usepackage{icml2025}
+
+% If accepted, instead use the following line for the camera-ready submission:
+\usepackage[accepted]{icml2025}
+
+% For theorems and such
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{listings}
-\usepackage{xcolor}
+\usepackage{mathtools}
+\usepackage{amsthm}
+
+% if you use cleveref..
+\usepackage[capitalize,noabbrev]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Todonotes is useful during development; simply uncomment the next line
+%    and comment out the line below the next line to turn off comments
+%\usepackage[disable,textsize=tiny]{todonotes}
+\usepackage[textsize=tiny]{todonotes}
 
 
-
-\title{Predicción de Clase de Animal mediante Clasificadores Bayesianos, Estimadores No Paramétricos y k-NN}
-\author{Jordi Blasco Lozano \and 74527208D}
-\date{\today}
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{Predicción de Clase de Animal mediante Clasificadores Bayesianos y k-NN}
 
 \begin{document}
-\maketitle
+
+\twocolumn[
+\icmltitle{Predicción de Clase de Animal mediante Clasificadores Bayesianos, \\ Estimadores No Paramétricos y k-NN}
+
+% It is OKAY to include author information, even for blind
+% submissions: the style file will automatically remove it for you
+% unless you've provided the [accepted] option to the icml2025
+% package.
+
+\begin{icmlauthorlist}
+\icmlauthor{Jordi Blasco Lozano}{}
+\end{icmlauthorlist}
+
+\icmlaffiliation{uji}{Fundamentos del Aprendizaje Automático, Universitat Jaume I, Castellón, España}
+
+\icmlcorrespondingauthor{Jordi Blasco Lozano}{74527208D}
+
+% You may provide any keywords that you
+% find helpful for describing your paper; these are used to populate
+% the "keywords" metadata in the PDF but will not be shown in the document
+\icmlkeywords{Machine Learning, Bayesian Classifiers, k-NN, Parzen Windows, Multiclass Classification}
+
+\vskip 0.3in
+]
+
+% this must go after the closing bracket ] following \twocolumn[ ...
 
 \begin{abstract}
-Este trabajo aborda la práctica 2 en la asignatura de Fundamentos del Aprendizaje Automático empleando el dataset Zoo de UCI, aplicando los algoritmos requeridos y analizando sus resultados en una tarea real de clasificación con múltiples clases y características binarias. Finalmente se compararán los seis modelos diferentes y explicaremos
+Este trabajo aborda la práctica 2 en la asignatura de Fundamentos del Aprendizaje Automático empleando el dataset Zoo de UCI, aplicando seis algoritmos de clasificación: Naive Bayes Gaussiano, MLE Multivariante, Histogram Bayes, Parzen Windows, k-NN Density Bayes y k-NN Rule. Se analiza su rendimiento en una tarea real de clasificación multiclase (7 clases) con características binarias y clases minoritarias.
 \end{abstract}
 
 \section{Introducción y justificación del dataset}
+\label{introduction}
 
-He seleccionado el \textbf{dataset Zoo} de UCI para esta práctica porque cumple estrictamente con los requerimientos del enunciado y permite aplicar eficazmente todos los métodos estudiados en la asignatura. Las razones principales son:
+He seleccionado el \textbf{dataset Zoo} de UCI porque cumple con los requerimientos del enunciado: clasificación multiclase (7 clases: mamífero, ave, reptil, pez, anfibio, invertebrado, insecto), 16 atributos binarios interpretables, y tamaño adecuado (101 instancias originales) para observar comportamientos de métodos paramétricos y no paramétricos.
 
-\begin{itemize}
-    \item \textbf{Clasificación multiclase:} El enunciado exige explícitamente abordar problemas con múltiples clases, no solo binarios. El dataset Zoo tiene 7 clases diferentes (mamífero, ave, reptil, pez, anfibio, invertebrado, insecto).
-    \item \textbf{Características interpretables:} 16 atributos binarios (presencia/ausencia de características físicas o comportamentales) que facilitan el análisis y la aplicación de estimadores de densidad.
-    \item \textbf{Tamaño adecuado:} 101 instancias, suficientes para validación pero pequeñas para observar comportamientos de los métodos no paramétricos con datos limitados.
-
-\end{itemize}
-
-El objetivo es comparar el rendimiento de clasificadores bayesianos paramétricos versus estimadores no paramétricos de densidad, analizando sus fortalezas y debilidades en clasificación multiclase con datos de tamaño moderado.
+Dado el desbalance original (41 mamíferos vs 4 anfibios y un \textbf{meanIR} de 4.84), generé sintéticamente nuevos animales mediante investigación profunda usando IA añadiendo nuevos animales con sus características, alcanzando 287 instancias con 41 ejemplares por clase. Esto permite evaluar cómo el balanceo afecta el rendimiento de cada modelo, especialmente aquellos sensibles a datos escasos (MLE).
 
 \section{Dataset y Análisis Exploratorio}
+\label{dataset}
 
-El \textbf{dataset Zoo} consta de:
-\begin{itemize}
-    \item \textbf{Tamaño:} 101 instancias (animales)
-    \item \textbf{Dimensionalidad:} 16 atributos binarios (0/1) que describen características físicas y comportamentales
-    \item \textbf{Clases:} 7 tipos de animales (multiclase):
-    \begin{itemize}
-        \item Mamífero (mammal): 41 muestras (40.6\%)
-        \item Ave (bird): 20 muestras (19.8\%)
-        \item Reptil (reptile): 5 muestras (5.0\%)
-        \item Pez (fish): 13 muestras (12.9\%)
-        \item Anfibio (amphibian): 4 muestras (4.0\%)
-        \item Invertebrado (invertebrate): 8 muestras (7.9\%)
-        \item Insecto (insect): 10 muestras (9.9\%)
-    \end{itemize}
-\end{itemize}
+\textbf{Dataset original:} 101 instancias, 17 atributos (15 binarios + 1 numérico + 1 clase), 7 clases desbalanceadas (mamíferos: 41, aves: 20, reptiles: 5, peces: 13, anfibios: 4, invertebrados: 8, insectos: 10).\\ \textbf{Dataset balanceado:} 287 instancias con 41 ejemplares por clase, generados sintéticamente mediante investigación de características específicas de cada tipo de animal.
 
-\subsection{Características del dataset}
-
-El dataset presenta una distribución de clases moderadamente desbalanceada, con mamíferos dominando (40.6\%) y anfibios siendo la clase minoritaria (4.0\%). Esta distribución es más realista que un desbalance extremo y permite evaluar cómo los diferentes métodos manejan clases con pocas muestras.
-
-Las 16 características binarias incluyen atributos como: tiene pelo, pone huevos, vuela, acuático, depredador, con dientes, columna vertebral, respira, venenoso, con aletas, número de patas, cola, doméstico, tamaño, etc.
-
-\subsection{Preprocesamiento}
-
-No se requiere normalización porque todas las características son binarias (0 o 1). Los datos están completos sin valores faltantes. El único preprocesamiento necesario es la codificación de las etiquetas de clase a valores numéricos (0-6) para los algoritmos.
+Los 17 atributos incluyen \textbf{15 características binarias}: pelo, plumas, huevos, leche, vuela, acuático, depredador, dientes, columna vertebral, respira, venenoso, aletas, cola, doméstico, tamaño grande; \textbf{1 atributo numérico}: patas; y \textbf{1 atributo de tipo clase} (valores 1-7 codificados como los grupos de animales anteriores).
 
 \section{Metodología: Particionado y Validación}
+\label{methodology}
 
-\subsection{División Train-Test (80\%-20\%)}
-He implementado una división estratificada del dataset:
+\textbf{División Train-Test (80\%-20\%):} División estratificada manteniendo proporciones de clases (original: 80 train / 21 test; balanceado: 229 train / 58 test).
 
-\begin{itemize}
-    \item \textbf{Conjunto de entrenamiento:} 80 muestras (79.2\%)
-    \item \textbf{Conjunto de prueba:} 21 muestras (20.8\%)
-\end{itemize}
+\textbf{Validación Cruzada:} 5-fold estratificada solo en entrenamiento para optimizar hiperparámetros (bandwidth en Parzen, k en k-NN).
 
-La estratificación garantiza que la proporción de clases se mantenga en ambos conjuntos. Dada la distribución desbalanceada (especialmente las clases minoritarias con 4-5 ejemplos), la estratificación es crucial para asegurar que todas las clases estén representadas en ambos conjuntos.
-
-\textbf{Distribución en conjunto de prueba:}
-\begin{itemize}
-    \item Mamífero: 8 muestras
-    \item Ave: 4 muestras
-    \item Reptil: 1 muestra
-    \item Pez: 3 muestras
-    \item Anfibio: 1 muestra
-    \item Invertebrado: 2 muestras
-    \item Insecto: 2 muestras
-\end{itemize}
-
-\subsection{Validación Cruzada para Hiperparámetros}
-
-Para la optimización de hiperparámetros (bandwidth en Parzen, k en k-NN), utilizo validación cruzada estratificada de 5 folds \textbf{únicamente sobre el conjunto de entrenamiento}. Esto evita contaminación de datos (data leakage) y garantiza que las métricas del conjunto de prueba sean imparciales.
-
-\textbf{Nota importante:} Dado que algunas clases tienen muy pocas muestras (3-4 en entrenamiento), scikit-learn genera warnings sobre la validación cruzada 5-fold. Esto es esperado y no afecta significativamente los resultados, pero refleja las limitaciones de trabajar con clases muy minoritarias.
-
-\subsection{Metodología de Evaluación}
-
-\begin{itemize}
-    \item \textbf{Métricas principales:} Accuracy y F1-macro
-    \item \textbf{F1-macro:} Promedia el F1-score de todas las clases, tratándolas con igual importancia (crítico para datasets desbalanceados)
-    \item \textbf{Matrices de confusión:} Para análisis detallado clase por clase
-    \item \textbf{Reporte de clasificación completo:} Precision, recall y F1 por clase
-\end{itemize}
+\textbf{Métricas:} F1-macro (métrica principal por desbalance), accuracy, precision, matrices de confusión.
 
 \section{Modelos Implementados}
+\label{models}
 
-He implementado y comparado seis clasificadores siguiendo los contenidos de teoría (T2-T4):
-
-\begin{enumerate}
-    \item \textbf{Naive Bayes Gaussiano} (T2): Clasificador paramétrico con independencia condicional
-    \item \textbf{MLE Multivariante (Full Bayesian Gaussian)} (T2): Estimación máxima verosimilitud con covarianza completa
-    \item \textbf{Histogram Bayes} (T4): Estimador no paramétrico basado en histogramas
-    \item \textbf{Parzen Windows} (T4): Estimador no paramétrico con kernel Gaussiano
-    \item \textbf{k-NN Density Bayes} (T4): Estimador no paramétrico basado en densidad local
-    \item \textbf{k-NN Rule} (T4): Regla de los k vecinos más cercanos clásica
-\end{enumerate}
-
-\subsection{Naive Bayes Gaussiano (T2)}
-
-\subsubsection{Fundamento teórico}
-Naive Bayes aplica el teorema de Bayes con la asunción de independencia condicional entre características:
-\[
-P(y|x_1, \ldots, x_n) \propto P(y) \prod_{i=1}^{n} P(x_i|y)
-\]
-
-Para cada clase $y$ y característica $i$, estima $\mu_{y,i}$ y $\sigma^2_{y,i}$ asumiendo distribución Gaussiana:
-\[
-P(x_i|y) = \frac{1}{\sqrt{2\pi\sigma^2_{y,i}}} \exp\left(-\frac{(x_i-\mu_{y,i})^2}{2\sigma^2_{y,i}}\right)
-\]
-
-A pesar de que la asunción de independencia raramente se cumple en la práctica, Naive Bayes suele funcionar sorprendentemente bien, especialmente cuando las correlaciones no son excesivamente fuertes.
-
-\subsection{MLE Multivariante - Full Bayesian Gaussian (T2)}
-
-\subsubsection{Fundamento teórico}
-A diferencia de Naive Bayes, este método \textbf{no asume independencia} entre características. Estima la matriz de covarianza completa $\Sigma_y$ para cada clase:
-\[
-P(\mathbf{x}|y) = \frac{1}{(2\pi)^{d/2}|\Sigma_y|^{1/2}} \exp\left(-\frac{1}{2}(\mathbf{x}-\boldsymbol{\mu}_y)^T\Sigma_y^{-1}(\mathbf{x}-\boldsymbol{\mu}_y)\right)
-\]
-
-Donde $\boldsymbol{\mu}_y$ es el vector de medias y $\Sigma_y$ es la matriz de covarianza $d \times d$ para la clase $y$.
-
-\textbf{Limitaciones:} Con $d$ características, se deben estimar $d(d+1)/2$ parámetros para cada matriz de covarianza. Esto requiere muchas muestras por clase. Con clases minoritarias (4-5 ejemplos), la matriz puede ser singular o mal condicionada.
-
-\subsection{Histogram Bayes (T4)}
-
-\subsubsection{Fundamento teórico}
-Estimador no paramétrico que divide el espacio de características en bins (histogramas) y estima la densidad como:
-\[
-\hat{p}(\mathbf{x}|y) = \frac{\text{count}(\mathbf{x} \in \text{bin})}{n_y \cdot V_{\text{bin}}}
-\]
-
-Donde $n_y$ es el número de ejemplos de la clase $y$ y $V_{\text{bin}}$ es el volumen del bin.
-
-\textbf{Problema de la maldición de la dimensionalidad:} Con $d$ dimensiones y $b$ bins por dimensión, se necesitan $b^d$ bins. Con $d=16$, incluso con $b=2$ (binario), tenemos $2^{16} = 65536$ posibles combinaciones. Con solo 101 muestras totales, la mayoría de bins estarán vacíos, resultando en estimaciones muy pobres.
-
-\subsection{Parzen Windows (T4)}
-
-\subsubsection{Fundamento teórico}
-Estimador no paramétrico que usa un kernel (típicamente Gaussiano) para suavizar la estimación de densidad:
-\[
-\hat{p}(\mathbf{x}|y) = \frac{1}{n_y} \sum_{i=1}^{n_y} K_h(\mathbf{x} - \mathbf{x}_i^{(y)})
-\]
-
-Donde $K_h$ es un kernel Gaussiano con ancho de banda (bandwidth) $h$:
-\[
-K_h(\mathbf{u}) = \frac{1}{(2\pi h^2)^{d/2}} \exp\left(-\frac{\|\mathbf{u}\|^2}{2h^2}\right)
-\]
-
-El parámetro $h$ controla el suavizado: valores pequeños capturan detalles locales pero son sensibles al ruido, valores grandes producen estimaciones más suaves pero pueden perder estructura.
-
-\textbf{Ventaja sobre histogramas:} Parzen windows produce estimaciones continuas y suaves, evitando discontinuidades artificiales de los bins.
-
-\subsection{k-NN Density Bayes (T4)}
-
-\subsubsection{Fundamento teórico}
-Estimador de densidad basado en la distancia al k-ésimo vecino más cercano:
-\[
-\hat{p}(\mathbf{x}|y) = \frac{k}{n_y \cdot V_k(\mathbf{x})}
-\]
-
-Donde $V_k(\mathbf{x})$ es el volumen de la esfera que contiene los $k$ vecinos más cercanos de $\mathbf{x}$ en la clase $y$.
-
-Este método adapta el volumen localmente: en regiones densas usa volúmenes pequeños, en regiones dispersas usa volúmenes grandes.
-
-\subsection{k-NN Rule (T4)}
-
-\subsubsection{Fundamento teórico}
-El método más simple de k-NN: asigna la clase mayoritaria entre los $k$ vecinos más cercanos:
-\[
-\hat{y} = \arg\max_c \sum_{i \in N_k(\mathbf{x})} \mathbb{1}(y_i = c)
-\]
-
-Donde $N_k(\mathbf{x})$ son los índices de los $k$ vecinos más cercanos a $\mathbf{x}$.
-
-\textbf{Diferencia con k-NN Density:} k-NN Rule cuenta votos directamente, mientras que k-NN Density estima probabilidades vía densidades locales y usa Bayes para clasificar.
+Seis clasificadores: (1) Naive Bayes Gaussiano, (2) MLE Multivariante con covarianza completa, (3) Histogram Bayes, (4) Parzen Windows con kernel Gaussiano, (5) k-NN Density Bayes, (6) k-NN Rule.
 
 \section{Resultados}
+\label{results}
 
-He evaluado los seis modelos en el conjunto de prueba de 21 muestras. La Tabla~\ref{tab:results_test} muestra los resultados principales.
+He evaluado los seis modelos en el conjunto de prueba de 21 muestras. Las \cref{tab:results_cv,tab:results_test} muestran los resultados de validación cruzada y test respectivamente, separando modelos paramétricos (1-2) de no paramétricos (3-6).
 
-\begin{table}[h]
-\centering
-\begin{tabular}{lcc}
-\toprule
-\textbf{Modelo} & \textbf{Accuracy} & \textbf{F1-macro} \\
-\midrule
-Naive Bayes & 1.0000 & 1.0000 \\
-MLE Full & 0.7143 & 0.4563 \\
-Histogram Bayes & 0.3810 & 0.0788 \\
-Parzen Bayes (h=0.1) & 1.0000 & 1.0000 \\
-k-NN Density (k=11) & 0.4762 & 0.5714 \\
-k-NN Rule (k=1) & 1.0000 & 1.0000 \\
-\bottomrule
-\end{tabular}
-\caption{Resultados en conjunto de prueba (21 muestras, 7 clases)}
-\label{tab:results_test}
-\end{table}
 
 \begin{table}[h]
-\centering
-\begin{tabular}{lcc}
-\toprule
-\textbf{Modelo} & \textbf{F1-macro CV (mean)} & \textbf{F1-macro CV (std)} \\
-\midrule
-Naive Bayes & 0.8505 & 0.1357 \\
-MLE Full & 0.5329 & 0.1021 \\
-Histogram Bayes & 0.2474 & 0.1277 \\
-Parzen Bayes (h=0.1) & 0.8648 & -- \\
-k-NN Density (k=11) & 0.5664 & -- \\
-k-NN Rule (k=1) & 0.8267 & -- \\
-\bottomrule
-\end{tabular}
-\caption{Validación cruzada 5-fold en conjunto de entrenamiento (80 muestras)}
+\caption{Validación cruzada 5-fold en entrenamiento}
 \label{tab:results_cv}
+\vskip 0.15in
+\begin{center}
+\begin{small}
+\begin{sc}
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Original}} & \multicolumn{2}{c}{\textbf{Balanceado}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+\textbf{Modelo} & \textbf{F1} & \textbf{std} & \textbf{F1} & \textbf{std} \\
+\midrule
+\multicolumn{5}{l}{\textit{Modelos Paramétricos}} \\
+Naive Bayes & 0.85 & 0.14 & 0.84 & 0.04 \\
+MLE Full & 0.53 & 0.10 & 0.87 & 0.01 \\
+\midrule
+\multicolumn{5}{l}{\textit{Modelos No Paramétricos}} \\
+Histogram Bayes & 0.25 & 0.13 & 0.06 & 0.02 \\
+Parzen (h=0.1) & 0.86 & -- & 0.94 & -- \\
+k-NN Density (k=11) & 0.57 & -- & 0.70 & -- \\
+k-NN Rule (k=1) & 0.83 & -- & 0.94 & -- \\
+\bottomrule
+\end{tabular}
+\end{sc}
+\end{small}
+\end{center}
+\vskip -0.1in
 \end{table}
 
+\begin{table}[h]
+\caption{Resultados en conjunto de prueba}
+\label{tab:results_test}
+\vskip 0.15in
+\begin{center}
+\begin{small}
+\begin{sc}
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Original}} & \multicolumn{2}{c}{\textbf{Balanceado}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+\textbf{Modelo} & \textbf{Acc} & \textbf{F1} & \textbf{Acc} & \textbf{F1} \\
+\midrule
+\multicolumn{5}{l}{\textit{Modelos Paramétricos}} \\
+Naive Bayes & 1.00 & 1.00 & 0.91 & 0.91 \\
+MLE Full & 0.71 & 0.46 & 0.95 & 0.95 \\
+\midrule
+\multicolumn{5}{l}{\textit{Modelos No Paramétricos}} \\
+Histogram Bayes & 0.38 & 0.08 & 0.16 & 0.07 \\
+Parzen (h=0.1) & 1.00 & 1.00 & 0.95 & 0.95 \\
+k-NN Density (k=11) & 0.48 & 0.57 & 0.74 & 0.68 \\
+k-NN Rule (k=1) & 1.00 & 1.00 & 0.95 & 0.95 \\
+\bottomrule
+\end{tabular}
+\end{sc}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table}
 \subsection{Análisis detallado por modelo}
 
-\subsubsection{1. Naive Bayes Gaussiano - Rendimiento perfecto}
-\textbf{Resultados en test:} Accuracy = 1.0, F1-macro = 1.0
+\subsubsection{Naive Bayes Gaussiano}
+\textbf{Original:} Accuracy = 1.0, F1-macro = 1.0 \\ \textbf{Balanceado:} Accuracy = 0.91, F1-macro = 0.91
 
-Naive Bayes logra clasificación perfecta en el conjunto de prueba, clasificando correctamente las 21 muestras. La matriz de confusión muestra ceros fuera de la diagonal principal.
+ En el dataset original desbalanceado, Naive Bayes logra clasificación perfecta (21/21 muestras correctas). Sin embargo, con el dataset balanceado (287 muestras, 41 por clase), el rendimiento baja ligeramente a 91\%, revelando que la perfección inicial se debía en parte al pequeño tamaño del conjunto de prueba. A pesar de la asunción "naive" de independencia entre características, el modelo funciona excepcionalmente bien en ambos casos. La matriz de confusión muestra que las principales confusiones ocurren entre reptiles-anfibios y anfibios-insectos, lo cual es razonable dado que comparten características físicas similares. El modelo estima solo $d$ parámetros por clase ($\mu_{y,i}$ y $\sigma^2_{y,i}$ para cada característica), lo que lo hace robusto incluso con clases minoritarias.
 
-\textbf{Interpretación:} A pesar de la asunción "naive" de independencia entre características, el modelo funciona excepcionalmente bien. Esto sugiere que:
-\begin{itemize}
-    \item Las características binarias están relativamente poco correlacionadas
-    \item La separación entre clases es clara en el espacio de características
-    \item Las distribuciones Gaussianas aproximan bien los datos binarios en este caso
-\end{itemize}
+\subsubsection{MLE Multivariante (Full Bayesian Gaussian)}
+\textbf{Original:} Accuracy = 0.71, F1-macro = 0.46 \\ \textbf{Balanceado:} Accuracy = 0.95, F1-macro = 0.95
 
-\textbf{CV:} F1-macro = 0.8505 $\pm$ 0.1357. La desviación estándar moderada refleja variabilidad en algunos folds debido a clases minoritarias, pero el rendimiento en test confirma la robustez del modelo.
+ Este modelo muestra la mejora más dramática al balancear los datos. En el dataset original, falla significativamente con clases minoritarias (reptiles, anfibios, invertebrados), clasificándolas erróneamente como mamíferos. La causa es que con solo 3-6 ejemplos en entrenamiento, la estimación de la matriz de covarianza completa $16 \times 16$ (136 parámetros únicos por clase) es imposible, resultando en matrices singulares o mal condicionadas. Con el dataset balanceado (41 ejemplos por clase), el modelo puede estimar correctamente las covarianzas y alcanza 95\% de rendimiento, igualando a los mejores modelos. Esto demuestra que los modelos más complejos \textbf{necesitan más datos} para funcionar correctamente. La covarianza completa captura las correlaciones entre características, pero requiere $O(d^2)$ muestras por clase.
 
-\subsubsection{2. MLE Full - Problemas con clases minoritarias}
-\textbf{Resultados en test:} Accuracy = 0.7143, F1-macro = 0.4563
+\subsubsection{Histogram Bayes}
+\textbf{Original:} Accuracy = 0.38, F1-macro = 0.08  \\ \textbf{Balanceado:} Accuracy = 0.16, F1-macro = 0.07
 
-El modelo multivariante con covarianza completa falla significativamente. La matriz de confusión revela que:
-\begin{itemize}
-    \item Clasifica correctamente mamíferos (8/8) y aves (4/4)
-    \item Falla completamente en reptiles (0/1), anfibios (0/1) e invertebrados (0/2)
-    \item Clasificando erróneamente estas clases minoritarias como mamíferos
-\end{itemize}
+Este modelo obtiene el peor rendimiento de todos, evidenciando la maldición de la dimensionalidad. Con 16 características binarias existen $2^{16} = 65,536$ bins posibles, pero solo 287 muestras en el dataset balanceado (y con menos muestras aún en el desbalanceado). Dado que los histogramas requieren $N \propto b^d$ muestras, la mayoría de bins permanecerán vacíos, asignando $p(\mathbf{x}|y) = 0$ a regiones no vistas, forzando al modelo a predecir sistemáticamente la clase mayoritaria. El accuracy empeora al balancear (0.38→0.16) porque en el dataset original predecía "mamífero" siempre, y esta clase supone casi un 40 por ciento de las muestras. Mientras el F1-macro se mantiene bajo (0.07 aprox) en ambos casos porque evalúa cada clase individualmente. Es por esto por lo que deberíamos de tener más en cuenta el F1 en vez del accuracy al estudiar clasificaciones.
 
-\textbf{Causa del fallo:} Con solo 16 características, la matriz de covarianza $16 \times 16$ requiere estimar 136 parámetros por clase. Para clases con 3-6 ejemplos en entrenamiento, esto es imposible:
-\begin{itemize}
-    \item Matrices de covarianza singulares o mal condicionadas
-    \item Warnings de división por cero durante el cálculo de densidades
-    \item El modelo colapsa prediciendo solo las clases mayoritarias
-\end{itemize}
+\subsubsection{Parzen Windows}
+\textbf{Original:} Accuracy = 1.0, F1-macro = 1.0  \\ \textbf{Balanceado:} Accuracy = 0.95, F1-macro = 0.95
 
-\textbf{Lección:} La estimación multivariante completa \textbf{requiere muchas más muestras} que Naive Bayes. Con clases minoritarias, la asunción de independencia de Naive Bayes es una ventaja, no una limitación.
+ Parzen windows con kernel Gaussiano mantiene excelente rendimiento en ambos escenarios. Con bandwidth $h=0.1$ óptimo (obtenido por validación cruzada en el entrenamiento), el modelo produce estimaciones de densidad continuas y suaves que funcionan bien incluso con datos escasos. A diferencia de histogramas, el suavizado del kernel Gaussiano compensa la falta de muestras, evitando las discontinuidades artificiales de los bins. En el dataset balanceado, obtiene el mejor F1-macro (0.95), superior a Naive Bayes (0.91), confirmando que el bandwidth optimizado generaliza correctamente al capturar características conjuntas que NB asume como independientes, también es por esto por lo que las confusiones ocurren principalmente entre clases con características solapadas (anfibios-reptiles), lo cual es esperado. Este método mitiga efectivamente la maldición de la dimensionalidad mediante un leve suavizado continuo. Obtenemos un 1 en el test del dataset desbalanceado gracias a haber elegido el suavizado correcto y al tener solo 21 ejemplos. En nuestro caso, una ventana pequeña pero no mínima, "prestando" densidad de vecinos cercanos sin manchar clusters separados, es clave para obtener la máxima precisión.
 
-\subsubsection{3. Histogram Bayes - Colapso por maldición dimensionalidad}
-\textbf{Resultados en test:} Accuracy = 0.3810, F1-macro = 0.0788
+\subsubsection{k-NN Density Bayes}
+\textbf{Original:} Accuracy = 0.48, F1-macro = 0.57  \\ \textbf{Balanceado:} Accuracy = 0.74, F1-macro = 0.68
 
-El peor rendimiento de todos los modelos. La matriz de confusión muestra que predice solo mamíferos:
-\begin{itemize}
-    \item Mammal: 8/8 correctos
-    \item Todas las demás clases: 0\% de recall
-\end{itemize}
+ Rendimiento mediocre que mejora con el balanceo pero sigue siendo inferior a otros métodos. Con $k=11$ óptimo en ambos datasets, los 11 vecinos más cercanos diluyen la señal local, resultando en estimación de densidad por volumen local inestable. El modelo adapta el volumen $V_k(\mathbf{x})$ localmente (pequeño en regiones densas, grande en dispersas), pero esta estrategia resulta problemática con clases que tienen distribuciones espaciales dispersas. En el dataset original, confunde masivamente mamíferos como reptiles. Con el balanceo mejora, pero las confusiones persisten entre reptiles-peces y insectos distribuidos entre múltiples clases. Comparado con Parzen (que fija bandwidth globalmente), la adaptación local de volumen es menos efectiva en este dataset. La estimación explícita de densidad añade complejidad sin beneficio claro.
 
-\textbf{Explicación:} Con 16 características binarias, hay $2^{16} = 65536$ posibles combinaciones (bins). Con solo 101 muestras totales y 41 mamíferos:
-\begin{itemize}
-    \item La mayoría de bins están vacíos ($p(\mathbf{x}|y) = 0$)
-    \item Solo los bins con mamíferos tienen densidad estimada
-    \item El modelo predice siempre la clase mayoritaria por defecto
-\end{itemize}
+\subsubsection{k-NN Rule}
+\textbf{Original:} Accuracy = 1.0, F1-macro = 1.0 \\ \textbf{Balanceado:} Accuracy = 0.95, F1-macro = 0.95
 
-\textbf{Maldición de la dimensionalidad:} Caso de libro de texto sobre por qué los histogramas fallan en alta dimensionalidad, incluso con características binarias.
-
-\subsubsection{4. Parzen Windows - Rendimiento perfecto}
-\textbf{Resultados en test:} Accuracy = 1.0, F1-macro = 1.0
-\textbf{Hiperparámetro óptimo:} bandwidth h = 0.1
-
-Parzen windows logra clasificación perfecta, igualando a Naive Bayes y k-NN Rule. Con h=0.1:
-\begin{itemize}
-    \item El kernel Gaussiano proporciona suavizado local adecuado
-    \item Evita las discontinuidades artificiales de los histogramas
-    \item Captura la estructura de las clases sin overfitting
-\end{itemize}
-
-\textbf{CV:} F1-macro = 0.8648 (el mejor en validación cruzada), superior incluso a Naive Bayes (0.8505). Esto confirma que el bandwidth optimizado generaliza bien.
-
-\textbf{Ventaja clave:} A diferencia de histogramas, Parzen produce estimaciones continuas que funcionan bien incluso con datos relativamente escasos. El suavizado del kernel compensa la falta de muestras.
-
-\subsubsection{5. k-NN Density Bayes - Rendimiento mediocre}
-\textbf{Resultados en test:} Accuracy = 0.4762, F1-macro = 0.5714
-\textbf{Hiperparámetro óptimo:} k = 11
-
-Rendimiento pobre en test. Análisis de la matriz de confusión:
-\begin{itemize}
-    \item Confunde mamíferos (0/8 correctos) clasificándolos como reptiles
-    \item Acierta en aves (4/4), invertebrados (2/2) e insectos (1/2)
-    \item Resultados erráticos y poco fiables
-\end{itemize}
-
-\textbf{Problema:} Con k=11 en un dataset de 80 muestras entrenamiento:
-\begin{itemize}
-    \item Los 11 vecinos más cercanos diluyen la señal local
-    \item La estimación de densidad por volumen local es inestable
-    \item Clases con distribuciones espaciales dispersas sufren especialmente
-\end{itemize}
-
-\textbf{Comparación con Parzen:} Ambos son estimadores no paramétricos, pero Parzen (h=0.1) fija el ancho de banda globalmente mientras k-NN adapta el volumen localmente. En este caso, la estrategia fija de Parzen es superior.
-
-\subsubsection{6. k-NN Rule - Rendimiento perfecto}
-\textbf{Resultados en test:} Accuracy = 1.0, F1-macro = 1.0
-\textbf{Hiperparámetro óptimo:} k = 1
-
-El método clásico de k-NN logra clasificación perfecta con k=1 (vecino más cercano). Esto indica:
-\begin{itemize}
-    \item Las clases están bien separadas en el espacio de características
-    \item Los ejemplos de test tienen vecinos cercanos de su misma clase en entrenamiento
-    \item La estructura del dataset es relativamente simple
-\end{itemize}
-
-\textbf{CV:} F1-macro = 0.8267, ligeramente inferior a Parzen (0.8648) y Naive Bayes (0.8505) en validación cruzada, pero perfecto en test.
-
-\textbf{Ventaja de k=1:} Con datos bien separados y sin ruido significativo, el vecino más cercano es suficiente. Valores mayores de k diluirían innecesariamente la señal.
+ El método clásico de k-NN mantiene excelente rendimiento con $k=1$ óptimo en ambos datasets (vecino más cercano). En el dataset original logra clasificación perfecta, indicando que las clases están bien separadas espacialmente. Con el dataset balanceado, mantiene 95\% de accuracy, igualando a MLE Full y Parzen. Con $k=1$, el método simplemente asigna la clase del vecino más cercano, lo cual es óptimo cuando los datos están bien separados y tienen poco ruido. La simplicidad del método (asignación directa basada en vecinos sin calcular densidades probabilísticas) resulta ventajosa: menos pasos intermedios significan menos fuentes de error. Las confusiones coinciden exactamente con las de Parzen (anfibios-reptiles), confirmando que ambos métodos capturan correctamente la estructura espacial. Valores mayores de $k$ promediarían en exceso los vecinos cercanos, borrando detalles locales innecesariamente.
 
 \section{Discusión y Conclusiones}
+\label{discussion}
 
 \subsection{Comparación general de enfoques}
 
-\subsubsection{Modelos paramétricos vs no paramétricos}
+Los modelos paramétricos muestran comportamientos opuestos: Naive Bayes es robusto con clases minoritarias (F1=0.85 original) al estimar solo $2d$ parámetros por clase, mientras MLE Full colapsa (F1=0.46) requiriendo $O(d^2)$ parámetros. Con datos suficientes (41 ejemplares/clase), MLE Full alcanza 95\% superando a NB (91\%), confirmando el equilibrio entre sesgo y varianza: modelos simples son robustos pero limitados; complejos necesitan más datos pero alcanzan mayor rendimiento.
 
-Los resultados revelan patrones claros sobre cuándo cada enfoque es apropiado:
+Entre no paramétricos, Histogram Bayes falla completamente (F1=0.07-0.08) por la maldición de dimensionalidad: $2^{16}=65,536$ bins con solo 287 muestras resulta en predicciones por defecto. Parzen y k-NN Rule logran 95-100\% evitando particiones rígidas mediante suavizado continuo ($h=0.1$) o asignación directa ($k=1$). k-NN Density (F1=0.57-0.68) queda en medio, sugiriendo que estimar densidades explícitamente añade complejidad sin beneficio en alta dimensión.
 
-\textbf{Modelos paramétricos exitosos:}
-\begin{itemize}
-    \item \textbf{Naive Bayes:} Perfecto en test (1.0/1.0). La asunción de independencia, aunque incorrecta teóricamente, no penaliza en este dataset.
-    \item \textbf{Ventaja:} Pocas suposiciones (solo medias y varianzas), robusto con pocas muestras.
-\end{itemize}
+\subsection{Impacto del desbalance y balanceo}
 
-\textbf{Modelo paramétrico fallido:}
-\begin{itemize}
-    \item \textbf{MLE Full:} Falla con clases minoritarias (0.71/0.46). Estimación de covarianza completa imposible con 3-6 ejemplos.
-    \item \textbf{Lección:} Más parámetros $\neq$ mejor modelo. Con datos limitados, modelos simples ganan.
-\end{itemize}
+El desbalance original (meanIR=4.84) expone brutalmente debilidades de modelos complejos: MLE Full no puede estimar covarianzas con 3-5 ejemplos/clase, clasificando anfibios como mamíferos. El balanceo sintético (101→287 instancias) transforma MLE Full dramáticamente:\linebreak
+F1 = $0.46 \rightarrow 0.95$ (+107\%), pasando de peor a mejor modelo. Paradójicamente, Histogram empeora (accuracy $0.38 \rightarrow 0.16$) al no poder explotar el sesgo mayoritario, confirmando su inadecuación fundamental. Los mejores modelos originales (NB, Parzen, k-NN Rule con F1=1.0) bajan ligeramente a 91-95\%, pero esto refleja que al aumentar el conjunto de datos trabajamos en un test más realista (58 vs 21 muestras) que revela verdadera capacidad de generalización.
 
-\textbf{Modelos no paramétricos exitosos:}
-\begin{itemize}
-    \item \textbf{Parzen:} Perfecto (1.0/1.0) con h=0.1 óptimo. Suavizado continuo supera limitaciones de histogramas.
-    \item \textbf{k-NN Rule:} Perfecto (1.0/1.0) con k=1. Simplicidad efectiva cuando datos están separados.
-\end{itemize}
+\subsection{Métricas y lecciones prácticas}
 
-\textbf{Modelos no paramétricos fallidos:}
-\begin{itemize}
-    \item \textbf{Histogram:} Colapso total (0.38/0.08). Maldición dimensionalidad en acción.
-    \item \textbf{k-NN Density:} Mediocre (0.48/0.57). Estimación de densidad por volumen local inestable.
-\end{itemize}
-
-\subsection{Impacto de clases minoritarias}
-
-El dataset Zoo tiene clases con solo 3-4 ejemplos en entrenamiento (anfibios, reptiles). Observamos:
-
-\begin{itemize}
-    \item \textbf{Naive Bayes:} Maneja bien clases minoritarias. Estima $\mu$ y $\sigma^2$ por característica (16 parámetros/clase).
-    \item \textbf{MLE Full:} Falla con minoritarias. Necesita estimar 136 parámetros/clase (matriz $16 \times 16$).
-    \item \textbf{Parzen y k-NN Rule:} No estiman parámetros por clase, usan similitud directa. Funcionan bien si ejemplos están separados.
-    \item \textbf{Histogram:} Fragmenta los pocos ejemplos en bins vacíos. Imposible estimar densidad.
-\end{itemize}
-
-\textbf{Principio general:} Con clases minoritarias, preferir modelos que requieran \textbf{pocos parámetros por clase} o \textbf{métodos basados en distancia} sin estimación explícita de densidad.
-
-\subsection{Métricas: Accuracy vs F1-macro}
-
-En dataset multiclase con distribución desbalanceada (40\% mamíferos vs 4\% anfibios):
-
-\begin{itemize}
-    \item \textbf{Histogram Bayes:} Accuracy 38\% pero F1-macro 7.9\%. Predice solo mamíferos.
-    \item \textbf{F1-macro:} Promedia rendimiento de todas las clases. Penaliza modelos que ignoran minoritarias.
-    \item \textbf{Uso correcto:} F1-macro es métrica principal para datasets desbalanceados multiclase.
-\end{itemize}
-
-Los tres modelos perfectos (Naive Bayes, Parzen, k-NN Rule) tienen Accuracy = F1-macro = 1.0, confirmando clasificación genuinamente balanceada.
-
-\subsection{Validación de la metodología}
-
-La división train-test estratificada (80\%-20\%) con validación cruzada interna para hiperparámetros ha sido fundamental:
-
-\begin{itemize}
-    \item \textbf{Evaluación imparcial:} El test set nunca se usa durante entrenamiento u optimización
-    \item \textbf{Hiperparámetros óptimos:} GridSearchCV encuentra h=0.1 (Parzen), k=11 (k-NN Density), k=1 (k-NN Rule)
-    \item \textbf{Coherencia CV-Test:} Los modelos con mejor F1-macro en CV (Parzen 0.865, NB 0.851) también son perfectos en test
-    \item \textbf{Detección de inestabilidad:} k-NN Density con F1-CV=0.566 confirma su mediocridad en test (0.571)
-\end{itemize}
+El contraste accuracy vs F1-macro es crucial: Histogram obtiene accuracy = 0.38 pero F1 = 0.08 en desbalanceado, prediciendo siempre "mamífero" (al ser clase mayoritaria acierta 8 ejemplos de 21, de aquí la "gran" precisión). El accuracy premia este sesgo pero F1-macro lo penaliza al promediar todas las clases. Esto confirma que \textbf{accuracy es engañoso en multiclase desbalanceado}, siendo F1-macro la métrica correcta para evaluar poder discriminativo real.
 
 \subsection{Conclusiones finales}
 
-\subsubsection{Resultados principales}
+Este trabajo confirma empíricamente tres principios del aprendizaje automático: (1) el trade-off complejidad-datos (modelos con $O(d^2)$ parámetros necesitan más muestras), (2) la maldición de dimensionalidad (particionado rígido colapsa, suavizado continuo mitiga), y (3) la importancia del balanceo para revelar limitaciones sin sesgos artificiales. Los tres mejores modelos (MLE Full, Parzen, k-NN Rule con F1=0.95) triunfan por razones distintas: MLE captura correlaciones completas, Parzen suaviza óptimamente, k-NN Rule aprovecha separación espacial. \linebreak \textbf{Las lecciones clave son:} validar hiperparámetros con CV estratificada es crucial ($h=0.1$, $k=1$ optimizados); usar F1-macro en multiclase desbalanceado; la asunción "naive" es sorprendentemente efectiva (F1=0.91) sugiriendo correlaciones débiles entre clases; y el balanceo sintético mediante características reales es válido (pero hay que comprender también que puede haber confusiones entre anfibios y reptiles pero son biológicamente coherentes).
 
-En el dataset Zoo multiclase con clases minoritarias:
 
-\begin{enumerate}
-    \item \textbf{Tres modelos perfectos:} Naive Bayes, Parzen Windows (h=0.1) y k-NN Rule (k=1) logran clasificación perfecta (Accuracy = F1-macro = 1.0)
-    \item \textbf{MLE Full falla:} Accuracy 71.4\%, F1-macro 45.6\%. No maneja clases con 3-6 ejemplos (matrices singulares)
-    \item \textbf{Histogram colapsa:} Accuracy 38.1\%, F1-macro 7.9\%. Maldición dimensionalidad ($2^{16}$ bins, 101 muestras)
-    \item \textbf{k-NN Density mediocre:} Accuracy 47.6\%, F1-macro 57.1\%. Estimación de volumen local inestable
-\end{enumerate}
 
-\subsubsection{Lecciones sobre teoría T2-T4}
 
-\textbf{De teoría paramétrica (T2):}
-\begin{itemize}
-    \item La \textbf{asunción de independencia} de Naive Bayes no siempre penaliza. Con características poco correladas, simplifica y robustece.
-    \item \textbf{Modelos complejos necesitan datos:} MLE Full con covarianza completa requiere $O(d^2)$ muestras/clase. Con clases minoritarias, Naive Bayes ($O(d)$ parámetros) gana.
-    \item La \textbf{parsimonia} (pocos parámetros) es ventaja con datos limitados, no limitación.
-\end{itemize}
-
-\textbf{De teoría no paramétrica (T4):}
-\begin{itemize}
-    \item \textbf{Histogramas vs Parzen:} Los histogramas sufren severamente curse of dimensionality. Parzen con suavizado continuo lo mitiga.
-    \item \textbf{Bandwidth crítico:} h=0.1 óptimo en Parzen. Muy pequeño (overfitting) o grande (underfit) fallan.
-    \item \textbf{k-NN simple vs k-NN density:} k-NN Rule (votación directa) supera a k-NN Density (estimación explícita). Menos pasos $\rightarrow$ menos fuentes de error.
-    \item \textbf{k=1 efectivo:} Cuando datos están separados sin ruido, el vecino más cercano es suficiente y óptimo.
-\end{itemize}
-
-\subsubsection{Importancia del F1-macro}
-
-El F1-macro ha sido crucial para detectar modelos que ignoran clases minoritarias:
-\begin{itemize}
-    \item Histogram: 38.1\% accuracy parece "razonable", pero F1-macro 7.9\% revela que predice solo mamíferos
-    \item MLE Full: 71.4\% accuracy oculta fallo total en 3 clases (0\% recall)
-    \item Los modelos perfectos tienen Accuracy $=$ F1-macro $=$ 1.0, confirmando balance genuino
-\end{itemize}
-
-En clasificación multiclase desbalanceada, \textbf{reportar solo accuracy es científicamente inaceptable}.
-
-\subsubsection{Conclusión práctica}
-
-Para el dataset Zoo:
-\begin{itemize}
-    \item \textbf{Recomendación principal:} Naive Bayes, Parzen (h=0.1) o k-NN Rule (k=1). Los tres son perfectos y simples.
-    \item \textbf{Evitar:} MLE Full (falla con minoritarias), Histogram (curse of dimensionality), k-NN Density (inestable)
-    \item \textbf{Principio general:} En datos pequeños multiclase, preferir modelos \textbf{simples con pocas suposiciones} (Naive Bayes) o \textbf{basados en distancia sin estimación} (k-NN directo, Parzen).
-\end{itemize}
-
-Esta práctica demuestra que complejidad $\neq$ mejor rendimiento. Los clasificadores más sencillos (Naive Bayes, k-NN k=1) igualan o superan a métodos sofisticados cuando los datos tienen estructura simple y están bien separados. La teoría T2-T4 predice exactamente estos comportamientos: los resultados empíricos validan la teoría.
 
 \end{document}
+
+
+% This document was modified from the file originally made available by
+% Pat Langley and Andrea Danyluk for ICML-2K. This version was created
+% by Iain Murray in 2018, and modified by Alexandre Bouchard in
+% 2019 and 2021 and by Csaba Szepesvari, Gang Niu and Sivan Sabato in 2022.
+% Modified again in 2023 and 2024 by Sivan Sabato and Jonathan Scarlett.
+% Previous contributors include Dan Roy, Lise Getoor and Tobias
+% Scheffer, which was slightly modified from the 2010 version by
+% Thorsten Joachims & Johannes Fuernkranz, slightly modified from the
+% 2009 version by Kiri Wagstaff and Sam Roweis's 2008 version, which is
+% slightly modified from Prasad Tadepalli's 2007 version which is a
+% lightly changed version of the previous year's version by Andrew
+% Moore, which was in turn edited from those of Kristian Kersting and
+% Codrina Lauth. Alex Smola contributed to the algorithmic style files.

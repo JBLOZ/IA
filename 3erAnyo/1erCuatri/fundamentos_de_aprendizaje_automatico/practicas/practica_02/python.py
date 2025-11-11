@@ -23,7 +23,7 @@ print("ANÁLISIS DEL DATASET ZOO (Multiclass Classification)")
 print("=" * 80)
 
 # Cargar datos: zoo.data (col 0: animal name (ignorar), col 1-17: features binarias, col 18: class 1-7)
-df = pd.read_csv('./zoo/zoo_balanced.csv', header=None)
+df = pd.read_csv('./zoo/zoo.data', header=None)
 df.columns = ['animal'] + [f'feature_{i}' for i in range(1, 17)] + ['class']
 X = df.iloc[:, 1:-1]  # Features 1-17 (binarias 0/1)
 y = df.iloc[:, -1].values - 1  # Clase 0-6 para sklearn
