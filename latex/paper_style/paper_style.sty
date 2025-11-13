@@ -1,0 +1,200 @@
+% --- paper_style.sty (VERSIÓN SIMPLE Y COMPATIBLE) ---
+\ProvidesPackage{paper_style}[2025/08/22 Estilo de paper v3.0-listings]
+
+% --- Paquetes de base ---
+\RequirePackage{geometry}
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{titling}
+\RequirePackage[spanish]{babel}
+\RequirePackage{setspace}
+% --- Paquetes recomendados y para bibliografía ---
+\RequirePackage{csquotes}
+\RequirePackage[backend=biber, style=ieee, sorting=none]{biblatex}
+\RequirePackage{xurl}
+\RequirePackage{caption} % Necesario para que funcione caption*
+
+% --- Tipografía para código ---
+% Si tienes la fuente Fira Code instalada, puedes descomentar la siguiente línea
+% \setmonofont{Fira Code}
+
+% --- Márgenes y Colores ---
+\geometry{a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=3.5cm, footskip=1cm}
+\definecolor{paper_blue}{HTML}{1A73E8}
+
+% --- Configuración de numeración de secciones (sin punto) ---
+\RequirePackage{titlesec}
+\titlelabel{\thetitle\quad}
+
+% --- Paquetes para los cuadros de texto ---
+\RequirePackage{tcolorbox}
+\RequirePackage{varwidth}
+
+% --- Definición de cuadros de texto personalizados ---
+% Cuadro para información general/objetivos (fondo gris claro)
+\newtcolorbox{infobox}[1][]{
+	colback=black!5,
+	colframe=black!40,
+	boxrule=0.8pt,
+	arc=2pt,
+	left=8pt,
+	right=8pt,
+	top=8pt,
+	bottom=8pt,
+	fontupper=\small,
+	#1
+}
+
+% Cuadro para información de entrega (fondo azul claro)
+\newtcolorbox{deliverybox}[1][]{
+	colback=blue!5,
+	colframe=blue!40,
+	boxrule=0.8pt,
+	arc=2pt,
+	left=8pt,
+	right=8pt,
+	top=8pt,
+	bottom=8pt,
+	fontupper=\small,
+	#1
+}
+
+% --- Añadir el fichero de bibliografía ---
+\addbibresource{bibliografia.bib}
+
+% --- Configuración para Listados de Código (listings) ---
+\RequirePackage{listings}
+
+% --- NOMBRE GLOBAL PARA TODOS LOS LISTADOS NUMERADOS ---
+\renewcommand{\lstlistingname}{Bloque}
+
+% --- Paleta de Colores Unificada para Código ---
+\definecolor{codebackground}{rgb}{0.97, 0.97, 0.97} % Gris muy claro (equivalente a black!3)
+\definecolor{colorkeyword}{rgb}{0.2, 0.2, 0.9}       % Azul oscuro para palabras clave (de tu keywordblue)
+\definecolor{colorcomment}{rgb}{0.2, 0.7, 0.2}    % Verde oscuro para comentarios (de tu commentgreen)
+\definecolor{colorstring}{rgb}{0.8, 0.25, 0.25}     % Rojo oscuro para cadenas de texto (de tu stringred)
+\definecolor{colorpreproc}{rgb}{0.4, 0.0, 0.4}      % Morado para preprocesador y decoradores (de tu preprocpurple)
+\definecolor{colornumber}{rgb}{0.5, 0.5, 0.5}       % Gris para los números de línea (de tu codegray original)
+
+% --- Definición de Estilos (SIN PreSet) ---
+
+% Definimos el estilo "consola" para terminales
+% --- Definición de Estilos para listings ---
+
+% Estilo "consola" para terminales (monocromo y con números de línea)
+\lstdefinestyle{consola}{
+	aboveskip=10pt,
+	belowskip=10pt,
+	backgroundcolor=\color{codebackground},
+	basicstyle=\small\ttfamily\color{black},
+	breaklines=true,
+	keepspaces=true,
+	commentstyle=\color{black},
+	keywordstyle=\color{black},
+	stringstyle=\color{black},
+	identifierstyle=\color{black},
+	numbers=left,
+	numberstyle=\tiny\color{colornumber},
+	numbersep=5pt,
+	frame=single,
+	showspaces=false,
+	showstringspaces=false,
+	rulecolor=\color{black!40},
+	framerule=0.4pt,
+	breaklines=true,
+	keepspaces=true,
+	tabsize=1,
+	breakautoindent=false,
+	breakindent=5pt
+}
+
+% Estilo para código fuente de C++
+\lstdefinestyle{cpp-style}{
+	language=C++,
+	backgroundcolor=\color{codebackground},
+	frame=single,
+	rulecolor=\color{black!40},
+	framerule=0.4pt,
+	aboveskip=10pt,
+	belowskip=10pt,
+	basicstyle=\footnotesize\ttfamily\setstretch{0.9},
+	breaklines=true,
+	keepspaces=true,
+	tabsize=1,
+	keywordstyle=\color{colorkeyword}\bfseries,
+	commentstyle=\color{colorcomment}\itshape,
+	stringstyle=\color{colorstring},
+	identifierstyle=\color{black},
+	% numbers=left,
+	% numberstyle=\tiny\color{colornumber},
+	% numbersep=5pt,
+	morekeywords={*,std, string, cout, cin, endl, vector, list, map, set, nullptr, auto, size_t},
+	keywordsprefix=\#,
+	morekeywords=[2]{\#include, \#define, \#ifdef, \#endif, \#ifndef},
+	keywordstyle=[2]\color{colorpreproc},
+	breaklines=true,
+	keepspaces=true,
+	showstringspaces=false,
+	classoffset=1
+}
+
+% Estilo para código fuente de Python
+\lstdefinestyle{python-style}{
+	language=Python,
+	backgroundcolor=\color{codebackground},
+	frame=single,
+	rulecolor=\color{black!40},
+	framerule=0.4pt,
+	aboveskip=10pt,
+	belowskip=10pt,
+	basicstyle=\footnotesize\ttfamily\setstretch{0.9},
+	tabsize=1,
+	% --- Coloreado de Sintaxis para Python ---
+	commentstyle=\color{colorcomment}\itshape,
+	stringstyle=\color{colorstring},
+	identifierstyle=\color{black},
+	% --- Palabras clave de Python (divididas en grupos para evitar errores) ---
+	keywords=[1]{ % Grupo 1: Palabras reservadas del lenguaje
+		False, None, True, and, as, assert, async, await, break, class, continue,
+		def, del, elif, else, except, finally, for, from, global, if, import,
+		in, is, lambda, nonlocal, not, or, pass, raise, return, try, while,
+		with, yield
+	},
+	morekeywords=[2]{ % Grupo 2: Funciones y tipos comunes
+		print, len, range, str, int, float, list, dict, set, tuple, open, self,
+		__init__, __name__, __main__
+	},
+	morekeywords=[3]{ % Grupo 3: Librerías populares
+		numpy, pandas, matplotlib, plt, np, pd, sklearn, torch, tensorflow
+	},
+	% --- Aplicamos el mismo estilo a todos los grupos de palabras clave ---
+	keywordstyle=\color{colorkeyword}\bfseries,
+	keywordstyle=[2]\color{colorkeyword}\bfseries,
+	keywordstyle=[3]\color{colorkeyword}\bfseries,
+	% --- Estilos específicos de Python ---
+	morestring=[m][\itshape\color{colorcomment}]{"}{"""},
+	morestring=[m][\itshape\color{colorcomment}]{'}{'''},
+	keywordsprefix=@,
+	keywordstyle=[4]\color{colorpreproc}, % Usamos el grupo 4 para decoradores
+	% --- Configuración general ---
+	% numbers=left,
+	% numberstyle=\tiny\color{colornumber},
+	numbersep=5pt,
+	breaklines=true,
+	keepspaces=true,
+	showstringspaces=false,
+	classoffset=1
+}
+% --- Fin de la configuración de listings ---
+
+
+% --- Hipervínculos (SE CARGA AL FINAL PARA EVITAR ERRORES) ---
+\RequirePackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=paper_blue,
+	citecolor=paper_blue,
+	urlcolor=paper_blue
+}
+
+% --- Fin del fichero de estilo ---
