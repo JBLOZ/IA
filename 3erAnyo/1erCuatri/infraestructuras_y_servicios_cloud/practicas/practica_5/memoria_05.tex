@@ -95,7 +95,7 @@ FROM
 
 		Node-RED permite conectarse mediante MQTT a nuestro tema de `thing' de IoT para simular el envío de datos de las farolas. El flujo consta de tres nodos:
 		\begin{itemize}
-			\item \textbf{Inject (timestamp):} Un disparador manual para iniciar el flujo, cada 10 segundos se envia una señal al siguiente nodo para que mande un mensaje.
+			\item \textbf{Inject:} Un disparador manual para iniciar el flujo, cada 10 segundos se envia una señal al siguiente nodo para que mande un mensaje.
 			\item \textbf{Function:} Un nodo que construye el mensaje JSON con los datos de la farola (ID, consumo y el tiempo) y establece el tema de destino en \texttt{smartcity/consumo/test}. Este nodo consta de una serie de variables que hemos randomizado para simular la farola. He utilizado 6 variables de más para el tiempo, de forma que tengamos en variables separadas el año, el mes, el dia, la hora, los minutos y los segundos. Consiguiendo que los pasos anteriores hayan sido más sencillos de implementar sabiendo que no tenemos que parsear ni usar funciones diferentes para obtener los datos del tiempo.
 			\item 	\begin{lstlisting}[style=consola, language=bash, caption={Funcion constructora del mensaje}]
 		const now = new Date();
