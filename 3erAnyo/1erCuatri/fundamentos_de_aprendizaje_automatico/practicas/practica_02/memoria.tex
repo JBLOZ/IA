@@ -33,24 +33,7 @@
 % if you use cleveref..
 \usepackage[capitalize,noabbrev]{cleveref}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% THEOREMS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{corollary}[theorem]{Corollary}
-\theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{assumption}[theorem]{Assumption}
-\theoremstyle{remark}
-\newtheorem{remark}[theorem]{Remark}
 
-% Todonotes is useful during development; simply uncomment the next line
-%    and comment out the line below the next line to turn off comments
-%\usepackage[disable,textsize=tiny]{todonotes}
-\usepackage[textsize=tiny]{todonotes}
 
 
 % The \icmltitle you define below is probably too long as a header.
@@ -71,7 +54,6 @@
 \icmlauthor{Jordi Blasco Lozano}{}
 \end{icmlauthorlist}
 
-\icmlaffiliation{uji}{Fundamentos del Aprendizaje Automático, Universitat Jaume I, Castellón, España}
 
 \icmlcorrespondingauthor{Jordi Blasco Lozano}{74527208D}
 
@@ -233,8 +215,6 @@ El contraste accuracy vs F1-macro es crucial: Histogram obtiene accuracy = 0.38 
 \subsection{Conclusiones finales}
 
 Este trabajo confirma empíricamente tres principios del aprendizaje automático: (1) el equilibrio entre complejidad del modelo y cantidad de datos: modelos complejos como MLE Full ($O(d^2)$ parámetros) necesitan muchos más datos que modelos simples como Naive Bayes ($O(d)$ parámetros); (2) la maldición de dimensionalidad (particionado rígido colapsa, suavizado continuo mitiga), y (3) la importancia del balanceo para revelar limitaciones sin sesgos artificiales. Los tres mejores modelos (MLE Full, Parzen, k-NN Rule con F1=0.95) triunfan por razones distintas: MLE captura correlaciones completas, Parzen suaviza óptimamente, k-NN Rule aprovecha separación espacial. \linebreak \textbf{Las lecciones clave son:} validar hiperparámetros con CV estratificada es crucial ($h=0.1$, $k=1$ optimizados); usar F1-macro en multiclase desbalanceado; la asunción "naive" es sorprendentemente efectiva (F1=0.91) sugiriendo correlaciones débiles entre clases; y el balanceo sintético mediante características reales es válido (pero hay que comprender también que puede haber confusiones entre anfibios y reptiles pero son biológicamente coherentes).
-
-
 
 
 
