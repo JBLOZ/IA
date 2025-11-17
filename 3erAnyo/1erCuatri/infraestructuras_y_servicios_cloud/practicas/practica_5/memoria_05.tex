@@ -97,7 +97,7 @@ FROM
 		\begin{itemize}
 			\item \textbf{Inject:} Un disparador manual para iniciar el flujo, cada 10 segundos se envia una señal al siguiente nodo para que mande un mensaje.
 			\item \textbf{Function:} Un nodo que construye el mensaje JSON con los datos de la farola (ID, consumo y el tiempo) y establece el tema de destino en \texttt{smartcity/consumo/test}. Este nodo consta de una serie de variables que hemos randomizado para simular la farola. He utilizado 6 variables de más para el tiempo, de forma que tengamos en variables separadas el año, el mes, el dia, la hora, los minutos y los segundos. Consiguiendo que los pasos anteriores hayan sido más sencillos de implementar sabiendo que no tenemos que parsear ni usar funciones diferentes para obtener los datos del tiempo.
-			\item 	\begin{lstlisting}[style=consola, language=bash, caption={Funcion constructora del mensaje}]
+			\begin{lstlisting}[style=consola, language=bash, caption={Funcion constructora del mensaje}]
 		const now = new Date();
 msg.topic = "smartcity/consumo/test";
 msg.payload = {
@@ -115,7 +115,20 @@ return msg;\end{lstlisting}
 			 
 			\item \textbf{MQTT Out:} Este nodo está configurado para publicar el mensaje en el endpoint de AWS IoT (a1paa0c5brn8mp-ats.iot.us-east-1.amazonaws.com) a través del puerto 8883 con TLS. La autenticación se realizó utilizando los mismos certificados de dispositivo que en la prueba de conexión inicial. Usamos TLS el cual contiene todos los certificados necesarios para conecarnos al endpoint que anteriormente hemos introducido.
 		\end{itemize}
-\subsection{Prueba}
+\subsection{Pruebas}
+Para comprobar que cada una de las acciones anteriores de la regla funcionen debemos de comprobarlo lanzando el Node-RED. El primer paso es comprobar que los mensajes son enviados al tema correspondiente, para esto nos vamos al cliente de prueba de MQTT dentro de la pestaña de IoT de AWS y nos subscribimos a \texttt{smartcity/consumo/\#} cuando nos subscribamos nos empezaran a salir mensajes como estos.
+
+
+%imagen
+
+
+Respecto al guardado de mensajes historicos debemos de comprobarlo dentro del S3 de la practica, nos dirigimos a la sucesiones de carpetas que tenemos configurada y dentro de la ultima vemos como tenemos estos datos. Los datos de dentro de cada archivo tambien corresponden con el .json definido en el SQL.
+
+%imagen
+
+Finalemente debemos de comprobar la tabla de DynamoDB, dentro de vigia\_farolas\_estado, y en explorar elementos de la tabla vemos como nuestra tabla contiene una farola001 con el json correspondiente.
+
+%imagen
 
 	
 
