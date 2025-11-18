@@ -88,9 +88,9 @@ Los 17 atributos incluyen \textbf{15 características binarias}: pelo, plumas, h
 \section{Metodología: Particionado y Validación}
 \label{methodology}
 
-\textbf{División Train-Test (80\%-20\%):} División estratificada manteniendo proporciones de clases (original: 80 train / 21 test; balanceado: 229 train / 58 test). El conjunto de test permanece intacto durante todo el proceso. \linebreak
-\textbf{Validación Cruzada 5-fold:} Aplicada sobre el entrenamiento para evaluar todos los modelos y optimizar hiperparámetros (bandwidth en Parzen, k en k-NN). El conjunto se divide aleatoriamente en 5 particiones estratificadas: en cada iteración, 4 particiones entrenan y 1 valida, repitiendo el proceso 5 veces (cada partición valida una vez). Se obtienen 5 F1 independientes cuya media y desviación estándar reflejan el rendimiento y la estabilidad del modelo.\linebreak
-\textbf{Métricas:} F1-macro (es la métrica principal por desbalance), matrices de confusión (para observar que clasifica mal cada modelo) y accuracy (para medias generalistas)
+\textbf{Validación Cruzada 5-fold Estratificada:} Se aplica validación cruzada 5-fold estratificada sobre todo el conjunto de datos. En cada fold, el conjunto se divide en 80\% entrenamiento y 20\% test, manteniendo las proporciones de clases. El proceso se repite 5 veces, de modo que cada partición actúa como test una vez. Para cada modelo se obtienen 5 métricas independientes, cuya media y desviación estándar reflejan el rendimiento y la estabilidad del modelo.\linebreak
+\textbf{Optimización de Hiperparámetros:} En los modelos que requieren selección de hiperparámetros, se evalúan todos los valores candidatos en cada uno de los 5 folds. Se calcula el F1-macro promedio de cada hiperparámetro y se selecciona el que maximiza esta métrica.\linebreak
+\textbf{Métricas:} F1-macro (métrica principal), accuracy (para comparación general) y matrices de confusión (para analizar errores por clase).
 
 \section{Modelos Implementados}
 \label{models}
@@ -100,31 +100,31 @@ Los 17 atributos incluyen \textbf{15 características binarias}: pelo, plumas, h
 \section{Resultados}
 \label{results}
 
-He evaluado los seis modelos en el conjunto de prueba de 21 muestras. Las \cref{tab:results_cv,tab:results_test} muestran los resultados de validación cruzada y test respectivamente.
+Las \cref{tab:results_desbalanced,tab:results_balanced} muestran la media y desviación estándar de Accuracy y F1-macro obtenidas en los para cada dataset.
 
 
 \begin{table}[h]
-\caption{Validación cruzada mean de 5-fold en entrenamiento}
-\label{tab:results_cv}
+\caption{Resultados en dataset desbalanceado (CV 5-fold)}
+\label{tab:results_desbalanced}
 \vskip 0.15in
 \begin{center}
 \begin{small}
 \begin{sc}
 \begin{tabular}{lcccc}
 \toprule
- & \multicolumn{2}{c}{\textbf{Original}} & \multicolumn{2}{c}{\textbf{Balanceado}} \\
+ & \multicolumn{2}{c}{\textbf{Accuracy}} & \multicolumn{2}{c}{\textbf{F1-macro}} \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
-\textbf{Modelo} & \textbf{F1} & \textbf{std} & \textbf{F1} & \textbf{std} \\
+\textbf{Modelo} & \textbf{mean} & \textbf{std} & \textbf{mean} & \textbf{std} \\
 \midrule
 \multicolumn{5}{l}{\textit{Modelos Paramétricos}} \\
-Naive Bayes & 0.85 & 0.14 & 0.84 & 0.04 \\
-MLE Full & 0.53 & 0.10 & 0.87 & 0.01 \\
+Naive Bayes & 0.96 & 0.06 & 0.90 & 0.14 \\
+MLE Full & 0.81 & 0.04 & 0.58 & 0.05 \\
 \midrule
 \multicolumn{5}{l}{\textit{Modelos No Paramétricos}} \\
-Histogram Bayes & 0.25 & 0.13 & 0.06 & 0.02 \\
-Parzen (h=0.1) & 0.86 & 0.12 & 0.94 & 0.04 \\
-k-NN Density (k=1) & 0.77 & 0.05 & 0.93 & 0.03 \\
-k-NN Rule (k=1) & 0.83 & 0.12 & 0.94 & 0.04 \\
+Histogram Bayes & 0.46 & 0.06 & 0.17 & 0.10 \\
+Parzen ($h=0.5$) & 0.98 & 0.02 & 0.91 & 0.12 \\
+k-NN Density ($k=1$) & 0.98 & 0.02 & 0.90 & 0.12 \\
+k-NN Rule ($k=1$) & 0.98 & 0.02 & 0.91 & 0.12 \\
 \bottomrule
 \end{tabular}
 \end{sc}
@@ -134,27 +134,27 @@ k-NN Rule (k=1) & 0.83 & 0.12 & 0.94 & 0.04 \\
 \end{table}
 
 \begin{table}[h]
-\caption{Resultados en conjunto de prueba}
-\label{tab:results_test}
+\caption{Resultados en dataset balanceado (CV 5-fold)}
+\label{tab:results_balanced}
 \vskip 0.15in
 \begin{center}
 \begin{small}
 \begin{sc}
 \begin{tabular}{lcccc}
 \toprule
- & \multicolumn{2}{c}{\textbf{Original}} & \multicolumn{2}{c}{\textbf{Balanceado}} \\
+ & \multicolumn{2}{c}{\textbf{Accuracy}} & \multicolumn{2}{c}{\textbf{F1-macro}} \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
-\textbf{Modelo} & \textbf{Acc} & \textbf{F1} & \textbf{Acc} & \textbf{F1} \\
+\textbf{Modelo} & \textbf{mean} & \textbf{std} & \textbf{mean} & \textbf{std} \\
 \midrule
 \multicolumn{5}{l}{\textit{Modelos Paramétricos}} \\
-Naive Bayes & 1.00 & 1.00 & 0.91 & 0.91 \\
-MLE Full & 0.71 & 0.46 & 0.95 & 0.95 \\
+Naive Bayes & 0.88 & 0.07 & 0.87 & 0.08 \\
+MLE Full & 0.89 & 0.05 & 0.89 & 0.05 \\
 \midrule
 \multicolumn{5}{l}{\textit{Modelos No Paramétricos}} \\
-Histogram Bayes & 0.38 & 0.08 & 0.16 & 0.07 \\
-Parzen (h=0.1) & 1.00 & 1.00 & 0.95 & 0.95 \\
-k-NN Density (k=1) & 1.00 & 1.00 & 0.95 & 0.95 \\
-k-NN Rule (k=1) & 1.00 & 1.00 & 0.95 & 0.95 \\
+Histogram Bayes & 0.15 & 0.01 & 0.06 & 0.02 \\
+Parzen ($h=0.5$) & 0.93 & 0.03 & 0.93 & 0.03 \\
+k-NN Density ($k=1$) & 0.93 & 0.03 & 0.93 & 0.04 \\
+k-NN Rule ($k=3$) & 0.92 & 0.05 & 0.91 & 0.05 \\
 \bottomrule
 \end{tabular}
 \end{sc}
@@ -165,56 +165,55 @@ k-NN Rule (k=1) & 1.00 & 1.00 & 0.95 & 0.95 \\
 \subsection{Análisis detallado por modelo}
 
 \subsubsection{Naive Bayes Gaussiano}
-\textbf{Original:} Accuracy = 1.0, F1-macro = 1.0 \\ \textbf{Balanceado:} Accuracy = 0.91, F1-macro = 0.91
+\textbf{Desbalanceado:} Acc = 0.96 $\pm$ 0.06, F1 = 0.90 $\pm$ 0.14; \textbf{Balanceado:} Acc = 0.88 $\pm$ 0.07, F1 = 0.87 $\pm$ 0.08
 
- En el dataset original desbalanceado, Naive Bayes logra clasificación perfecta (21/21 muestras correctas). Sin embargo, con el dataset balanceado (287 muestras, 41 por clase), el rendimiento baja ligeramente a 91\%, revelando que la perfección inicial se debía en parte al pequeño tamaño del conjunto de prueba. A pesar de la asunción "naive" de independencia entre características, el modelo funciona excepcionalmente bien en ambos casos. La matriz de confusión muestra que las principales confusiones ocurren entre reptiles-anfibios y anfibios-insectos, lo cual es razonable dado que comparten características físicas similares. El modelo estima solo $d$ parámetros por clase ($\mu_{y,i}$ y $\sigma^2_{y,i}$ para cada característica), lo que lo hace robusto incluso con clases minoritarias.
+Naive Bayes obtiene excelente rendimiento en el dataset desbalanceado (F1=0.90), demostrando robustez ante clases minoritarias gracias a estimar solo $2d$ parámetros por clase ($\mu_{y,i}$ y $\sigma^2_{y,i}$). Con el dataset balanceado, el rendimiento baja ligeramente (F1=0.87), pero la desviación se reduce notablemente (0.14$\rightarrow$0.08), indicando mayor estabilidad al disponer de más datos por clase. La matriz de confusión revela que las principales confusiones ocurren entre reptiles-anfibios (13 casos) y anfibios-reptiles (11 casos), reflejando el solapamiento real de características binarias entre estas clases. A pesar de la asunción "naive" de independencia, el modelo captura eficazmente las distribuciones de clase, siendo especialmente preciso con mamíferos, aves e invertebrados (recall=1.00).
 
 \subsubsection{MLE Multivariante (Full Bayesian Gaussian)}
-\textbf{Original:} Accuracy = 0.71, F1-macro = 0.46 \\ \textbf{Balanceado:} Accuracy = 0.95, F1-macro = 0.95
+\textbf{Desbalanceado:} Acc = 0.81 $\pm$ 0.04, F1 = 0.58 $\pm$ 0.05; \textbf{Balanceado:} Acc = 0.89 $\pm$ 0.05, F1 = 0.89 $\pm$ 0.05
 
- Este modelo muestra la mejora más dramática al balancear los datos. En el dataset original, falla significativamente con clases minoritarias (reptiles, anfibios, invertebrados), clasificándolas erróneamente como mamíferos. La causa es que con solo 3-6 ejemplos en entrenamiento, la estimación de la matriz de covarianza completa $16 \times 16$ (136 parámetros únicos por clase) es imposible, resultando en matrices singulares o mal condicionadas. Con el dataset balanceado (41 ejemplos por clase), el modelo puede estimar correctamente las covarianzas y alcanza 95\% de rendimiento, igualando a los mejores modelos. Esto demuestra que los modelos más complejos \textbf{necesitan más datos} para funcionar correctamente. La covarianza completa captura las correlaciones entre características, pero requiere $O(d^2)$ muestras por clase.
+Este modelo exhibe la mejora más dramática con el balanceo (F1: 0.58 $\rightarrow$ 0.89, +53\%). En el dataset desbalanceado, la matriz de confusión revela colapso total en clases minoritarias: 5 reptiles clasificados como mamíferos, 4 anfibios como mamíferos, resultando en precision cero para estas clases. La causa es que estimar la covarianza completa $16 \times 16$ (136 parámetros únicos por clase) con solo 3-5 ejemplos produce matrices mal condicionadas, generando predicciones inestables. Con el balanceo (41 ejemplos/clase), el modelo estima correctamente las correlaciones entre características y alcanza F1=0.89, igualando a Naive Bayes y demostrando que capturar dependencias completas es valioso cuando hay datos suficientes.
 
 \subsubsection{Histogram Bayes}
-\textbf{Original:} Accuracy = 0.38, F1-macro = 0.08  \\ \textbf{Balanceado:} Accuracy = 0.16, F1-macro = 0.07
+\textbf{Desbalanceado:} Acc = 0.46 $\pm$ 0.06, F1 = 0.17 $\pm$ 0.10; \textbf{Balanceado:} Acc = 0.15 $\pm$ 0.01, F1 = 0.06 $\pm$ 0.02
 
-Este modelo obtiene el peor rendimiento de todos, evidenciando la maldición de la dimensionalidad. Con 16 características binarias existen $2^{16} = 65,536$ bins posibles, pero solo 287 muestras en el dataset balanceado (y con menos muestras aún en el desbalanceado). Dado que los histogramas requieren $N \propto b^d$ muestras, la mayoría de bins permanecerán vacíos, asignando $p(\mathbf{x}|y) = 0$ a regiones no vistas, forzando al modelo a predecir sistemáticamente la clase mayoritaria. El accuracy empeora al balancear ($0.38\rightarrow0.16$) porque en el dataset original predecía "mamífero" siempre, y esta clase supone casi un 40 por ciento de las muestras. Mientras el F1-macro se mantiene bajo (0.07 aprox) en ambos casos porque evalúa cada clase individualmente. Es por esto por lo que deberíamos de tener más en cuenta el F1 en vez del accuracy al estudiar clasificaciones.
+Este modelo sufre el peor rendimiento, demostrando brutalmente la maldición de la dimensionalidad. Con $2^{16}=65,536$ bins posibles pero solo 287 muestras (41/clase), la mayoría de bins quedan vacíos, asignando $p(\mathbf{x}|y)=0$ a patrones no vistos y forzando predicciones por defecto. La matriz de confusión balanceada muestra el colapso: 283/287 muestras clasificadas como mamíferos (recall=1.00 mamífero, 0.00 resto). El accuracy paradójicamente empeora con el balanceo (0.46$\rightarrow$0.15) porque en desbalanceado, predecir "mamífero" siempre acierta 40\% del tiempo, mientras que con clases equiprobables solo acierta 14\%. El F1-macro permanece consistentemente bajo (0.17$\rightarrow$0.06) porque evalúa todas las clases por igual. Los histogramas requieren $N \propto b^d$ muestras; con $d=16$ y $N=287$, el método es fundamentalmente inadecuado.
 
 \subsubsection{Parzen Windows}
-\textbf{Original:} Accuracy = 1.0, F1-macro = 1.0  \\ \textbf{Balanceado:} Accuracy = 0.95, F1-macro = 0.95
+\textbf{Desbalanceado:} Acc = 0.98 $\pm$ 0.02, F1 = 0.91 $\pm$ 0.12; \textbf{Balanceado:} Acc = 0.93 $\pm$ 0.03, F1 = 0.93 $\pm$ 0.03
 
- Parzen windows con kernel Gaussiano mantiene excelente rendimiento en ambos escenarios. Con bandwidth $h=0.1$ óptimo (obtenido por validación cruzada en el entrenamiento), el modelo produce estimaciones de densidad continuas y suaves que funcionan bien incluso con datos escasos. A diferencia de histogramas, el suavizado del kernel Gaussiano compensa la falta de muestras, evitando las discontinuidades artificiales de los bins. En el dataset balanceado, obtiene el mejor F1-macro (0.95), superior a Naive Bayes (0.91), confirmando que el bandwidth optimizado generaliza correctamente al capturar características conjuntas que NB asume como independientes, también es por esto por lo que las confusiones ocurren principalmente entre clases con características solapadas (anfibios-reptiles), lo cual es esperado. Este método mitiga efectivamente la maldición de la dimensionalidad mediante un leve suavizado continuo. Obtenemos un 1 en el test del dataset desbalanceado gracias a haber elegido el suavizado correcto y al tener solo 21 ejemplos. En nuestro caso, una ventana pequeña pero no mínima, "prestando" densidad de vecinos cercanos sin manchar clusters separados, es clave para obtener la máxima precisión.
+Parzen Windows alcanza el mejor rendimiento global, especialmente tras balanceo (F1=0.93), con bandwidth óptimo $h=0.5$ que proporciona suavizado continuo sin sobreajuste. En el dataset desbalanceado, obtiene F1=0.91 con alta varianza (std=0.12), reflejando sensibilidad a la composición de los folds con clases minoritarias. El balanceo estabiliza dramáticamente el modelo (std: 0.12$\rightarrow$0.03), demostrando que el kernel Gaussiano funciona óptimamente con datos equilibrados. La matriz de confusión muestra confusiones concentradas en reptiles-anfibios (6+4=10 casos) e insectos dispersos entre múltiples clases, coherentes con solapamiento de características binarias. A diferencia de histogramas, el suavizado continuo mitiga la maldición de dimensionalidad prestando densidad de vecinos cercanos sin crear discontinuidades artificiales. La búsqueda de hiperparámetros revela que $h$ pequeños (0.05-0.5) mantienen F1≈0.93, mientras que $h$ grandes (1.5-2.0) degradan a F1≈0.60, confirmando importancia de localidad.
 
 \subsubsection{k-NN Density Bayes}
-\textbf{Original:} Accuracy = 0.48, F1-macro = 0.57  \\ \textbf{Balanceado:} Accuracy = 0.74, F1-macro = 0.68
+\textbf{Desbalanceado:} Acc = 0.98 $\pm$ 0.02, F1 = 0.90 $\pm$ 0.12; \textbf{Balanceado:} Acc = 0.93 $\pm$ 0.03, F1 = 0.93 $\pm$ 0.04
 
- Rendimiento mediocre que mejora con el balanceo pero sigue siendo inferior a otros métodos. Con $k=11$ óptimo en ambos datasets, los 11 vecinos más cercanos diluyen la señal local, resultando en estimación de densidad por volumen local inestable. El modelo adapta el volumen $V_k(\mathbf{x})$ localmente (pequeño en regiones densas, grande en dispersas), pero esta estrategia resulta problemática con clases que tienen distribuciones espaciales dispersas. En el dataset original, confunde masivamente mamíferos como reptiles. Con el balanceo mejora, pero las confusiones persisten entre reptiles-peces y insectos distribuidos entre múltiples clases. Comparado con Parzen (que fija bandwidth globalmente), la adaptación local de volumen es menos efectiva en este dataset. La estimación explícita de densidad añade complejidad sin beneficio claro.
+Con $k=1$ óptimo, este modelo iguala prácticamente a Parzen Windows (F1=0.93 vs 0.93 balanceado), sugiriendo que en este dataset la asignación de densidad local adaptativa funciona óptimamente con el vecino más cercano. En desbalanceado, obtiene F1=0.90 con alta varianza (0.12), similar a Parzen, reflejando sensibilidad a clases minoritarias. El balanceo estabiliza el modelo (std: 0.12$\rightarrow$0.04) y mejora F1 (0.90$\rightarrow$0.93). La búsqueda de $k$ revela degradación con valores mayores: $k=3$ produce F1=0.92, $k≥5$ baja a F1 (0.83-0.88), confirmando que promediar muchos vecinos diluye información local crítica. La matriz de confusión muestra confusiones reptiles-anfibios (1+10=11 casos), coherentes con Parzen. Aunque el método estima densidades explícitamente mediante $\hat{p}(\mathbf{x}|y) = k/(NV_k(\mathbf{x}))$, con $k=1$ se comporta esencialmente como asignación directa, explicando su equivalencia con k-NN Rule.
 
 \subsubsection{k-NN Rule}
-\textbf{Original:} Accuracy = 1.0, F1-macro = 1.0 \\ \textbf{Balanceado:} Accuracy = 0.95, F1-macro = 0.95
+\textbf{Desbalanceado:} Acc = 0.98 $\pm$ 0.02, F1 = 0.91 $\pm$ 0.12; \textbf{Balanceado:} Acc = 0.92 $\pm$ 0.05, F1 = 0.91 $\pm$ 0.05
 
- El método clásico de k-NN mantiene excelente rendimiento con $k=1$ óptimo en ambos datasets (vecino más cercano). En el dataset original logra clasificación perfecta, indicando que las clases están bien separadas espacialmente. Con el dataset balanceado, mantiene 95\% de accuracy, igualando a MLE Full y Parzen. Con $k=1$, el método simplemente asigna la clase del vecino más cercano, lo cual es óptimo cuando los datos están bien separados y tienen poco ruido. La simplicidad del método (asignación directa basada en vecinos sin calcular densidades probabilísticas) resulta ventajosa: menos pasos intermedios significan menos fuentes de error. Las confusiones coinciden exactamente con las de Parzen (anfibios-reptiles), confirmando que ambos métodos capturan correctamente la estructura espacial. Valores mayores de $k$ promediarían en exceso los vecinos cercanos, borrando detalles locales innecesariamente.
+Este método clásico obtiene resultados excelentes, especialmente en desbalanceado (F1=0.91), con $k$ óptimo variando según balanceo: $k=1$ en desbalanceado, $k=3$ en balanceado. La simplicidad del método (asignación directa por votación mayoritaria sin estimar densidades) resulta ventajosa: con $k=1$ en desbalanceado, iguala a Parzen y k-NN Density, confirmando que la estructura espacial está bien definida. En balanceado, $k=3$ aporta ligero suavizado (F1=0.91 vs 0.93 de Parzen), con matriz de confusión mostrando confusiones reptiles-anfibios (2+11=13 casos) coherentes con otros métodos. La búsqueda revela que $k$ grandes degradan rendimiento: $k=11$ baja a F1≈0.51-0.89, confirmando que promediar muchos vecinos borra fronteras de decisión locales. La alta varianza en balanceado (std=0.05 vs 0.03 de Parzen) sugiere mayor sensibilidad a la composición de folds, pero el rendimiento global permanece competitivo.
 
 \section{Discusión y Conclusiones}
 \label{discussion}
 
 \subsection{Comparación general de enfoques}
 
-Los modelos paramétricos muestran comportamientos opuestos: Naive Bayes es robusto con clases minoritarias (F1=0.85 original) al estimar solo $2d$ parámetros por clase, mientras MLE Full colapsa (F1=0.46) requiriendo $O(d^2)$ parámetros. Con datos suficientes (41 ejemplares/clase), MLE Full alcanza 95\% superando a NB (91\%), confirmando el equilibrio entre sesgo y varianza: modelos simples son robustos pero limitados; complejos necesitan más datos pero alcanzan mayor rendimiento.
+Los modelos paramétricos muestran comportamientos complementarios: Naive Bayes es robusto con clases minoritarias (F1=0.90 desbalanceado) estimando solo $2d$ parámetros por clase, mientras MLE Full colapsa en desbalanceado (F1=0.58) pero alcanza F1=0.89 con balanceo, igualando a NB. Esto confirma el equilibrio sesgo-varianza: modelos simples son robustos con datos escasos; complejos necesitan más muestras pero capturan correlaciones valiosas.
 
-Entre no paramétricos, Histogram Bayes falla completamente (F1=0.07-0.08) por la maldición de dimensionalidad: $2^{16}=65,536$ bins con solo 287 muestras resulta en predicciones por defecto. Parzen y k-NN Rule logran 95-100\% evitando particiones rígidas mediante suavizado continuo ($h=0.1$) o asignación directa ($k=1$). k-NN Density (F1=0.57-0.68) queda en medio, sugiriendo que estimar densidades explícitamente añade complejidad sin beneficio en alta dimensión.
+Entre no paramétricos, Histogram Bayes falla completamente (F1=0.06-0.17) por maldición de dimensionalidad: $2^{16}=65,536$ bins con 287 muestras resultan en colapso predictivo. Los tres métodos de vecinos cercanos (Parzen, k-NN Density, k-NN Rule) logran rendimiento excepcional (F1=0.91-0.93 balanceado) mediante suavizado continuo o asignación directa. Parzen con $h=0.5$ obtiene máximo F1=0.93 y mínima varianza (std=0.03), confirmándose como mejor modelo global. k-NN Density con $k=1$ iguala a Parzen (F1=0.93), mientras k-NN Rule con $k=3$ queda ligeramente atrás (F1=0.91), sugiriendo que votación mayoritaria es menos precisa que estimación de densidad en este problema.
 
 \subsection{Impacto del desbalance y balanceo}
 
-El desbalance original (meanIR=4.84) expone brutalmente debilidades de modelos complejos: MLE Full no puede estimar covarianzas con 3-5 ejemplos/clase, clasificando anfibios como mamíferos. El balanceo sintético ($101\rightarrow287$ instancias) transforma MLE Full dramáticamente:\linebreak
-F1 = $0.46 \rightarrow 0.95$ (+107\%), pasando de peor a mejor modelo. Paradójicamente, Histogram empeora (accuracy $0.38 \rightarrow 0.16$) al no poder explotar el sesgo mayoritario, confirmando su inadecuación fundamental. Los mejores modelos originales (NB, Parzen, k-NN Rule con F1=1.0) bajan ligeramente a 91-95\%, pero esto refleja que al aumentar el conjunto de datos trabajamos en un test más realista (58 vs 21 muestras) que revela verdadera capacidad de los modelos.
+El desbalance original (meanIR=4.84) expone brutalmente debilidades de modelos complejos: MLE Full colapsa con clases minoritarias (F1=0.58), generando precision=0.00 para reptiles y anfibios al no poder estimar covarianzas con 3-5 ejemplos. El balanceo sintético ($101\rightarrow287$ instancias) transforma MLE Full: F1=$0.58\rightarrow0.89$ (+53\%), alcanzando rendimiento competitivo. Histogram Bayes muestra paradoja accuracy: 0.46→0.15 (empeora), pero F1 permanece consistente en colapso (0.17→0.06), confirmando que predice clase mayoritaria por defecto. Los métodos de vecinos cercanos mejoran moderadamente con balanceo (Parzen: 0.91→0.93) pero exhiben mejora crítica en estabilidad: desviaciones estándar reducen dramáticamente (Parzen: 0.12→0.03, k-NN Density: 0.12→0.04), revelando que con 41 ejemplos/clase las estimaciones locales son robustas. Naive Bayes se mantiene estable (F1: 0.90→0.87) con reducción de varianza (0.14→0.08), confirmando su robustez intrínseca.
 
 \subsection{Métricas y lecciones prácticas}
 
-El contraste accuracy vs F1-macro es crucial: Histogram obtiene accuracy = 0.38 pero F1 = 0.08 en desbalanceado, prediciendo siempre "mamífero" (al ser clase mayoritaria acierta 8 ejemplos de 21, de aquí la "gran" precisión). El accuracy premia este sesgo pero F1-macro lo penaliza al promediar todas las clases. Esto confirma que \textbf{accuracy es engañoso en multiclase desbalanceado}, siendo F1-macro la métrica correcta para evaluar poder discriminativo real.
+El contraste accuracy vs F1-macro es crucial: Histogram obtiene accuracy=0.46 pero F1=0.17 en desbalanceado, prediciendo predominantemente "mamífero" (matriz muestra 96/101 predicciones como clase 1). Con balanceo, accuracy baja a 0.15 pero F1 solo a 0.06, confirmando colapso sistemático: 283/287 muestras clasificadas como mamífero (recall=1.00 mamífero, 0.00-0.05 resto). El accuracy engaña porque con desbalance, predecir clase mayoritaria acierta 40\%; con balanceo solo 14\%. F1-macro revela el verdadero colapso (0.17→0.06) al promediar equitativamente todas las clases. Esto confirma que \textbf{accuracy es engañoso en multiclase desbalanceado}, siendo F1-macro la métrica correcta para evaluar capacidad discriminativa real.
 
 \subsection{Conclusiones finales}
 
-Este trabajo confirma empíricamente tres principios del aprendizaje automático: (1) el equilibrio entre complejidad del modelo y cantidad de datos: modelos complejos como MLE Full ($O(d^2)$ parámetros) necesitan muchos más datos que modelos simples como Naive Bayes ($O(d)$ parámetros); (2) la maldición de dimensionalidad (particionado rígido colapsa, suavizado continuo mitiga), y (3) la importancia del balanceo para revelar limitaciones sin sesgos artificiales. Los tres mejores modelos (MLE Full, Parzen, k-NN Rule con F1=0.95) triunfan por razones distintas: MLE captura correlaciones completas, Parzen suaviza óptimamente, k-NN Rule aprovecha separación espacial. \linebreak \textbf{Las lecciones clave son:} validar hiperparámetros con CV estratificada es crucial ($h=0.1$, $k=1$ optimizados); usar F1-macro en multiclase desbalanceado; la asunción "naive" es sorprendentemente efectiva (F1=0.91) sugiriendo correlaciones débiles entre clases; y el balanceo sintético mediante características reales es válido (pero hay que comprender también que puede haber confusiones entre anfibios y reptiles pero son biológicamente coherentes).
+Este trabajo confirma empíricamente tres principios del aprendizaje automático: (1) el equilibrio entre complejidad del modelo y cantidad de datos (MLE Full: F1=0.58→0.89 con balanceo, +53\%; Naive Bayes mantiene F1≈0.87-0.90 consistentemente); (2) la maldición de dimensionalidad (Histogram colapsa con F1=0.06-0.17; métodos de vecinos cercanos alcanzan F1=0.91-0.93); y (3) la importancia crítica de estabilidad (balanceo reduce desviaciones: Parzen 0.12→0.03, k-NN Density 0.12→0.04). \textbf{Parzen Windows con $h=0.5$} emerge como mejor modelo (F1=0.93±0.03 balanceado), combinando alto rendimiento y mínima varianza. \linebreak \textbf{Lecciones clave:} validación cruzada estratificada optimiza hiperparámetros críticos ($h=0.5$ Parzen, $k=1$ k-NN Density, $k=3$ k-NN Rule); F1-macro es métrica esencial en multiclase desbalanceado (Histogram: accuracy=0.46 pero F1=0.17); la asunción "naive" es sorprendentemente efectiva (F1=0.87-0.90) sugiriendo independencia aproximada entre características binarias; confusiones reptiles-anfibios (10-13 casos) son biológicamente coherentes dado solapamiento de atributos (huevos, respira, venenoso); y el balanceo sintético mediante investigación profunda produce datos válidos que estabilizan modelos complejos.
 
 
 
