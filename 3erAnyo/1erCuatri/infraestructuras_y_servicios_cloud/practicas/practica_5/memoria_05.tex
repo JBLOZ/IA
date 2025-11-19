@@ -263,28 +263,70 @@ Finalmente en los registros de cloudWatch podemos ver las invocaciones a la func
 
 	\section{Flujo Masivo: Transformación y Análisis Serverless}
 
-	\subsection{Preparación del Entorno de Datos}
+	
 
-	\subsubsection{Subida del Dataset a S3}
+\noindent
+\begin{minipage}[c]{0.45\textwidth}
+	\subsection{Carga y Catalogación (RA 1)}
+	Para cargar el dataset historico de datos de movilidad hice uso de una carpeta nueva en nuestro S3 de la practica, la llame \texttt{/historicomovilidad} e introduje el \texttt{.csv} proporcionado en la practica, utilice el de 10 filas para evitar consumos. Antes de subirlo lo abrí en visual studio code y me di cuenta de que me saltaba el linter porque al haber eliminado la categoria repetida \texttt{Airport\_fee} no me había fijado que tambíen debía eliminar las comas de esta columna.
+	\subsubsection{Carga Masiva}
+	Con el \texttt{.csv} listo y la carpeta creada cargué el archivo.
+\end{minipage}%
+\hfill
+\begin{minipage}[c]{0.5\textwidth}
+	\centering
+	\includegraphics[width=\textwidth]{image copy 34.png}
+	\captionof{figure}{csv historico movilidad}
+\end{minipage}
+
+\vspace{0.5cm}
+	
+
+	\subsubsection{AWS Glue Crawler}
+	Mediante AWS Glue Crawler, automatizamos el proceso de descubrimiento y catalogación de los datos almacenados en el S3. El Crawler escanea los archivos en la carpeta, infiere su esquema (nombres de columnas, tipos de datos y particiones) y crea las Glue Tables dentro de nuestra base de datos.
+
+	Es importante destacar que las tablas creadas en el Data Catalog no contienen los datos en sí, sino metadatos: apuntan a la ubicación física de los archivos en S3 y definen su estructura. Esto actúa como una capa de abstracción que permite a servicios como Amazon Athena consultar los archivos CSV (u otros formatos) directamente usando SQL estándar, como si se tratara de una base de datos relacional tradicional, sin necesidad de mover o cargar los datos previamente. El crawler lo configuramos de la siguiente forma: 
+
+\noindent
+\begin{minipage}[c]{0.35\textwidth}
+	\begin{itemize}
+	\item \textbf{Creación del Crawler:} en este apartado debemos de definir el nombre del crawler (el mio vigia-crawler) y dentro de su panel de configuración debemos de añadir nuestra fuente de datos (la dirección S3 de nuestra carpeta \texttt{/historicomovilidad} que creamos anteriormente). Posteriormente asignamos nuestro IAM role (el LabRole) y finalmente creamos una base de datos vacia para que el Crawler genere las tablas dentro de ella. Al acabar estos pasos debemos de tener un Crawler como este:
+	\end{itemize}
+\end{minipage}%
+\hfill
+\begin{minipage}[c]{0.57\textwidth}
+
+	\centering
+	\includegraphics[width=\textwidth]{image copy 30.png}
+	\captionof{figure}{Crawler}
+\end{minipage}
+
+\vspace{0.5cm}
+\begin{itemize}
+	\item \textbf{Ejecución del Crawler:} tras terminar la configuración del Crawler debemos de ejecutarlo. Durante este proceso de ejecución el crawler lo podemos observar en los logs de ejecución: el crawler \texttt{vigia-movilidad-crawler} inicia el proceso de clasificación de los datos. Una vez analizada la estructura de los archivos en S3, escribe los resultados en la base de datos \texttt{vigia\_datalake\_db}, creando exitosamente la tabla \texttt{historicomovilidad}. Finalmente, actualiza el Data Catalog (indicando \texttt{ADD: 1} en los logs) y vuelve al estado \texttt{READY}, dejando los datos listos para ser consultados. Para comprobar si ha el crawler ha conseguido analizar correctamente la escructura accedemos a las tablas de nuestro Data Catalog y dentro de la tabla \texttt{historicomovilidad} deberá de aparecernos este esquema:
+	
+	\begin{figure}[H]
+	\centerline{
+	\includegraphics[width=0.9\textwidth]{image copy 35.png}}
+	\caption{Table Schema}
+	\end{figure}
+
+	\item \textbf{Consulta SQL:} Al tener la tabla ya creada, podemos consultar el archivo csv directamente con SQL mediante el servicio de Athena que proporciona amazon. Para las guardar las consultas lo optimo será crear un S3 nuevo que en mi caso he llamado \texttt{resultados-p5-backet} que guardará tanto las consultas que hagamos con esta tabla (de datos en bruto) como las que hagamos con la tabla (analítica). He obtenido estos resultados al hacer la consulta:
+
+	\begin{figure}[H]
+	\centerline{
+	\includegraphics[width=0.9\textwidth]{image copy 36.png}}
+	\caption{Table Schema}
+	\end{figure}
+
+	
+	\end{itemize}
 
 
-	\subsubsection{Verificación de la Estructura del Dataset}
+	\subsection{Optimización del Data Lake (AWS Glue ETL) (RA 2)}
+	En este paso lo que vamos a realizar será ejecutar un job mediante Amazon Glue que hará ...
 
-
-	\subsection{Configuración de AWS Glue}
-
-	\subsubsection{Creación de la Base de Datos en Glue}
-
-
-	\subsubsection{Configuración del Crawler}
-
-
-	\subsubsection{Ejecución del Crawler y Validación del Esquema}
-
-
-	\subsection{Transformación ETL con AWS Glue}
-
-	\subsubsection{Creación del Job ETL}
+	\subsubsection{Creación y Propiedades del Job}
 
 
 	\subsubsection{Configuración del Script de Transformación}
