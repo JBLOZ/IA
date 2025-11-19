@@ -324,7 +324,14 @@ Finalmente en los registros de cloudWatch podemos ver las invocaciones a la func
 
 
 	\subsection{Optimización del Data Lake (AWS Glue ETL) (RA 2)}
-	En este paso lo que vamos a realizar será ejecutar un job mediante Amazon Glue que hará ...
+	En este paso, implementaremos un proceso ETL (Extract, Transform, Load) utilizando un Job de AWS Glue. El objetivo principal es transformar los datos crudos que tenemos en formato CSV a un formato optimizado para analítica (Parquet) y particionarlos adecuadamente. Esto nos servirá para mejorar drásticamente el rendimiento de las consultas en Athena y reducir los costos, ya que Parquet es un formato columnar comprimido que permite leer solo las columnas necesarias, y el particionado permite escanear solo los datos relevantes para una consulta (por ejemplo, filtrar solo por un año y mes específicos).
+
+	El Job realizará las siguientes acciones clave:
+	\begin{itemize}
+		\item \textbf{Extracción:} Leerá los datos de la tabla original catalogada en el Data Lake.
+		\item \textbf{Transformación:} Convertirá los tipos de datos (casteo de strings a double/timestamp), limpiará el formato de fecha y seleccionará las columnas críticas para el análisis.
+		\item \textbf{Carga:} Escribirá los datos procesados en una nueva carpeta \texttt{/analitica} del S3 en formato Parquet, particionados por año y mes.
+	\end{itemize}
 
 	\subsubsection{Creación y Propiedades del Job}
 
