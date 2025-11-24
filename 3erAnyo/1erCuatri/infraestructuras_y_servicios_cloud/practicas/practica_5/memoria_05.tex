@@ -334,15 +334,45 @@ Finalmente en los registros de cloudWatch podemos ver las invocaciones a la func
 	\end{itemize}
 
 	\subsubsection{Creación y Propiedades del Job}
+	Para crear nuestro job nos dirigimos a AWS glue, a ETL Jobs y creamos uno nuevo. Este paso es sencillo ya que al tener ya el código python tan solo tendremos que pegarlo en la pestaña de scripts eligiendo antes la version de python 3, Spark 3.5, amazon glue 5.0 y el LabRole.
 
 
 	\subsubsection{Configuración del Script de Transformación}
+	Al acabar configurar el entorno Serverless debemos de pegar el archivo python cambiando los valores de nuestra tabla y base de datos a \texttt{historicomovilidad} y \texttt{vigia\_datalake\_db} respectivamente. También debemos de cambiar el nombre de la variable S3 para que apunte a nuestra carpeta de analisis (que debemos de crear) dentro de nuestro S3. En esta carpeta es donde se realizarán las particiones y se guardaran los archivos Parquet que genere nuestro job. \\
+
+	Sabremos que nuestro job ha concluido con exito cuando en runs nos salga lo siguiente.
+	\begin{figure}[H]
+	\centerline{
+	\includegraphics[width=0.95\textwidth]{image copy 37.png}}
+	\caption{Job run}
+	\end{figure}
+
+	Dentro de la carpeta \texttt{/analisis} de nuestro S3 debemos de comprobar si realmente ha escrito los archivos \texttt{Parquet} correspondientes.
 
 
-	\subsubsection{Ejecución del Job y Almacenamiento de Datos Procesados}
+	\begin{figure}[H]
+	\centerline{
+	\includegraphics[width=0.95\textwidth]{image copy 38.png}}
+	\caption{Archivo parket}
+	\end{figure}
+
+	Al inspeccionar la salida en S3, observamos que se ha generado una estructura de carpetas jerárquica correspondiente a las claves de partición definidas en el script (\texttt{year} y \texttt{month}). En este caso específico, solo vemos la ruta \texttt{year=2023/month=6/} conteniendo un único archivo Parquet. Esto se debe a que nuestro dataset de prueba (las 10 filas del CSV) es minúsculo y contiene exclusivamente registros del 30 de junio de 2023.
+
+	Es importante aclarar que en un entorno de producción con muchos datos, es normal y deseable encontrar múltiples archivos Parquet dentro de una misma carpeta de mes. Esto ocurre porque Glue procesa los datos en paralelo; cada proceso "worker" escribe su propia parte de los datos simultáneamente para maximizar el rendimiento. Aunque Athena leerá automáticamente todos los archivos que encuentre dentro de la carpeta de la partición como si fueran una única tabla.
+
+	\subsection{Creación del Crawler PROCESADO}
+	Para finalizar este flujo y poder explotar estos datos optimizados, es necesario catalogar esta nueva estructura en el Glue Data Catalog. Esto se realiza creando y ejecutando un segundo Crawler que apunte específicamente a la carpeta \texttt{/analitica}. Una vez completado, tendremos una nueva tabla \texttt{analitica\_movilidadanalitica} en la base de datos \texttt{vigia\_datalake\_db}. En esta nueva tabla podemos ver como el crawler ha analizado la carpeta \texttt{/analitica} y a parte de extraer las columnas con los nuevos tipos de datos, ha obtenido las particiones de año y mes.
+
+	\begin{figure}[H]
+	\centerline{
+	\includegraphics[width=0.8\textwidth]{image copy 32.png}}
+	\caption{Schema analitica\_movilidadanalitica}
+	\end{figure}
 
 
-	\subsection{Consultas y Análisis con Amazon Athena}
+
+
+	
 
 	\subsubsection{Configuración de Athena}
 

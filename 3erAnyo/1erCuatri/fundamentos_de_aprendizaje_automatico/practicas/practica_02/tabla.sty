@@ -1,0 +1,10 @@
+% tabla.sty - Entorno de tabla personalizado con espaciado reducido
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tabla}[2025/11/22 v1.0 Custom table spacing]
+
+% Nuevo entorno tablacompacta que hereda de table pero con menos espacio después
+\newenvironment{tablacompacta}[1][h]
+  {\begin{table}[#1]}
+  {\end{table}\vspace{-0.8cm}}
+
+\endinput
