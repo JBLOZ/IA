@@ -347,18 +347,27 @@ Finalmente en los registros de cloudWatch podemos ver las invocaciones a la func
 	\caption{Job run}
 	\end{figure}
 
+
+	\noindent
+	\begin{minipage}[c]{0.42\textwidth}
+		
 	Dentro de la carpeta \texttt{/analisis} de nuestro S3 debemos de comprobar si realmente ha escrito los archivos \texttt{Parquet} correspondientes.
 
-
-	\begin{figure}[H]
-	\centerline{
-	\includegraphics[width=0.95\textwidth]{image copy 38.png}}
-	\caption{Archivo parket}
-	\end{figure}
 
 	Al inspeccionar la salida en S3, observamos que se ha generado una estructura de carpetas jerárquica correspondiente a las claves de partición definidas en el script (\texttt{year} y \texttt{month}). En este caso específico, solo vemos la ruta \texttt{year=2023/month=6/} conteniendo un único archivo Parquet. Esto se debe a que nuestro dataset de prueba (las 10 filas del CSV) es minúsculo y contiene exclusivamente registros del 30 de junio de 2023.
 
 	Es importante aclarar que en un entorno de producción con muchos datos, es normal y deseable encontrar múltiples archivos Parquet dentro de una misma carpeta de mes. Esto ocurre porque Glue procesa los datos en paralelo; cada proceso "worker" escribe su propia parte de los datos simultáneamente para maximizar el rendimiento. Aunque Athena leerá automáticamente todos los archivos que encuentre dentro de la carpeta de la partición como si fueran una única tabla.
+		
+
+	\end{minipage}%
+	\hfill
+	\begin{minipage}[c]{0.55\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{image copy 38.png}
+		\captionof{figure}{Archivo Parquet}
+	\end{minipage}
+
+
 
 	\subsection{Creación del Crawler PROCESADO}
 	Para finalizar este flujo y poder explotar estos datos optimizados, es necesario catalogar esta nueva estructura en el Glue Data Catalog. Esto se realiza creando y ejecutando un segundo Crawler que apunte específicamente a la carpeta \texttt{/analitica}. Una vez completado, tendremos una nueva tabla \texttt{analitica\_movilidadanalitica} en la base de datos \texttt{vigia\_datalake\_db}. En esta nueva tabla podemos ver como el crawler ha analizado la carpeta \texttt{/analitica} y a parte de extraer las columnas con los nuevos tipos de datos, ha obtenido las particiones de año y mes.
@@ -370,20 +379,41 @@ Finalmente en los registros de cloudWatch podemos ver las invocaciones a la func
 	\end{figure}
 
 
+	\subsection{Consultas con Athena}
+	Como se ha explicado en apartados anteriores, Amazon Athena permite realizar consultas SQL directamente sobre las tablas definidas en el catálogo de AWS Glue. Con el objetivo de comparar el rendimiento entre la tabla de datos brutos en formato CSV y la tabla de datos analíticos optimizados, se han diseñado dos consultas filtrando por el mismo periodo temporal (2023-06).
+
+	En la Consulta A se utiliza la tabla histórica sin procesar (historico\_movilidad), cuyo esquema incluye, entre otras, la columna de fecha y hora tpep\_pickup\_datetime sobre la que se aplica el filtro.
+
+	\begin{figure}[H]
+	\centerline{
+	\includegraphics[width=\textwidth]{primera.jpeg}}
+	\caption{Consulta A}
+	\end{figure}
 
 
+	Al no existir particiones por año y mes en esta tabla, Athena debe escanear el CSV completo y aplicar el filtro fila a fila sobre tpep\_pickup\_datetime, por lo que el valor de \textbf{Datos analizados} es elevado.
+
+	En la Consulta B se trabaja sobre la tabla procesada analitica\_movilidad, donde el dataset se ha transformado a formato Parquet y se ha particionado por las columnas year y month.
+
+	\begin{figure}[H]
+	\centerline{
+	\includegraphics[width=\textwidth]{segunda.jpeg}}
+	\caption{Consulta B}
+	\end{figure}
+
+	Al filtrar directamente por las columnas de partición, Athena solo lee los archivos Parquet ubicados en la ruta year=2023/month=6/ del bucket S3, reduciendo de forma muy significativa los datos escaneados y demostrando la mejora de rendimiento y coste que aporta la optimización serverless del Data Lake.
 	
+	\section{Conclusiones:}
 
-	\subsubsection{Configuración de Athena}
-
-
-	\subsubsection{Consultas SQL sobre los Datos Originales}
-
-
-	\subsubsection{Consultas SQL sobre los Datos Transformados}
-
-
-	\subsubsection{Análisis de Resultados y Optimización}
+	Tras acabar la práctica, me quedo con varias ideas que considero bastante representativas de lo que realmente implica montar una arquitectura de datos serverless en AWS para un caso como el de la Smart City. Todo el proceso, desde la ingesta con Node-RED y la integración con AWS IoT Core, hasta la automatización con Lambda y EventBridge, ha permitido ver de primera mano cómo se pueden orquestar servicios gestionados para cubrir tanto las consultas históricas (S3) como el estado en tiempo real (DynamoDB).
+\\\\
+	Con la parte de Glue y Athena me ha quedado claro que la clave está en cómo estructuramos la información. Tener los datos en CSV es funcional para el inicio, pero en cuanto necesitas rendimiento y consultas eficientes, el particionado y el formato Parquet marcan la diferencia. La cantidad de datos escaneados y el tiempo de ejecución cambian radicalmente según el tipo de tabla y el tratamiento que se les haya dado en el ETL.
+\\\\
+	También he aprendido lo útil que es automatizar flujos con EventBridge y Lambda, sobre todo cuando hay entradas de contexto que no siguen el mismo patrón que los datos IoT. Integrar scraping periódico y guardar los resultados en el Data Lake resulta sencillo, de esta forma se mantiene el sistema desacoplado para cuando queramos incluir más datos a parte de la tarifa.
+\\\\
+	Otra parte interesante ha sido comprobar cómo Glue Crawler, detectando automáticamente los esquemas y particiones, facilita muchísimo la catalogación de datos para crear facilmente nuevas tablas. 
+\\\\
+	En definitiva, el trabajo que hemos realizado muestra de forma práctica que el éxito en arquitecturas de datos modernas depende de manejar bien el ciclo de vida del dato, automatizar todo lo posible y, sobre todo, diseñar pensando en el rendimiento desde el principio. Esto no solo aplica para este caso, sino para cualquier entorno donde se trabaje con datos y sea necesario combinarlos, analizarlos y servirlos de forma flexible y eficiente.
 
 
 	
