@@ -27,10 +27,9 @@ def solve_assignment(
         assigned_tasks: Lista booleana para marcar qué tareas ya están ocupadas.
     """
     
-    global nodes, leaves
+    global nodes, leaves, best, best_solution
     nodes += 1
     if len(current_solution) == len(B):
-        global best, best_solution
         leaves += 1
         if current_cost < best:
             best = current_cost
