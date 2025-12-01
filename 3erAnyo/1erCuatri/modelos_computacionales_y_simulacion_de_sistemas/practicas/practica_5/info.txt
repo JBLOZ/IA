@@ -1,0 +1,82 @@
+REDES ALEATORIAS ERDOS-RENYI (Modelo G(N, p)):
+- Definición: Conjunto de N nodos donde cada par se conecta con probabilidad p independiente.
+- Distribución de Grado P(k): Sigue una distribución binomial, que para N grande tiende a una Poisson.
+  - La mayoría de nodos tienen un grado cercano al grado medio <k>.
+  - Decae muy rápido (exponencialmente) para k grandes -> No hay "hubs" (nodos muy conectados).
+  - Red homogénea estructuralmente.
+- Grado medio: <k> = p * (N - 1) ≈ p * N.
+- Clustering (C): Es muy bajo, C ≈ p = <k>/N. Tiende a 0 cuando N crece (si <k> es constante).
+- Distancia media (L): Es pequeña, crece logarítmicamente con el tamaño de la red (L ~ ln(N) / ln(<k>)).
+  - Propiedad de "Mundo Pequeño" en cuanto a distancias, pero no en clustering.
+- Transición de Fase:
+  - Si <k> < 1: La red está fragmentada en componentes pequeñas.
+  - Si <k> > 1: Emerge una "Componente Gigante" que conecta una fracción significativa de la red.
+  - Si <k> >= ln(N): La red está casi seguramente conectada (una sola componente).
+- Uso: Sirve como "modelo nulo" o referencia para comparar con redes reales. Si una red real se desvía de ER, hay estructura no aleatoria.
+ 
+ 
+REDES LIBRES DE ESCALA (BARABASI-ALBERT):
+- Definición: Modelo dinámico basado en dos mecanismos:
+  1. Crecimiento: La red crece añadiendo nuevos nodos uno a uno (m enlaces nuevos por nodo).
+  2. Conexión Preferencial ("Rico se hace más rico"): Los nuevos nodos se conectan con mayor probabilidad a nodos que ya tienen alto grado (Probabilidad ~ k_i).
+- Distribución de Grado P(k): Sigue una Ley de Potencia (Power Law): P(k) ~ k^(-gamma), típicamente gamma = 3 en el modelo BA estándar.
+  - "Cola pesada": Hay una probabilidad significativa de encontrar nodos con grados altísimos.
+  - Existencia de "Hubs": Nodos muy conectados que actúan como puentes y mantienen la red unida.
+  - Red heterogénea estructuralmente: La mayoría de nodos tienen muy pocas conexiones, mientras que unos pocos tienen muchísimas.
+- Propiedad "Libre de Escala" (Scale-Free): No hay un grado "típico" o característico (la media no es representativa). La estructura es auto-similar.
+- Distancia media (L): "Ultra-pequeño mundo". L ~ ln(ln(N)). Las distancias son aún más cortas que en redes aleatorias gracias a los hubs que conectan partes distantes.
+- Robustez y Fragilidad:
+  - Muy robusta ante fallos aleatorios: Eliminar nodos al azar apenas afecta la conectividad (porque es probable borrar nodos de bajo grado).
+  - Muy frágil ante ataques dirigidos: Eliminar selectivamente los hubs fragmenta la red rápidamente.
+- Ejemplos reales: Internet, WWW, redes de colaboración científica, redes metabólicas.
+
+
+REDES DE MUNDO PEQUEÑO (WATTS-STROGATZ):
+- Definición: Modelo que interpola entre una red regular (retículo) y una red aleatoria mediante un proceso de recableado (rewiring).
+  1. Se parte de un anillo regular donde cada nodo se conecta a sus k vecinos más cercanos.
+  2. Cada enlace se "recablea" aleatoriamente con probabilidad p.
+- Propiedades según p:
+  - p = 0 (Red Regular): Alto Clustering, Distancia media grande (L ~ N).
+  - p = 1 (Red Aleatoria): Bajo Clustering, Distancia media pequeña (L ~ ln(N)).
+  - 0 < p < 1 (Región de Mundo Pequeño): Para valores intermedios pequeños de p (ej. p ~ 0.01 - 0.1):
+    - Se mantiene un Alto Clustering (como en la red regular).
+    - La Distancia media cae drásticamente (como en la red aleatoria) gracias a los "atajos" de largo alcance.
+- Características clave del "Mundo Pequeño":
+  - Alto Coeficiente de Clustering (C): Los amigos de mis amigos tienden a ser mis amigos.
+  - Corta Distancia Media (L): Se puede llegar de un nodo a otro en pocos pasos (fenómeno de los "6 grados de separación").
+- Distribución de Grado:
+  - Para p pequeño, es bastante homogénea, centrada en k, similar a la red regular pero con ligera varianza.
+  - No es libre de escala (no tiene hubs gigantes como BA).
+- Ejemplos reales: Redes sociales (amistad), redes neuronales (C. elegans), red eléctrica.
+
+
+DINÁMICA EN REDES:
+
+1. DIFUSIÓN EN REDES:
+- Concepto: Proceso por el cual algo (calor, información, partículas) se extiende desde nodos con alta concentración a nodos con baja concentración.
+- Ecuación básica: dx/dt = -L * x (donde L es la matriz Laplaciana).
+- Matriz Clave: Laplaciana (L = D - A).
+- Convergencia: El sistema tiende a un estado de equilibrio donde todos los nodos tienen el mismo valor (consenso).
+- Velocidad de convergencia: Depende del espectro de autovalores de L.
+  - El segundo autovalor más pequeño (lambda_2) controla la velocidad asintótica. Cuanto mayor sea lambda_2, más rápida es la difusión.
+- Estabilidad (métodos discretos): Si simulamos paso a paso (x(t+1) = x(t) - alpha*L*x(t)), el paso alpha debe ser pequeño.
+  - Condición: alpha < 2 / lambda_max(L). Si alpha es muy grande, la simulación explota.
+
+2. SINCRONIZACIÓN Y CONECTIVIDAD ALGEBRAICA:
+- Concepto: Osciladores acoplados (ej. luciérnagas, neuronas, metrónomos) que ajustan sus fases para moverse al unísono.
+- Modelo de Kuramoto: Describe cómo cambian las fases de los osciladores dependiendo de su frecuencia natural y la influencia de vecinos.
+- Parámetro de Orden (r): Mide el grado de sincronización (0 = caos, 1 = sincronización total).
+- Conectividad Algebraica (lambda_2): Es el segundo autovalor más pequeño del Laplaciano.
+  - Importancia: Mide cuán bien conectada está la red.
+  - Relación: Una red con mayor lambda_2 es más difícil de fragmentar y se sincroniza más fácilmente (requiere menor fuerza de acoplamiento K).
+  - Redes aleatorias y Small-World suelen tener lambda_2 mayor que redes regulares o cadenas, facilitando la sincronización.
+
+3. UMBRAL EPIDÉMICO Y TOPOLOGÍA (Modelo SIS):
+- Concepto: Propagación de enfermedades donde los individuos pasan de Susceptible (S) a Infectado (I) y vuelven a S (no hay inmunidad).
+- Matriz Clave: Matriz de Adyacencia (A).
+- Umbral Epidémico (lambda_c): Valor crítico de la relación (tasa infección / tasa recuperación) por encima del cual la enfermedad se vuelve endémica (no desaparece).
+- Relación Teórica: lambda_c ≈ 1 / lambda_max(A) (inverso del autovalor máximo de la matriz de adyacencia).
+- Efecto de la Topología:
+  - Redes Homogéneas (ER, WS): lambda_max(A) es moderado. Tienen un umbral epidémico finito y positivo.
+  - Redes Heterogéneas (BA - Libres de Escala): Debido a los HUBS, lambda_max(A) crece mucho con el tamaño de la red.
+  - Consecuencia en BA: El umbral epidémico tiende a 0. Es decir, en redes libres de escala muy grandes, incluso virus muy débiles pueden persistir si llegan a los hubs. Los hubs actúan como "super-propagadores".
