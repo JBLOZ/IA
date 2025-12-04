@@ -24,6 +24,11 @@
 % If accepted, instead use the following line for the camera-ready submission:
 \usepackage[accepted]{icml2025}
 
+% Eliminar el texto de "Proceedings of ICML..." de la primera página
+\makeatletter
+\renewcommand{\ICML@appearing}{}
+\makeatother
+
 % For theorems and such
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -35,6 +40,19 @@
 
 % Custom table spacing
 \usepackage{tabla}
+
+% Pie de página personalizado en la última página
+\usepackage{lastpage}
+\makeatletter
+\fancypagestyle{lastpagestyle}{%
+  \fancyhf{}
+  \fancyhead{}
+  \chead{}
+  \cfoot{\thepage\\[0.3cm]\small\hypertarget{author1}{}\textsuperscript{1}Jordi Blasco Lozano -- DNI: 74527208D -- jordiblloz@gmail.com}
+  \renewcommand{\headrulewidth}{1pt}
+}
+\AtEndDocument{\thispagestyle{lastpagestyle}}
+\makeatother
 
 
 
@@ -54,11 +72,8 @@
 % package.
 
 \begin{icmlauthorlist}
-\icmlauthor{Jordi Blasco Lozano}{}
+\icmlauthor{Jordi Blasco Lozano\hyperlink{author1}{\textsuperscript{1}}}{}
 \end{icmlauthorlist}
-
-
-\icmlcorrespondingauthor{Jordi Blasco Lozano}{74527208D}
 
 % You may provide any keywords that you
 % find helpful for describing your paper; these are used to populate
@@ -92,10 +107,10 @@ Los 17 atributos incluyen \textbf{15 características binarias}: pelo, plumas, h
 \centering
 \includegraphics[width=\columnwidth]{tsne_dataset.pdf}
 \vspace{-0.5cm}
-\caption{Disposición del dataset}
+\caption{Disposición del dataset balanceado}
 \label{fig:tsne}
 
-En la anterior figura podemos ver como estan configurados los clusters de las clases de animales respecto a sus caracteristicas usando embedings no lineales.
+En la anterior figura podemos ver cómo están configurados los clusters de las clases de animales respecto a sus características usando embeddings no lineales.
 \end{figure}
 
 
@@ -216,7 +231,7 @@ Este método clásico obtiene resultados excelentes, especialmente en desbalance
 
 \textbf{Comparación general de enfoques:} Los modelos paramétricos muestran comportamientos complementarios: Naive Bayes es robusto con clases minoritarias (F1=0.90 desbalanceado) estimando solo $2d$ parámetros por clase, mientras MLE Full colapsa en desbalanceado (F1=0.58) pero alcanza F1=0.89 con balanceo, igualando a NB. Esto confirma el equilibrio sesgo-varianza: modelos simples son robustos con datos escasos; los complejos necesitan más muestras pero capturan correlaciones valiosas. Entre no paramétricos, Histogram Bayes falla completamente (F1=0.06-0.17) por la maldición de dimensionalidad: $2^{16}=65,536$ bins con 287 muestras resultan en colapso predictivo. Los tres métodos de vecinos cercanos (Parzen, k-NN Density, k-NN Rule) logran rendimiento excepcional (F1=0.91-0.93 balanceado) mediante suavizado continuo o asignación directa. Parzen con $h=0.5$ obtiene máximo F1=0.93 y mínima varianza (std=0.03), confirmándose como mejor modelo global. k-NN Density con $k=1$ iguala a Parzen (F1=0.93), mientras k-NN Rule con $k=3$ queda ligeramente atrás (F1=0.91), sugiriendo que votación mayoritaria es menos precisa que estimación de densidad en este problema.
 
-\textbf{Impacto del desbalance y balanceo:} El desbalance original (meanIR=4.84) expone brutalmente debilidades de modelos complejos: MLE Full colapsa con clases minoritarias (F1=0.58), generando precision cero para reptiles y anfibios al no poder estimar covarianzas con 3-5 ejemplos. El balanceo sintético ($101\rightarrow287$ instancias) mejora el F1 de MLE Full en un 53\%, alcanzando el 0.89. En Histogram Bayes paradójicamente el accuracy empeora: 0.46$\rightarrow$0.15, pero F1 permanece consistente en colapso (0.17$\rightarrow$0.06), confirmando que predice clase mayoritaria por defecto. Los métodos de vecinos cercanos mejoran con balanceo: +0.2 aprox en F1 y notándose sobretodo en las std que se reducen dramáticamente (un 0.8 aprox), revelando que con 41 ejemplos/clase las estimaciones locales son robustas.
+\textbf{Impacto del desbalance y balanceo:} El desbalance original (meanIR=4.84) expone brutalmente debilidades de modelos complejos: MLE Full colapsa con clases minoritarias (F1=0.58), generando precision cero para reptiles y anfibios al no poder estimar covarianzas con 3-5 ejemplos. El balanceo sintético ($101\rightarrow287$ instancias) mejora el F1 de MLE Full en un 53\%, alcanzando el 0.89. En Histogram Bayes paradójicamente el accuracy empeora: 0.46$\rightarrow$0.15, pero F1 permanece consistente en colapso (0.17$\rightarrow$0.06), confirmando que predice clase mayoritaria por defecto. Los métodos de vecinos cercanos mejoran con balanceo: +0.2 aprox en F1 y notándose sobre todo en las std que se reducen dramáticamente (un 0.8 aprox), revelando que con 41 ejemplos/clase las estimaciones locales son robustas.
 
 \textbf{Métricas:} El contraste accuracy vs F1-macro es crucial: Histogram obtiene accuracy=0.46 pero F1=0.17, prediciendo predominantemente "mamífero". El accuracy engaña porque predecir clase mayoritaria acierta 40\% en desbalanceado; F1-macro revela el colapso real al promediar todas las clases equitativamente.
 
