@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador Profesional LK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --panel-bg: rgba(24, 24, 27, 0.95);
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- LAYOUT --- */
+        .app-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 400px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            z-index: 20;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            margin: 5px 0 0 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* INFO CARD */
+        .info-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent);
+        }
+
+        .step-title {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .step-desc {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #e4e4e7;
+            min-height: 50px;
+        }
+
+        /* BARRAS DE COMPARACIÓN */
+        .comparison-box {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 5px;
+            border: 1px solid var(--border);
+            display: none; /* Oculto hasta que empiece */
+        }
+
+        .bar-group {
+            margin-bottom: 12px;
+        }
+        .bar-group:last-child { margin-bottom: 0; }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 5px; }
+        .stat-value { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+        /* CONTROLS */
+        .controls-section {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: rgba(255,255,255,0.02);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        .btn-primary:hover { filter: brightness(1.1); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-main);
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+
+        .btn.paused { background: var(--warning); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+
+        /* --- CANVAS AREA --- */
+        .canvas-area {
+            flex-grow: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #18181b 0%, #000000 100%);
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Floating Legend */
+        .legend {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            gap: 20px;
+            pointer-events: none;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            backdrop-filter: blur(4px);
+        }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="sidebar">
+        <div class="header">
+            <h1>Lin-Kernighan Pro</h1>
+            <p>Simulador de Optimización Heurística</p>
+        </div>
+
+        <!-- EXPLAINER PANEL -->
+        <div class="info-card">
+            <span class="step-title" id="step-title">ESTADO: INACTIVO</span>
+            <div class="step-desc" id="step-desc">
+                Bienvenido. Pulsa "Iniciar" para ver cómo el algoritmo compara y mejora las rutas.
+            </div>
+        </div>
+
+        <!-- COMPARISON VISUALIZER -->
+        <div class="comparison-box" id="comparison-box">
+            <div class="bar-group">
+                <div class="bar-label">
+                    <span style="color: #ef4444;">Ruta Actual (Rojo)</span>
+                    <span id="val-curr">100%</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill" id="bar-curr" style="width: 100%; background: #ef4444;"></div>
+                </div>
+            </div>
+            
+            <div class="bar-group">
+                <div class="bar-label">
+                    <span style="color: #10b981;">Propuesta (Verde)</span>
+                    <span id="val-new">0%</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill" id="bar-new" style="width: 0%; background: #10b981;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span class="stat-label">Distancia Total</span>
+                <span class="stat-value" id="dist-val">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Mejora</span>
+                <span class="stat-value" id="gain-val" style="color: var(--success)">0</span>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Velocidad de Animación</span>
+                    <span id="speed-label">Normal</span>
+                </div>
+                <input type="range" id="speed-slider" min="10" max="2000" value="800" style="direction: rtl"> 
+            </div>
+
+            <div class="btn-group">
+                <button id="btn-toggle" class="btn btn-primary">
+                    <span id="btn-icon">▶</span> Iniciar
+                </button>
+                <button id="btn-reset" class="btn btn-secondary">
+                    ↺ Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="canvas-area">
+        <div class="legend">
+            <div class="legend-item">
+                <div class="dot" style="background: #ef4444; box-shadow: 0 0 10px #ef4444;"></div>
+                <span>Corte (Viejo)</span>
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background: #10b981; box-shadow: 0 0 10px #10b981;"></div>
+                <span>Unión (Nuevo)</span>
+            </div>
+        </div>
+        <canvas id="main-canvas"></canvas>
+    </div>
+</div>
+
+<script>
+    // --- CONFIGURACIÓN ---
+    const NUM_CITIES = 8;
+    const CITY_COLORS = [
+        '#f87171', '#fb923c', '#fbbf24', '#a3e635', 
+        '#34d399', '#22d3ee', '#818cf8', '#e879f9'
+    ]; 
+
+    // --- REFERENCIAS DOM ---
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+    const elTitle = document.getElementById('step-title');
+    const elDesc = document.getElementById('step-desc');
+    const elDist = document.getElementById('dist-val');
+    const elGain = document.getElementById('gain-val');
+    const btnToggle = document.getElementById('btn-toggle');
+    const btnReset = document.getElementById('btn-reset');
+    const slider = document.getElementById('speed-slider');
+    const speedLabel = document.getElementById('speed-label');
+    
+    // Referencias a las barras
+    const boxComparison = document.getElementById('comparison-box');
+    const barCurr = document.getElementById('bar-curr');
+    const barNew = document.getElementById('bar-new');
+    const valCurr = document.getElementById('val-curr');
+    const valNew = document.getElementById('val-new');
+
+    // --- ESTADO ---
+    let width, height;
+    let cities = [];
+    let tour = [];
+    let isRunning = false;
+    let isPaused = false;
+    let currentDelay = 800;
+    
+    // Nueva variable para almacenar la distancia al iniciar el mapa
+    let initialDistance = 0;
+
+    // Estado visual para la animación
+    let activeHighlight = null; // { p1, p2, p3, p4, type: 'check' | 'swap' }
+
+    // --- INICIALIZACIÓN ---
+    function resize() {
+        width = canvas.parentElement.clientWidth;
+        height = canvas.parentElement.clientHeight;
+        canvas.width = width;
+        canvas.height = height;
+        if (!isRunning) draw();
+    }
+    window.addEventListener('resize', resize);
+
+    function initMap() {
+        cities = [];
+        const padding = 80;
+        
+        for (let i = 0; i < NUM_CITIES; i++) {
+            cities.push({
+                x: Math.random() * (width - padding * 2) + padding,
+                y: Math.random() * (height - padding * 2) + padding,
+                color: CITY_COLORS[i],
+                id: i
+            });
+        }
+
+        tour = Array.from({length: NUM_CITIES}, (_, i) => i);
+        shuffle(tour);
+        
+        // Guardamos la distancia inicial
+        initialDistance = getTotalDistance();
+        
+        // Reset UI
+        updateMetrics();
+        setExplanation("LISTO", "Mapa generado con 8 ciudades. Pulsa Iniciar.");
+        boxComparison.style.display = 'none';
+        activeHighlight = null;
+        draw();
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // --- SISTEMA DE CONTROL DE TIEMPO ---
+    async function waitStep() {
+        while (isPaused) {
+            await new Promise(r => setTimeout(r, 100));
+            if (!isRunning) return Promise.reject("Stopped");
+        }
+        await new Promise(r => setTimeout(r, currentDelay));
+        if (!isRunning) return Promise.reject("Stopped");
+    }
+
+    // --- VISUALIZACIÓN DE BARRAS ---
+    function updateBars(dCurrent, dNew) {
+        boxComparison.style.display = 'block';
+        
+        // Normalización para visualización
+        const max = Math.max(dCurrent, dNew);
+        
+        const pctCurrent = (dCurrent / max) * 100;
+        const pctNew = (dNew / max) * 100;
+
+        barCurr.style.width = `${pctCurrent}%`;
+        barNew.style.width = `${pctNew}%`;
+
+        // Textos descriptivos de píxeles
+        valCurr.innerText = Math.round(dCurrent) + "px";
+        valNew.innerText = Math.round(dNew) + "px";
+    }
+
+    // --- DIBUJADO (RENDER LOOP) ---
+    function draw() {
+        ctx.fillStyle = '#09090b'; 
+        ctx.fillRect(0, 0, width, height);
+
+        // 1. Dibujar Conexiones (Tour) - Base
+        if (tour.length > 0) {
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#3f3f46';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            const start = cities[tour[0]];
+            ctx.moveTo(start.x, start.y);
+            for (let i = 1; i < NUM_CITIES; i++) {
+                const c = cities[tour[i]];
+                ctx.lineTo(c.x, c.y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        // 2. Dibujar Highlight (Animación educativa)
+        if (activeHighlight) {
+            const { p1, p2, p3, p4, type } = activeHighlight;
+            
+            // Dim background (efecto foco) - SUAVE
+            ctx.fillStyle = 'rgba(0,0,0,0.3)'; 
+            ctx.fillRect(0,0,width,height);
+
+            // Dibujar TODAS las ciudades primero (Más visibles)
+            cities.forEach(c => {
+                 const isActive = [p1, p2, p3, p4].includes(c.id);
+                 if (!isActive) {
+                     // AUMENTADA VISIBILIDAD DE FONDO
+                     ctx.globalAlpha = 0.6; 
+                     drawCity(c, false);
+                     ctx.globalAlpha = 1.0; 
+                 }
+            });
+
+            // Redibujar ciudades activas
+            [p1, p2, p3, p4].forEach(idx => drawCity(cities[idx], true));
+
+            if (type === 'check') {
+                // Líneas rojas (Actuales)
+                drawLine(cities[p1], cities[p2], '#ef4444', 4, []);
+                drawLine(cities[p3], cities[p4], '#ef4444', 4, []);
+
+                // Líneas verdes punteadas (Propuestas)
+                drawLine(cities[p1], cities[p3], '#10b981', 4, [10, 10]);
+                drawLine(cities[p2], cities[p4], '#10b981', 4, [10, 10]);
+
+                drawLabel(cities[p1], "A");
+                drawLabel(cities[p2], "B");
+                drawLabel(cities[p3], "C");
+                drawLabel(cities[p4], "D");
+
+            } else if (type === 'swap') {
+                drawLine(cities[p1], cities[p3], '#10b981', 6, []);
+                drawLine(cities[p2], cities[p4], '#10b981', 6, []);
+            }
+        } else {
+            cities.forEach(c => drawCity(c));
+        }
+    }
+
+    function drawCity(c, highlight = false) {
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, highlight ? 12 : 8, 0, Math.PI * 2);
+        ctx.fillStyle = c.color;
+        
+        if (highlight) {
+            ctx.shadowColor = c.color;
+            ctx.shadowBlur = 20;
+        } else {
+            ctx.shadowBlur = 0;
+        }
+        
+        ctx.fill();
+        ctx.shadowBlur = 0; 
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+
+    function drawLine(c1, c2, color, width, dash) {
+        ctx.beginPath();
+        ctx.moveTo(c1.x, c1.y);
+        ctx.lineTo(c2.x, c2.y);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.setLineDash(dash);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    function drawLabel(c, text) {
+        ctx.fillStyle = "white";
+        ctx.font = "bold 14px Inter";
+        ctx.textAlign = "center";
+        ctx.fillText(text, c.x, c.y - 20);
+    }
+
+    // --- LÓGICA ALGORÍTMICA ---
+
+    function dist(i, j) {
+        const dx = cities[i].x - cities[j].x;
+        const dy = cities[i].y - cities[j].y;
+        return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    function getTotalDistance() {
+        let d = 0;
+        for (let i = 0; i < NUM_CITIES; i++) {
+            d += dist(tour[i], tour[(i + 1) % NUM_CITIES]);
+        }
+        return d;
+    }
+
+    async function solve() {
+        isRunning = true;
+        btnToggle.innerHTML = `<span id="btn-icon">⏸</span> Pausar`;
+        btnToggle.classList.remove('paused');
+        
+        let improved = true;
+
+        try {
+            while (improved) {
+                improved = false;
+                
+                for (let i = 0; i < NUM_CITIES - 1; i++) {
+                    for (let j = i + 2; j < NUM_CITIES; j++) {
+                        if (i === 0 && j === NUM_CITIES - 1) continue;
+
+                        let idxA = i;
+                        let idxB = i + 1;
+                        let idxC = j;
+                        let idxD = (j + 1) % NUM_CITIES;
+
+                        let cityA = tour[idxA];
+                        let cityB = tour[idxB];
+                        let cityC = tour[idxC];
+                        let cityD = tour[idxD];
+
+                        // Calcular distancias para la gráfica
+                        let dCurrent = dist(cityA, cityB) + dist(cityC, cityD);
+                        let dNew = dist(cityA, cityC) + dist(cityB, cityD);
+
+                        // --- PASO 1: ANÁLISIS ---
+                        activeHighlight = { 
+                            p1: cityA, p2: cityB, p3: cityC, p4: cityD, 
+                            type: 'check' 
+                        };
+                        
+                        // Actualizar barras comparativas
+                        updateBars(dCurrent, dNew);
+                        draw();
+
+                        setExplanation("ANALIZANDO TRAMO", 
+                            `¿Es <span style="color:#ef4444">AB + CD</span> más largo que <span style="color:#10b981">AC + BD</span>?<br>
+                             Mira la barra verde: si es más corta, ¡ahorramos camino!`);
+                        
+                        await waitStep();
+
+                        if (dNew < dCurrent) {
+                            // --- PASO 2: DECISIÓN ---
+                            let gain = Math.floor(dCurrent - dNew);
+                            elGain.innerText = `+${gain}`;
+                            
+                            setExplanation("¡MEJORA ENCONTRADA!", 
+                                `¡La barra verde es visiblemente más pequeña!<br>
+                                 Ahorro: <b>${gain}px</b>. Intercambiando...`);
+                            
+                            await waitStep();
+
+                            // --- PASO 3: SWAP ---
+                            reverseSegment(i + 1, j);
+                            
+                            activeHighlight = { 
+                                p1: cityA, p2: cityB, p3: cityC, p4: cityD, 
+                                type: 'swap' 
+                            };
+                            updateMetrics();
+                            draw();
+                            
+                            setExplanation("RECONEXIÓN", 
+                                "Caminos actualizados. Buscando más mejoras...");
+                            
+                            await waitStep();
+
+                            improved = true;
+                            activeHighlight = null;
+                            draw();
+                            break; 
+                        }
+                    }
+                    if (improved) break; 
+                }
+            }
+
+            // --- FINALIZACIÓN ---
+            activeHighlight = null;
+            boxComparison.style.display = 'none'; // Ocultar barras al terminar
+            draw();
+            
+            // CÁLCULO DE MEJORA TOTAL
+            const finalDist = getTotalDistance();
+            const totalGain = Math.floor(initialDistance - finalDist);
+            
+            // Actualizar etiqueta de Mejora con el TOTAL
+            elGain.innerText = `Total: ${totalGain}`;
+            
+            setExplanation("OPTIMIZACIÓN COMPLETADA", 
+                `Hemos alcanzado un Óptimo Local.<br>
+                 Mejora Total desde el inicio: <b>${totalGain} píxeles</b> ahorrados.`);
+            stopLogic();
+
+        } catch (e) {
+            if (e === "Stopped") console.log("Process stopped by user");
+        }
+    }
+
+    function reverseSegment(start, end) {
+        while (start < end) {
+            [tour[start], tour[end]] = [tour[end], tour[start]];
+            start++;
+            end--;
+        }
+    }
+
+    // --- UI HELPERS ---
+
+    function setExplanation(title, html) {
+        elTitle.innerText = title;
+        elDesc.innerHTML = html;
+    }
+
+    function updateMetrics() {
+        elDist.innerText = Math.floor(getTotalDistance());
+    }
+
+    function stopLogic() {
+        isRunning = false;
+        isPaused = false;
+        btnToggle.innerHTML = `<span id="btn-icon">▶</span> Iniciar`;
+        btnToggle.classList.remove('paused');
+    }
+
+    // Handlers
+    btnToggle.addEventListener('click', () => {
+        if (!isRunning) {
+            solve();
+        } else {
+            isPaused = !isPaused;
+            if (isPaused) {
+                btnToggle.innerHTML = `<span id="btn-icon">▶</span> Reanudar`;
+                btnToggle.classList.add('paused');
+            } else {
+                btnToggle.innerHTML = `<span id="btn-icon">⏸</span> Pausar`;
+                btnToggle.classList.remove('paused');
+            }
+        }
+    });
+
+    btnReset.addEventListener('click', () => {
+        isRunning = false; 
+        isPaused = false;
+        setTimeout(() => {
+            initMap();
+            stopLogic();
+        }, 100);
+    });
+
+    slider.addEventListener('input', (e) => {
+        let val = parseInt(e.target.value);
+        currentDelay = 2010 - val;
+        
+        if (currentDelay < 50) speedLabel.innerText = "Máxima";
+        else if (currentDelay < 400) speedLabel.innerText = "Rápida";
+        else if (currentDelay < 1000) speedLabel.innerText = "Normal";
+        else speedLabel.innerText = "Lenta (Análisis)";
+    });
+
+    // START
+    resize();
+    initMap();
+
+</script>
+</body>
+</html>

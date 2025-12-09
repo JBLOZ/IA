@@ -1,0 +1,6 @@
+Comparación,n,p-valor,Significativo
+k-NN Original vs k-NN PCA,10,0.130859,⚪ No
+k-NN Original vs k-NN Autoencoder,10,0.054688,⚪ No
+k-NN Original vs MLP Original,10,0.232422,⚪ No
+k-NN PCA vs MLP PCA,10,0.005859,✅ Sí
+k-NN Autoencoder vs MLP Autoencoder,10,0.232422,⚪ No
