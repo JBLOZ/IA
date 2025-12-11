@@ -1,0 +1,387 @@
+% !TEX program = xelatex
+% ¡Recuerda compilar con XeLaTeX o LuaLaTeX!
+\documentclass{article}
+
+% --- Cargar nuestro fichero de estilo ---
+% Se asume que paper_style.sty está disponible o se usan paquetes estándar.
+\usepackage{paper_style}
+
+% --- PAQUETES PARA EL CONTENIDO DEL DOCUMENTO ---
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{soul}
+\usepackage{xcolor}
+\usepackage{wrapfig}
+
+% --- Información del Paper ---
+\title{Informe: \\ Práctica 6: Implementación de una canalización de aprendizaje automático con Amazon SageMaker}
+\author{
+	Jordi Blasco Lozano \\
+	\small Infraestructuras y Servicios Cloud \\
+	\small Universidad de Alicante
+}
+\date{\today}
+
+% --- Comienzo del Documento ---
+\begin{document}
+	
+	\maketitle
+
+	\begin{abstract}
+	\noindent 
+	En esta práctica hemos implementado un pipeline completo de Machine Learning con Amazon SageMaker para detectar anomalías en la columna vertebral de pacientes. Comenzamos explorando el dataset, luego entrenamos un modelo XGBoost, lo desplegamos y evaluamos con diferentes umbrales de clasificación. Finalmente, experimentamos con ajuste automático de hiperparámetros para intentar mejorar el rendimiento. A través de todos estos pasos vimos cómo funcionan los servicios de AWS para ML desde cero hasta tener un modelo en producción.
+	\end{abstract}
+	\vspace{1cm} 
+	
+	\tableofcontents
+
+	\newpage
+
+	%============================================================
+	% SECCIÓN 1: EXPLORACIÓN DE DATOS (LAB 3.2)
+	%============================================================
+	\section{Exploración de Datos (Lab 3.2)}
+	
+	\subsection{El Dataset}
+	Para esta práctica utilizamos el dataset \texttt{column\_2C\_weka.arff} del repositorio UCI, que contiene información sobre pacientes con columna vertebral. Tiene 310 instancias (100 normales y 210 con anomalías) y 6 atributos biomecánicos:
+	
+	\begin{itemize}
+		\item Incidencia pélvica
+		\item Inclinación pélvica
+		\item Ángulo de lordosis lumbar
+		\item Inclinación del sacro
+		\item Radio pélvico
+		\item Grado de espondilolistesis
+	\end{itemize}
+
+	El objetivo era clasificar a los pacientes en dos categorías: \textbf{Normal} o \textbf{Abnormal}.
+
+	\subsection{Análisis Exploratorio (EDA)}
+	
+	Lo primero que hicimos fue cargar el dataset y explorar su estructura usando \texttt{shape}, \texttt{describe()} y \texttt{info()}. Luego generamos gráficos de densidad (KDE), histogramas y box plots para entender cómo se distribuían los datos.
+
+
+	% image copy 12.png
+
+	
+
+	La característica \texttt{degree\_spondylolisthesis} tenía valores atípicos bastante extremos (alrededor de 400), mientras que el resto de variables estaban más centradas. 
+
+	% una al lado de otra
+	% output.png | output2.png
+
+	También vimos que había un desbalanceo moderado:  2/3 Abnormal y 1/3 Normal. Esto es importante tenerlo en cuenta más adelante con las métricas.
+
+	% image copy 11.png
+
+	
+
+	\subsection{Tareas de desafios}
+	
+	Las tareas desafio de este lab tenían como objetivo entender como explorar manualmente todas las características e identificar sus valores atípicos mediante pandas. Para hacer la ultima tarea de desafio, para explorar sobre otros datos de UCI,simplemente me descargue el DataSet que estamos usando en nuestra asignatura de Aprendizaje Automático y le pase las mismas celdas de código. Mi data set era del zoo y tube estos resultados para el mapa de calor.
+	
+	%output3.png
+
+
+
+	%============================================================
+	% SECCIÓN 2: CODIFICACIÓN DE DATOS CATEGÓRICOS (LAB 3.3)
+	%============================================================
+	\section{Codificación de Datos Categóricos (Lab 3.3)}
+	
+	
+	En este lab trabajamos con el dataset \texttt{imports-85.csv} que tiene información sobre automóviles. El archivo tiene 205 instancias, 25 atributos y no tenía encabezados, así que hay que definirlos manualmente. El objetivo será aprender a codificar variables categóricas de dos formas diferentes.
+	
+	Para variables numerales o ordinales (con orden), usamos un diccionario que mapeaba valores a números:
+
+	% image copy 13.png
+
+	Para variables nominales (sin orden natural), usamos \texttt{get\_dummies()} que creará nuevas columnas binarias:
+
+	% una al lado de la otra
+	% image copy 14.png | image copy 15.png
+
+
+	\subsection{Desafío: Añadir Más Variables}
+	
+	El desafío consistía en codificar variables adicionales: \texttt{fuel-type}, \texttt{body-style} y \texttt{engine-location}. 
+	
+	pasamos de esto:
+
+	% image copy 16.png
+
+	a esto:
+
+	% image copy 17.png
+		
+
+	\newpage
+
+	%============================================================
+	% SECCIÓN 3: DIVISIÓN DE DATOS Y ENTRENAMIENTO (LAB 3.4)
+	%============================================================
+	\section{División de Datos y Entrenamiento (Lab 3.4)}
+	
+	\subsection{Preparación del Dataset}
+	
+	Lo primero fue convertir la clase a números: Abnormal = 1, Normal = 0. XGBoost en SageMaker tiene un requisito importante: la columna objetivo debe estar en la primera posición, así que se reordenaron todas las columnas.
+
+	\subsection{División Estratificada}
+	
+	Dividimos el dataset en tres partes usando \texttt{train\_test\_val} con \texttt{stratify} para mantener la proporción de clases:
+	Usamos un 80 por ciento para entrenar, 10 para validación y 10 para test.
+	
+	Usar \texttt{stratify} asegura que cada conjunto tenga la misma proporción de Normal/Abnormal.
+	
+
+	\subsection{Entrenamiento con SageMaker}
+	
+	Exportamos los CSV sin encabezados ni índices y los cargamos a S3. Luego configuramos XGBoost con los siguientes hiperparámetros:
+
+	% image copy 18.png
+
+	SageMaker se encargó de entrenar el modelo en la nube.
+
+
+
+	%============================================================
+	% SECCIÓN 4: IMPLEMENTACIÓN Y PREDICCIONES (LAB 3.5)
+	%============================================================
+	\section{Implementación y Predicciones (Lab 3.5)}
+	
+	\subsection{Deploy del Modelo}
+	
+	Una vez entrenado, desplegamos el modelo como un endpoint en tiempo real:
+
+	Esto pone el modelo en un servidor que puede recibir peticiones y devolver predicciones.
+
+	\
+	
+	Enviamos datos al endpoint y nos devuelve una probabilidad:
+
+	\begin{lstlisting}[style=consola, language=Python, caption={Predicción}]
+result = xgb_predictor.predict(test_data_row)
+# Devuelve algo como 0.87 (probabilidad de ser Abnormal)
+	\end{lstlisting}
+
+	\noindent
+	\begin{minipage}[c]{0.5\textwidth}
+		El modelo devuelve \textbf{probabilidades (0-1)}, no clases. Un valor de 0.87 significa que el modelo cree que hay 87\% de probabilidad de que sea Abnormal. Necesitamos decidir un \textbf{umbral} para convertir eso a un 1 o 0 final.
+	\end{minipage}%
+	\hfill
+	\begin{minipage}[c]{0.48\textwidth}
+		\begin{lstlisting}[style=consola, language=Python, caption={Conversión binaria}]
+def binary_convert(prob):
+    if prob > 0.45:
+        return 1  # Abnormal
+    else:
+        return 0  # Normal
+		\end{lstlisting}
+	\end{minipage}
+
+	\subsection{Batch Transform}
+	
+	Para procesar muchos datos de una sola vez sin mantener un endpoint abierto, usamos Batch Transform, que es más barato. Al final borramos el endpoint con \texttt{delete\_endpoint()} para no pagar por nada que no usemos.
+
+	\subsection{Desafío: Experimentar con Umbrales}
+	
+	El gran desafío de este lab fue entender que cambiar el umbral (0.25, 0.30, 0.45, 0.75) \textbf{cambia completamente las métricas}. Con umbral bajo captamos más casos positivos (bueno para detectar anomalías, malo para falsos positivos). Con umbral alto al revés. Los resultados de cada combinación se muestran en el lab siguiente.
+
+	\newpage
+
+	%============================================================
+	% SECCIÓN 5: EVALUACIÓN DEL MODELO (LAB 3.6)
+	%============================================================
+	\section{Evaluación del Modelo (Lab 3.6)}
+	
+	\subsection{La Matriz de Confusión}
+	
+	Para evaluar un modelo de clasificación, usamos la matriz de confusión que cruza lo que el modelo predijo vs lo que realmente pasó:
+
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{l|cc}
+			\toprule
+			& \textbf{Pred: Normal} & \textbf{Pred: Abnormal} \\
+			\midrule
+			\textbf{Real: Normal} & TN & FP \\
+			\textbf{Real: Abnormal} & FN & TP \\
+			\bottomrule
+		\end{tabular}
+		\caption{Matriz de Confusión}
+	\end{table}
+
+	En contexto médico, los \textbf{Falsos Negativos (FN)} son lo peor: son pacientes enfermos que dijimos que estaban sanos.
+
+	\subsection{Métricas Principales}
+	
+	\noindent
+	\begin{minipage}[c]{0.48\textwidth}
+		\begin{itemize}
+			\item \textbf{Sensibilidad:} $\frac{TP}{TP+FN}$ = Detectar positivos reales
+			\item \textbf{Especificidad:} $\frac{TN}{TN+FP}$ = Detectar negativos reales
+			\item \textbf{Precisión:} $\frac{TP}{TP+FP}$ = Qué \% de nuestros positivos acertamos
+			\item \textbf{Exactitud:} $\frac{TP+TN}{Total}$ = Aciertos generales
+		\end{itemize}
+	\end{minipage}%
+	\hfill
+	\begin{minipage}[c]{0.48\textwidth}
+		\begin{itemize}
+			\item \textbf{FPR:} $\frac{FP}{FP+TN}$ = Falsas alarmas
+			\item \textbf{FNR:} $\frac{FN}{TP+FN}$ = Omisiones (casos perdidos)
+			\item \textbf{VPN:} $\frac{TN}{TN+FN}$ = Fiabilidad de negativos
+		\end{itemize}
+	\end{minipage}
+
+	\subsection{Desafío: Comparar Umbrales}
+	
+	Probamos con umbrales 0.25, 0.30 y 0.75 para ver cómo afectaban a las métricas:
+
+	\noindent
+	\begin{minipage}[c]{0.33\textwidth}
+		\centering
+		\textbf{Umbral 0.25 (Bajo)}
+		\begin{itemize}
+			\item ↑ Sensibilidad
+			\item ↓ Especificidad
+			\item Más FP
+			\item Detectamos más casos pero con más falsas alarmas
+		\end{itemize}
+	\end{minipage}%
+	\begin{minipage}[c]{0.33\textwidth}
+		\centering
+		\textbf{Umbral 0.45 (Medio)}
+		\begin{itemize}
+			\item Balance razonable
+			\item Menos extremo en ambas direcciones
+			\item Buena opción general
+		\end{itemize}
+	\end{minipage}%
+	\begin{minipage}[c]{0.33\textwidth}
+		\centering
+		\textbf{Umbral 0.75 (Alto)}
+		\begin{itemize}
+			\item ↓ Sensibilidad
+			\item ↑ Especificidad
+			\item Más FN
+			\item Pocos falsos positivos pero perdemos casos reales
+		\end{itemize}
+	\end{minipage}
+
+	\vspace{0.5cm}
+
+	Lo que descubrimos fue que \textbf{el umbral más bajo causaba overfitting}: el modelo parecía mejor en métricas locales pero generalizaba peor. En medicina, el trade-off es complicado, pero generalmente preferimos capturar más casos (sacrificar especificidad) que perder enfermos (reducir FN).
+
+	\subsection{Curva ROC y AUC}
+	
+	Generamos la curva ROC (Sensibilidad vs FPR) para visualizar el rendimiento a diferentes umbrales. El AUC (Area Under Curve) nos da un número único: si es 1.0 es perfecto, si es 0.5 es aleatorio, y $>0.8$ generalmente es bueno. Comparamos usando tanto probabilidades como binarios convertidos.
+
+	\newpage
+
+	%============================================================
+	% SECCIÓN 6: AJUSTE DE HIPERPARÁMETROS (LAB 3.7)
+	%============================================================
+	\section{Ajuste de Hiperparámetros (Lab 3.7)}
+	
+	\subsection{Qué Hicimos}
+	
+	Hasta ahora usábamos \texttt{num\_round=42} y otros valores "por defecto". En este lab, dejamos que AWS busque automáticamente los mejores valores usando el servicio \texttt{HyperparameterTuner}.
+
+	\subsection{Configuración del Tuner}
+	
+	Definimos rangos de búsqueda para 5 hiperparámetros:
+
+	\noindent
+	\begin{minipage}[c]{0.5\textwidth}
+		\begin{lstlisting}[style=consola, language=Python, caption={Rangos de búsqueda}]
+hyperparameter_ranges = {
+    'alpha': (0, 100),
+    'min_child_weight': (1, 5),
+    'subsample': (0.5, 1),
+    'eta': (0.1, 0.3),
+    'num_round': (1, 50)
+}
+
+max_jobs = 10
+max_parallel_jobs = 1
+		\end{lstlisting}
+	\end{minipage}%
+	\hfill
+	\begin{minipage}[c]{0.48\textwidth}
+		\textbf{Significado:}
+		\begin{itemize}
+			\item \textbf{alpha:} Regularización L1
+			\item \textbf{min\_child\_weight:} Peso mínimo en nodos
+			\item \textbf{subsample:} Fracción de datos por árbol
+			\item \textbf{eta:} Tasa de aprendizaje
+			\item \textbf{num\_round:} Número de árboles
+		\end{itemize}
+	\end{minipage}
+
+	\subsection{Ejecución}
+	
+	El tuner ejecutó 10 trabajos completos de entrenamiento, cada uno probando una combinación diferente. Tardó aproximadamente 45 minutos en total. La métrica que intentaba minimizar era \texttt{validation:error@.40}, que es la tasa de error del conjunto de validación con umbral 0.40.
+
+	\subsection{Desafío: Análisis de Resultados}
+	
+	\noindent
+	\begin{minipage}[c]{0.5\textwidth}
+		\textbf{La pregunta era:} ¿El modelo ajustado es mejor que el original?
+		
+		La respuesta no siempre fue sí. Hay varias razones por las que el ajuste puede no mejorar mucho:
+	\end{minipage}%
+	\hfill
+	\begin{minipage}[c]{0.48\textwidth}
+		\begin{itemize}
+			\item El modelo original ya era bastante bueno
+			\item Con solo 248 datos de training, hay poco margen de mejora
+			\item Probamos solo 10 combinaciones (un tuning real usa 30+)
+			\item Los rangos fueron reducidos para ahorrar tiempo
+		\end{itemize}
+	\end{minipage}
+
+	\vspace{0.5cm}
+
+	En un escenario real, con más datos, más trabajos (30-50) y rangos completos de búsqueda, probablemente veríamos mejoras más significativas. Pero este lab demostró cómo SageMaker automatiza completamente la tarea de encontrar los mejores hiperparámetros sin necesidad de hacerlo manualmente.
+
+	\newpage
+
+	%============================================================
+	% CONCLUSIONES
+	%============================================================
+	\section{Conclusiones}
+	
+	Tras acabar esta práctica, creo que lo más importante que me llevo es entender que hacer un modelo de ML no es solo entrenar y ya. Es todo un proceso donde cada decisión importa: desde cómo explores los datos, hasta qué umbral de clasificación eliges al final.
+
+	\vspace{0.3cm}
+
+	La exploración de datos fue clave. Sin saber que el \texttt{degree\_spondylolisthesis} tenía esos valores extremos o que el dataset estaba desbalanceado, hubiera sido difícil hacer decisiones informadas después. Los gráficos y estadísticas nos dijeron mucho de cómo trabajar.
+
+	\vspace{0.3cm}
+
+	Lo que más me sorprendió fue el impacto del umbral en las métricas. Con umbral 0.25 todo parecía mejor, pero en realidad estábamos siendo demasiado agresivos y probablemente sobreajustando. Con 0.75 al revés. Eso que los notebooks indicaban sobre overfitting cobró sentido cuando vimos los números.
+
+	\vspace{0.3cm}
+
+	SageMaker simplifica mucho las cosas: entrenar un modelo, desplegarlo, hacer predicciones... todo está integrado. Lo complicado es entender qué datos usar, cómo dividirlos, qué métricas importan. La plataforma es solo una herramienta.
+
+	\vspace{0.3cm}
+
+	El ajuste automático de hiperparámetros mostró que SageMaker puede hacer búsquedas que manualmente serían imposibles. Aunque en nuestro caso con 248 datos no vimos grandes mejoras, en un dataset real con decenas de miles de registros y rangos más amplios, probablemente sí.
+
+	\vspace{0.3cm}
+
+	En definitiva, creo que el pipeline completo que implementamos (exploración $\rightarrow$ codificación $\rightarrow$ división $\rightarrow$ entrenamiento $\rightarrow$ evaluación $\rightarrow$ ajuste) es lo que realmente funciona en producción. No es un solo paso, es un ciclo donde probablemente tendremos que iterar varias veces hasta llegar a un modelo que satisfaga nuestros requisitos de negocio.
+
+	\vspace{0.3cm}
+
+	Y en contexto médico especialmente, las métricas y el umbral no son decisiones técnicas puramente, son decisiones que afectan a pacientes reales. Eso es lo que hizo esta práctica más concreta que números en una pantalla.
+
+	
+\end{document}
