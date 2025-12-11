@@ -1,1 +1,4 @@
 Load the files into the main working window by clicking each file. Examine the data in these files. What format is the data in? Does the data have column headings? 
+
+
+aumento de overfeeting con el thresold mas bajo
