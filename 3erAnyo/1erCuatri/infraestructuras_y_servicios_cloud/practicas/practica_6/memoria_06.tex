@@ -41,7 +41,7 @@
 	
 	\tableofcontents
 
-	\newpage
+	
 
 	%============================================================
 	% SECCIÓN 1: EXPLORACIÓN DE DATOS (LAB 3.2)
@@ -66,19 +66,39 @@
 	
 	Lo primero que hicimos fue cargar el dataset y explorar su estructura usando \texttt{shape}, \texttt{describe()} y \texttt{info()}. Luego generamos gráficos de densidad (KDE), histogramas y box plots para entender cómo se distribuían los datos.
 
-
-	% image copy 12.png
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.85\textwidth]{image copy 12.png}
+		\caption{Visualización inicial del conjunto de datos (distribuciones y resumen del EDA).}
+	\end{figure}
 
 	
 
 	La característica \texttt{degree\_spondylolisthesis} tenía valores atípicos bastante extremos (alrededor de 400), mientras que el resto de variables estaban más centradas. 
 
-	% una al lado de otra
-	% output.png | output2.png
+	\begin{figure}[H]
+		\centering
+		\begin{subfigure}[b]{0.49\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{output.png}
+			\caption{Vista 1 del EDA}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.49\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{output2.png}
+			\caption{Vista 2 del EDA}
+		\end{subfigure}
+		\caption{Gráficos comparativos para identificar distribución y valores atípicos.}
+	\end{figure}
 
 	También vimos que había un desbalanceo moderado:  2/3 Abnormal y 1/3 Normal. Esto es importante tenerlo en cuenta más adelante con las métricas.
 
-	% image copy 11.png
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.75\textwidth]{image copy 11.png}
+		\caption{Distribución de clases (Normal vs. Abnormal) en el dataset.}
+	\end{figure}
 
 	
 
@@ -86,7 +106,11 @@
 	
 	Las tareas desafio de este lab tenían como objetivo entender como explorar manualmente todas las características e identificar sus valores atípicos mediante pandas. Para hacer la ultima tarea de desafio, para explorar sobre otros datos de UCI,simplemente me descargue el DataSet que estamos usando en nuestra asignatura de Aprendizaje Automático y le pase las mismas celdas de código. Mi data set era del zoo y tube estos resultados para el mapa de calor.
 	
-	%output3.png
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.85\textwidth]{output3.png}
+		\caption{Mapa de calor (dataset alternativo) usado en la tarea de desafío.}
+	\end{figure}
 
 
 
@@ -100,12 +124,29 @@
 	
 	Para variables numerales o ordinales (con orden), usamos un diccionario que mapeaba valores a números:
 
-	% image copy 13.png
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.85\textwidth]{image copy 13.png}
+		\caption{Ejemplo de codificación ordinal mediante un diccionario (mapeo).}
+	\end{figure}
 
 	Para variables nominales (sin orden natural), usamos \texttt{get\_dummies()} que creará nuevas columnas binarias:
 
-	% una al lado de la otra
-	% image copy 14.png | image copy 15.png
+	\begin{figure}[H]
+		\centering
+		\begin{subfigure}[b]{0.29\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{image copy 14.png}
+			\caption{Antes de \texttt{get\_dummies()}}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.69\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{image copy 15.png}
+			\caption{Después de \texttt{get\_dummies()}}
+		\end{subfigure}
+		\caption{Conversión de variables nominales a variables binarias.}
+	\end{figure}
 
 
 	\subsection{Desafío: Añadir Más Variables}
@@ -114,14 +155,22 @@
 	
 	pasamos de esto:
 
-	% image copy 16.png
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\textwidth]{image copy 16.png}
+		\caption{Estado inicial antes de codificar variables adicionales (desafío).}
+	\end{figure}
 
 	a esto:
 
-	% image copy 17.png
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\textwidth]{image copy 17.png}
+		\caption{Resultado tras añadir la codificación de variables adicionales.}
+	\end{figure}
 		
 
-	\newpage
+	
 
 	%============================================================
 	% SECCIÓN 3: DIVISIÓN DE DATOS Y ENTRENAMIENTO (LAB 3.4)
@@ -144,7 +193,11 @@
 	
 	Exportamos los CSV sin encabezados ni índices y los cargamos a S3. Luego configuramos XGBoost con los siguientes hiperparámetros:
 
-	% image copy 18.png
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.85\textwidth]{image copy 18.png}
+		\caption{Hiperparámetros utilizados para el entrenamiento de XGBoost en SageMaker.}
+	\end{figure}
 
 	SageMaker se encargó de entrenar el modelo en la nube.
 
@@ -157,43 +210,43 @@
 	
 	\subsection{Deploy del Modelo}
 	
-	Una vez entrenado, desplegamos el modelo como un endpoint en tiempo real:
+	Una vez entrenado, desplegamos el modelo como un \textit{endpoint} en tiempo real con SageMaker. Esto significa que el artefacto entrenado se levanta en una instancia (por ejemplo, \texttt{ml.m4.xlarge}) y queda expuesto como un servicio que acepta peticiones y devuelve predicciones al momento. Para inferencia, enviamos las características en formato CSV (sin la columna objetivo), y el modelo devuelve una \textbf{probabilidad} (por ejemplo, \texttt{0.9966}) de pertenecer a la clase \textit{Abnormal}. A partir de esa probabilidad, aplicamos un \textbf{umbral} para convertirla a una decisión binaria (0/1), y vimos que variar el umbral cambia el equilibrio entre falsos positivos y falsos negativos.
+	\subsection{Transformación por lotes}
 
-	Esto pone el modelo en un servidor que puede recibir peticiones y devolver predicciones.
+	Sin embargo, hacer peticiones fila a fila no es eficiente cuando queremos evaluar un conjunto completo. Por eso, siguiendo el Paso 4 del laboratorio, usamos una \textbf{transformación por lotes (Batch Transform)}: subimos a S3 un CSV con todas las filas de test (solo features), lanzamos un \textit{job} de transformación que procesa el fichero en bloque, y SageMaker escribe automáticamente las probabilidades de salida en otra ruta de S3. Finalmente descargamos ese resultado y aplicamos la misma conversión binaria por umbral para poder comparar predicción vs. etiqueta real y calcular métricas. Esta alternativa evita mantener un endpoint activo y suele ser más adecuada para evaluación offline.
+	\subsection{Tarea desafio}
+	En la tarea de desafío se nos pedía ir cambiando el valor del umbral de decisión. Al bajarlo, el modelo clasifica como \textit{Abnormal} con más facilidad (aumenta la sensibilidad, pero también los falsos positivos). Al subirlo, se vuelve más conservador (reduce falsos positivos, pero aumenta el riesgo de falsos negativos). En las siguientes capturas se ve cómo cambia la salida al probar distintos valores. En nuestro caso tendríamos el mejor rendimiento en un umbral desde 78 hasta 93. 
 
-	\
+	\begin{figure}[H]
+		\centering
+		\begin{subfigure}[b]{0.49\textwidth}`'
+			\centering
+			\includegraphics[width=\textwidth]{image copy 3.png}
+			\caption{Umbral 0.45}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.49\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{image copy 4.png}
+			\caption{Umbral 0.2}
+		\end{subfigure}
+		\\
+		\vspace{0.5em}
+		\begin{subfigure}[b]{0.49\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{image copy 5.png}
+			\caption{Umbral 0.90}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.49\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{image copy 6.png}
+			\caption{Umbral 0.95}
+		\end{subfigure}
+		\caption{Efecto de distintos umbrales en la conversión de probabilidad a clase binaria.}
+	\end{figure}
+
 	
-	Enviamos datos al endpoint y nos devuelve una probabilidad:
-
-	\begin{lstlisting}[style=consola, language=Python, caption={Predicción}]
-result = xgb_predictor.predict(test_data_row)
-# Devuelve algo como 0.87 (probabilidad de ser Abnormal)
-	\end{lstlisting}
-
-	\noindent
-	\begin{minipage}[c]{0.5\textwidth}
-		El modelo devuelve \textbf{probabilidades (0-1)}, no clases. Un valor de 0.87 significa que el modelo cree que hay 87\% de probabilidad de que sea Abnormal. Necesitamos decidir un \textbf{umbral} para convertir eso a un 1 o 0 final.
-	\end{minipage}%
-	\hfill
-	\begin{minipage}[c]{0.48\textwidth}
-		\begin{lstlisting}[style=consola, language=Python, caption={Conversión binaria}]
-def binary_convert(prob):
-    if prob > 0.45:
-        return 1  # Abnormal
-    else:
-        return 0  # Normal
-		\end{lstlisting}
-	\end{minipage}
-
-	\subsection{Batch Transform}
-	
-	Para procesar muchos datos de una sola vez sin mantener un endpoint abierto, usamos Batch Transform, que es más barato. Al final borramos el endpoint con \texttt{delete\_endpoint()} para no pagar por nada que no usemos.
-
-	\subsection{Desafío: Experimentar con Umbrales}
-	
-	El gran desafío de este lab fue entender que cambiar el umbral (0.25, 0.30, 0.45, 0.75) \textbf{cambia completamente las métricas}. Con umbral bajo captamos más casos positivos (bueno para detectar anomalías, malo para falsos positivos). Con umbral alto al revés. Los resultados de cada combinación se muestran en el lab siguiente.
-
-	\newpage
 
 	%============================================================
 	% SECCIÓN 5: EVALUACIÓN DEL MODELO (LAB 3.6)
@@ -201,187 +254,131 @@ def binary_convert(prob):
 	\section{Evaluación del Modelo (Lab 3.6)}
 	
 	\subsection{La Matriz de Confusión}
-	
-	Para evaluar un modelo de clasificación, usamos la matriz de confusión que cruza lo que el modelo predijo vs lo que realmente pasó:
+	En este laboratorio evaluamos el modelo entrenado en los pasos anteriores sobre el conjunto de {test}. El modelo devuelve una {probabilidad} de pertenecer a la clase {Abnormal}, y para poder comparar contra las etiquetas reales (0/1) aplicamos un {umbral} $t$ para convertir esa probabilidad en una decisión binaria.
+
+	Con $t = 0.30$ (umbral usado en el notebook base), obtuvimos la siguiente matriz de confusión:
 
 	\begin{table}[H]
 		\centering
-		\begin{tabular}{l|cc}
-			\toprule
-			& \textbf{Pred: Normal} & \textbf{Pred: Abnormal} \\
+		\begin{tabular}{lcc}
+				oprule
+			 & \textbf{Predicho Normal} & \textbf{Predicho Abnormal}\\
 			\midrule
-			\textbf{Real: Normal} & TN & FP \\
-			\textbf{Real: Abnormal} & FN & TP \\
+				extbf{Real Normal} & 7 & 3\\
+				extbf{Real Abnormal} & 2 & 19\\
 			\bottomrule
 		\end{tabular}
-		\caption{Matriz de Confusión}
+		\caption{Matriz de confusión del modelo con umbral $t=0.30$.}
 	\end{table}
 
-	En contexto médico, los \textbf{Falsos Negativos (FN)} son lo peor: son pacientes enfermos que dijimos que estaban sanos.
+	De aquí extraemos: $TN=7$, $FP=3$, $FN=2$ y $TP=19$. En un contexto médico, el error más crítico suele ser el {falso negativo} ($FN$), porque implica {no detectar una anomalía real}. Por otro lado, los {falsos positivos} ($FP$) generan alarmas innecesarias (más pruebas, más tiempo clínico), así que también conviene controlarlos.
 
-	\subsection{Métricas Principales}
-	
-	\noindent
-	\begin{minipage}[c]{0.48\textwidth}
-		\begin{itemize}
-			\item \textbf{Sensibilidad:} $\frac{TP}{TP+FN}$ = Detectar positivos reales
-			\item \textbf{Especificidad:} $\frac{TN}{TN+FP}$ = Detectar negativos reales
-			\item \textbf{Precisión:} $\frac{TP}{TP+FP}$ = Qué \% de nuestros positivos acertamos
-			\item \textbf{Exactitud:} $\frac{TP+TN}{Total}$ = Aciertos generales
-		\end{itemize}
-	\end{minipage}%
-	\hfill
-	\begin{minipage}[c]{0.48\textwidth}
-		\begin{itemize}
-			\item \textbf{FPR:} $\frac{FP}{FP+TN}$ = Falsas alarmas
-			\item \textbf{FNR:} $\frac{FN}{TP+FN}$ = Omisiones (casos perdidos)
-			\item \textbf{VPN:} $\frac{TN}{TN+FN}$ = Fiabilidad de negativos
-		\end{itemize}
-	\end{minipage}
+	A partir de la matriz calculamos las métricas principales:
+	\begin{itemize}
+		\item \textbf{Sensibilidad (TPR)} $=\frac{TP}{TP+FN}=90.48\%$.
+		\item \textbf{Especificidad (TNR)} $=\frac{TN}{TN+FP}=70.00\%$.
+		\item \textbf{Precisión (PPV)} $=\frac{TP}{TP+FP}=86.36\%$.
+		\item \textbf{NPV} $=\frac{TN}{TN+FN}=77.78\%$.
+		\item \textbf{Exactitud} $=\frac{TP+TN}{TP+TN+FP+FN}=83.87\%$.
+	\end{itemize}
+
+	En resumen, con este umbral el modelo detecta la mayoría de casos anormales (alta sensibilidad), pero aún produce algunas falsas alarmas en pacientes normales (FPR=30\%).
 
 	\subsection{Desafío: Comparar Umbrales}
 	
 	Probamos con umbrales 0.25, 0.30 y 0.75 para ver cómo afectaban a las métricas:
 
-	\noindent
-	\begin{minipage}[c]{0.33\textwidth}
-		\centering
-		\textbf{Umbral 0.25 (Bajo)}
-		\begin{itemize}
-			\item ↑ Sensibilidad
-			\item ↓ Especificidad
-			\item Más FP
-			\item Detectamos más casos pero con más falsas alarmas
-		\end{itemize}
-	\end{minipage}%
-	\begin{minipage}[c]{0.33\textwidth}
-		\centering
-		\textbf{Umbral 0.45 (Medio)}
-		\begin{itemize}
-			\item Balance razonable
-			\item Menos extremo en ambas direcciones
-			\item Buena opción general
-		\end{itemize}
-	\end{minipage}%
-	\begin{minipage}[c]{0.33\textwidth}
-		\centering
-		\textbf{Umbral 0.75 (Alto)}
-		\begin{itemize}
-			\item ↓ Sensibilidad
-			\item ↑ Especificidad
-			\item Más FN
-			\item Pocos falsos positivos pero perdemos casos reales
-		\end{itemize}
-	\end{minipage}
-
 	\vspace{0.5cm}
 
-	Lo que descubrimos fue que \textbf{el umbral más bajo causaba overfitting}: el modelo parecía mejor en métricas locales pero generalizaba peor. En medicina, el trade-off es complicado, pero generalmente preferimos capturar más casos (sacrificar especificidad) que perder enfermos (reducir FN).
+	Cambiar el umbral no re-entrena el modelo (por tanto no cambia el sobreajuste del entrenamiento), pero sí modifica la política de decisión y desplaza el equilibrio entre falsos positivos y falsos negativos:
+	\begin{itemize}
+		\item \textbf{Umbral bajo (0.25)}: el clasificador es más \textit{agresivo} marcando \textit{Abnormal}. Normalmente {aumenta la sensibilidad} (baja $FN$) a costa de {aumentar falsos positivos} (sube $FP$ y baja la especificidad).
+		\item \textbf{Umbral medio (0.30)}: compromiso intermedio; en nuestro caso dio una sensibilidad del 90.48\% con especificidad del 70.00\%.
+		\item \textbf{Umbral alto (0.75)}: el clasificador es más \textit{conservador}. Normalmente {reduce falsos positivos} (sube la especificidad) pero {aumenta el riesgo de falsos negativos}.
+	\end{itemize}
+
+	En un escenario de {cribado médico}, suele ser preferible reducir $FN$ (no dejar pasar pacientes con anomalía), aunque eso implique aceptar más $FP$ y luego confirmar con pruebas adicionales.
 
 	\subsection{Curva ROC y AUC}
 	
-	Generamos la curva ROC (Sensibilidad vs FPR) para visualizar el rendimiento a diferentes umbrales. El AUC (Area Under Curve) nos da un número único: si es 1.0 es perfecto, si es 0.5 es aleatorio, y $>0.8$ generalmente es bueno. Comparamos usando tanto probabilidades como binarios convertidos.
+	Generamos la curva ROC (Sensibilidad/TPR vs FPR) para visualizar el rendimiento del modelo a \textbf{todos} los umbrales posibles. El AUC (\textit{Area Under Curve}) resume la ROC en un único número: si es 1.0 es perfecto, si es 0.5 es equivalente a azar, y valores por encima de 0.8 suelen considerarse buenos.
 
-	\newpage
+	En nuestros resultados:
+	\begin{itemize}
+		\item Usando \textbf{probabilidades} (\textit{target\_predicted}), obtuvimos \textbf{AUC $\approx 0.8905$}.
+		\item Usando la salida \textbf{binaria} (\textit{target\_predicted\_binary}), el AUC bajó a \textbf{$\approx 0.8024$}.
+	\end{itemize}
+
+	Esto es esperable: la ROC está pensada para construirse con \textbf{scores/probabilidades} (que preservan el orden y la confianza de cada predicción). Al binarizar se pierde información y la curva queda menos representativa.
+
+	\begin{figure}[H]
+		\centering
+		\begin{subfigure}[b]{0.49\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{output4.png}
+			\caption{ROC usando probabilidades (AUC $\approx 0.8905$).}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.49\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{output5.png}
+			\caption{ROC usando predicción binaria (AUC $\approx 0.8024$).}
+		\end{subfigure}
+		\caption{Comparativa de curvas ROC: probabilidades vs clases binarizadas.}
+	\end{figure}
+
+	
 
 	%============================================================
 	% SECCIÓN 6: AJUSTE DE HIPERPARÁMETROS (LAB 3.7)
 	%============================================================
 	\section{Ajuste de Hiperparámetros (Lab 3.7)}
-	
-	\subsection{Qué Hicimos}
-	
-	Hasta ahora usábamos \texttt{num\_round=42} y otros valores "por defecto". En este lab, dejamos que AWS busque automáticamente los mejores valores usando el servicio \texttt{HyperparameterTuner}.
+	En este laboratorio realizamos \textbf{ajuste automático de hiperparámetros} con Amazon SageMaker para intentar mejorar el modelo XGBoost entrenado anteriormente. La idea es ejecutar varios entrenamientos variando parámetros críticos y quedarnos con la configuración que optimiza una métrica objetivo.
+
+	\subsection{Métricas del modelo base}
+	Antes de optimizar, calculamos métricas del modelo original para tener una referencia. En este notebook el umbral de decisión se fijó en $t=0.50$ para convertir probabilidades en clases (0/1). Con ese umbral, el modelo base obtuvo:
+	\begin{itemize}
+		\item \textbf{Accuracy}: 83.87\%.
+		\item \textbf{Sensitivity/TPR}: 90.48\%.
+		\item \textbf{Specificity/TNR}: 70.00\%.
+		\item \textbf{AUC (con salida binaria)}: 0.8024.
+	\end{itemize}
 
 	\subsection{Configuración del Tuner}
-	
-	Definimos rangos de búsqueda para 5 hiperparámetros:
+	Creamos un estimador de XGBoost y definimos la métrica de evaluación que el tuner debe minimizar. En el lab se usa \texttt{error@.40}, que mide la tasa de error binario evaluando como positivo si $p>0.40$ (y negativo en caso contrario). La configuración clave fue:
+	\begin{itemize}
+		\item \texttt{objective='binary:logistic'}.
+		\item \texttt{eval\_metric='error@.40'}.
+		\item \texttt{objective\_metric\_name='validation:error'}.
+		\item \texttt{objective\_type='Minimize'}.
+	\end{itemize}
 
-	\noindent
-	\begin{minipage}[c]{0.5\textwidth}
-		\begin{lstlisting}[style=consola, language=Python, caption={Rangos de búsqueda}]
-hyperparameter_ranges = {
-    'alpha': (0, 100),
-    'min_child_weight': (1, 5),
-    'subsample': (0.5, 1),
-    'eta': (0.1, 0.3),
-    'num_round': (1, 50)
-}
+	Después definimos rangos de búsqueda para los hiperparámetros con mayor impacto en XGBoost:
+	\begin{itemize}
+		\item \textbf{alpha} (regularización L1): \texttt{[0, 100]}.
+		\item \textbf{min\_child\_weight}: \texttt{[1, 5]}.
+		\item \textbf{subsample}: \texttt{[0.5, 1]}.
+		\item \textbf{eta} (learning rate): \texttt{[0.1, 0.3]}.
+		\item \textbf{num\_round}: \texttt{[1, 50]}.
+	\end{itemize}
 
-max_jobs = 10
-max_parallel_jobs = 1
-		\end{lstlisting}
-	\end{minipage}%
-	\hfill
-	\begin{minipage}[c]{0.48\textwidth}
-		\textbf{Significado:}
-		\begin{itemize}
-			\item \textbf{alpha:} Regularización L1
-			\item \textbf{min\_child\_weight:} Peso mínimo en nodos
-			\item \textbf{subsample:} Fracción de datos por árbol
-			\item \textbf{eta:} Tasa de aprendizaje
-			\item \textbf{num\_round:} Número de árboles
-		\end{itemize}
-	\end{minipage}
+	Finalmente lanzamos el {HyperparameterTuner} con {max\_jobs=10} y {max\_parallel\_jobs=1} (para limitar coste y tiempo), habilitando {early\_stopping\_type='Auto'}.
 
-	\subsection{Ejecución}
-	
-	El tuner ejecutó 10 trabajos completos de entrenamiento, cada uno probando una combinación diferente. Tardó aproximadamente 45 minutos en total. La métrica que intentaba minimizar era \texttt{validation:error@.40}, que es la tasa de error del conjunto de validación con umbral 0.40.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\textwidth]{image copy 10.png}
+		\caption{Jobs generados por el ajuste de hiperparámetros (10 entrenamientos).}
+	\end{figure}
 
-	\subsection{Desafío: Análisis de Resultados}
-	
-	\noindent
-	\begin{minipage}[c]{0.5\textwidth}
-		\textbf{La pregunta era:} ¿El modelo ajustado es mejor que el original?
-		
-		La respuesta no siempre fue sí. Hay varias razones por las que el ajuste puede no mejorar mucho:
-	\end{minipage}%
-	\hfill
-	\begin{minipage}[c]{0.48\textwidth}
-		\begin{itemize}
-			\item El modelo original ya era bastante bueno
-			\item Con solo 248 datos de training, hay poco margen de mejora
-			\item Probamos solo 10 combinaciones (un tuning real usa 30+)
-			\item Los rangos fueron reducidos para ahorrar tiempo
-		\end{itemize}
-	\end{minipage}
+	\subsection{Ejecución y análisis}
+	Tras lanzar el tuner, SageMaker ejecutó los 10 entrenamientos y dejó el proceso en estado {Completed}. Para analizar resultados, cargamos el resumen del tuning en un DataFrame con {HyperparameterTuningJobAnalytics}, que devuelve para cada {job} los hiperparámetros probados y el valor final de la métrica ({FinalObjectiveValue}). Ordenando por esa columna es fácil identificar la mejor combinación.
 
-	\vspace{0.5cm}
+	A partir del mejor entrenamiento, adjuntamos el {tuner} y creamos el modelo con \linebreak Estimator.attach(best\_training\_job). Después repetimos el flujo de evaluación con {Batch Transform} sobre el conjunto de test y, como en el modelo base, calculamos matriz de confusión y curva ROC.
 
-	En un escenario real, con más datos, más trabajos (30-50) y rangos completos de búsqueda, probablemente veríamos mejoras más significativas. Pero este lab demostró cómo SageMaker automatiza completamente la tarea de encontrar los mejores hiperparámetros sin necesidad de hacerlo manualmente.
-
-	\newpage
-
-	%============================================================
-	% CONCLUSIONES
-	%============================================================
-	\section{Conclusiones}
-	
-	Tras acabar esta práctica, creo que lo más importante que me llevo es entender que hacer un modelo de ML no es solo entrenar y ya. Es todo un proceso donde cada decisión importa: desde cómo explores los datos, hasta qué umbral de clasificación eliges al final.
-
-	\vspace{0.3cm}
-
-	La exploración de datos fue clave. Sin saber que el \texttt{degree\_spondylolisthesis} tenía esos valores extremos o que el dataset estaba desbalanceado, hubiera sido difícil hacer decisiones informadas después. Los gráficos y estadísticas nos dijeron mucho de cómo trabajar.
-
-	\vspace{0.3cm}
-
-	Lo que más me sorprendió fue el impacto del umbral en las métricas. Con umbral 0.25 todo parecía mejor, pero en realidad estábamos siendo demasiado agresivos y probablemente sobreajustando. Con 0.75 al revés. Eso que los notebooks indicaban sobre overfitting cobró sentido cuando vimos los números.
-
-	\vspace{0.3cm}
-
-	SageMaker simplifica mucho las cosas: entrenar un modelo, desplegarlo, hacer predicciones... todo está integrado. Lo complicado es entender qué datos usar, cómo dividirlos, qué métricas importan. La plataforma es solo una herramienta.
-
-	\vspace{0.3cm}
-
-	El ajuste automático de hiperparámetros mostró que SageMaker puede hacer búsquedas que manualmente serían imposibles. Aunque en nuestro caso con 248 datos no vimos grandes mejoras, en un dataset real con decenas de miles de registros y rangos más amplios, probablemente sí.
-
-	\vspace{0.3cm}
-
-	En definitiva, creo que el pipeline completo que implementamos (exploración $\rightarrow$ codificación $\rightarrow$ división $\rightarrow$ entrenamiento $\rightarrow$ evaluación $\rightarrow$ ajuste) es lo que realmente funciona en producción. No es un solo paso, es un ciclo donde probablemente tendremos que iterar varias veces hasta llegar a un modelo que satisfaga nuestros requisitos de negocio.
-
-	\vspace{0.3cm}
-
-	Y en contexto médico especialmente, las métricas y el umbral no son decisiones técnicas puramente, son decisiones que afectan a pacientes reales. Eso es lo que hizo esta práctica más concreta que números en una pantalla.
+	\subsection{Resultados obtenidos}
+	Este lab muestra que el tuning {no garantiza} una mejora grande en todos los casos. En nuestro escenario influyen varios factores: dataset pequeño, espacio de búsqueda recortado y pocas combinaciones (10). En un entorno real, aumentar {max\_jobs} (30--50+) y ampliar rangos suele ofrecer una mejora más consistente, aunque a costa de más tiempo y coste.
 
 	
+
+
 \end{document}
