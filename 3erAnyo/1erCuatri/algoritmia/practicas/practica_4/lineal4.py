@@ -42,7 +42,7 @@ b_ub = [
 # xA, xB, xC >= 0
 bounds = [(0, None), (0, None), (0, None)]
 
-res = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method="highs")
+res = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds)
 
 if res.success:
         print("Modelo factible/óptimo encontrado.")
