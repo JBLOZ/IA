@@ -1,0 +1,332 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{abstract}
+\usepackage{float}
+
+% Configuración de código Python
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray}
+}
+
+% Título y autores
+\title{\textbf{Práctica 0: Flujo completo de Machine Learning}\\
+\large Estimación de Niveles de Obesidad basado en Hábitos Alimenticios y Condición Física}
+
+\author{
+    \textbf{Jordi Blasco Lozano}\\
+    \small DNI: 74527208D\\
+    \small Universidad de Alicante - Escuela Politécnica Superior\\
+    \small Aprendizaje Avanzado - Curso 2025/2026\\
+    \small Email: \texttt{jbl42@alu.ua.es}
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\textit{En este trabajo presento un análisis completo del flujo de Machine Learning aplicado al dataset de estimación de niveles de obesidad de UCI. El dataset contiene 2111 registros de individuos de México, Perú y Colombia, con 16 características relacionadas con hábitos alimenticios y condición física. Realicé un preprocesamiento exhaustivo que incluyó codificación de variables categóricas (Label Encoding para binarias y One-Hot para multinivel) y estandarización con StandardScaler. El análisis exploratorio reveló correlaciones significativas entre peso-altura y patrones claros de separación entre niveles de obesidad. Evalué tres modelos (Regresión Logística, Random Forest y SVM) mediante validación cruzada de 5 folds, obteniendo el mejor rendimiento con Random Forest. La optimización de hiperparámetros mediante GridSearchCV permitió mejorar aún más el rendimiento del modelo final.}
+\end{abstract}
+
+\textbf{Palabras clave:} Machine Learning, Obesidad, Clasificación Multiclase, Preprocesamiento, Random Forest, SVM, Regresión Logística
+
+\vspace{0.5cm}
+
+\section{Introducción}
+
+\subsection{Dataset Seleccionado}
+
+Para esta práctica he seleccionado el dataset \textit{Estimation of Obesity Levels Based on Eating Habits and Physical Condition} del repositorio UCI Machine Learning. Este dataset me pareció especialmente interesante por varias razones: primero, porque aborda un problema de salud pública muy relevante como es la obesidad; segundo, porque presenta un desafío de clasificación multiclase con 7 categorías diferentes de peso; y tercero, porque combina variables numéricas y categóricas, lo que permite practicar diferentes técnicas de preprocesamiento.
+
+El dataset está disponible en: \url{https://archive.ics.uci.edu/dataset/544}
+
+Los datos fueron recopilados de individuos de México, Perú y Colombia mediante una plataforma web (23\% de los datos) y generados sintéticamente usando SMOTE en Weka (77\% restante).
+
+\subsection{Objetivo}
+
+El objetivo principal de este trabajo es predecir el nivel de obesidad de una persona basándose en sus características demográficas, hábitos alimenticios y nivel de actividad física. Las clases a predecir son:
+\begin{itemize}
+    \item Peso Insuficiente (\textit{Insufficient\_Weight})
+    \item Peso Normal (\textit{Normal\_Weight})
+    \item Sobrepeso Nivel I (\textit{Overweight\_Level\_I})
+    \item Sobrepeso Nivel II (\textit{Overweight\_Level\_II})
+    \item Obesidad Tipo I (\textit{Obesity\_Type\_I})
+    \item Obesidad Tipo II (\textit{Obesity\_Type\_II})
+    \item Obesidad Tipo III (\textit{Obesity\_Type\_III})
+\end{itemize}
+
+\section{Configuración Experimental}
+
+\subsection{Exploración Inicial}
+
+Lo primero que hice fue cargar el dataset y examinar sus características básicas. Las propiedades del conjunto de datos se resumen en la Tabla~\ref{tab:dataset_info}.
+
+\begin{table}[H]
+\centering
+\caption{Características del dataset de Obesidad}
+\label{tab:dataset_info}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Característica} & \textbf{Valor} \\ \midrule
+Filas & 2111 \\
+Columnas & 17 (16 features + 1 target) \\
+Var. numéricas & 7 (Age, Height, Weight, FCVC, NCP, CH2O, FAF, TUE) \\
+Var. categóricas & 9 (Gender, family\_history, FAVC, CAEC, SMOKE, SCC, CALC, MTRANS) \\
+Variable objetivo & NObeyesdad \\
+Tipo problema & Clasificación multiclase (7 clases) \\
+Valores faltantes & 0 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Análisis Exploratorio (EDA)}
+
+\subsubsection{Estadística Descriptiva}
+
+Calculé las estadísticas descriptivas de las variables numéricas principales. La Tabla~\ref{tab:stats} muestra un resumen de las más relevantes.
+
+\begin{table}[H]
+\centering
+\caption{Estadísticas descriptivas de variables principales}
+\label{tab:stats}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Variable} & \textbf{Media} & \textbf{Std} & \textbf{Min} & \textbf{Max} \\ \midrule
+Age & 24.31 & 6.35 & 14.0 & 61.0 \\
+Height & 1.70 & 0.09 & 1.45 & 1.98 \\
+Weight & 86.59 & 26.19 & 39.0 & 173.0 \\
+FAF (Actividad física) & 1.01 & 0.85 & 0.0 & 3.0 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Distribuciones}
+
+Generé histogramas de todas las variables numéricas para entender sus distribuciones. Lo que observé es que la variable Weight presenta una distribución bastante amplia, lo cual tiene sentido dado que estamos clasificando desde peso insuficiente hasta obesidad tipo III.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{images/distribuciones_univariadas.png}
+\caption{Distribuciones de las variables numéricas del dataset}
+\label{fig:distribuciones}
+\end{figure}
+
+Las variables Age y Height siguen distribuciones relativamente normales, mientras que FAF y TUE presentan distribuciones más sesgadas.
+
+\subsubsection{Correlaciones}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\columnwidth]{images/correlacion_matrix.png}
+\caption{Matriz de correlación entre variables numéricas}
+\label{fig:correlacion}
+\end{figure}
+
+El análisis de correlaciones reveló una relación muy fuerte entre Weight y Height (como era de esperar), así como correlaciones moderadas entre la frecuencia de consumo de vegetales (FCVC) y otros hábitos alimenticios.
+
+\subsubsection{Balance de Clases}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\columnwidth]{images/class_distribution.png}
+\caption{Distribución de los niveles de obesidad en el dataset}
+\label{fig:balance}
+\end{figure}
+
+Observé que las clases están razonablemente balanceadas, con cada una representando entre el 10\% y el 17\% del total de muestras. Esto es favorable para el entrenamiento de los modelos.
+
+\subsubsection{Hallazgos del EDA}
+
+Los principales hallazgos del análisis exploratorio fueron:
+\begin{itemize}
+    \item El peso y la altura tienen una correlación esperada y son claramente discriminativos
+    \item No hay valores faltantes en ninguna variable
+    \item Las clases están balanceadas, lo que facilita el entrenamiento
+    \item La visualización PCA muestra cierta separabilidad entre las clases extremas
+    \item Algunas variables categóricas como MTRANS tienen múltiples categorías que requieren One-Hot Encoding
+\end{itemize}
+
+\subsection{Preprocesamiento}
+
+\subsubsection{Valores Faltantes}
+
+El dataset no presenta valores faltantes, por lo que no fue necesario aplicar ninguna estrategia de imputación.
+
+\subsubsection{Outliers}
+
+Utilicé el método IQR para detectar outliers. Encontré algunos valores atípicos principalmente en las variables Age y Weight, pero decidí mantenerlos ya que representan casos legítimos (personas de mayor edad o con pesos extremos).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{images/boxplots.png}
+\caption{Box plots para detección de outliers}
+\label{fig:boxplots}
+\end{figure}
+
+\subsubsection{Transformaciones}
+
+Apliqué las siguientes transformaciones:
+\begin{itemize}
+    \item \textbf{Label Encoding}: Para variables binarias (Gender, family\_history, FAVC, SMOKE, SCC)
+    \item \textbf{One-Hot Encoding}: Para variables categóricas multinivel (CAEC, CALC, MTRANS)
+    \item \textbf{StandardScaler}: Para normalizar todas las features antes del entrenamiento
+\end{itemize}
+
+La justificación del uso de StandardScaler es que los algoritmos como Regresión Logística y SVM son sensibles a la escala de las variables.
+
+\subsection{Train-Test Split}
+
+Dividí los datos en 80\% para entrenamiento y 20\% para test, utilizando estratificación para mantener la proporción de clases.
+
+\begin{table}[H]
+\centering
+\caption{División de datos}
+\label{tab:split}
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Conjunto} & \textbf{N} & \textbf{\%} \\ \midrule
+Train & 1688 & 80 \\
+Test & 423 & 20 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Pipeline}
+
+Implementé el flujo de ML utilizando pipelines de scikit-learn para asegurar reproducibilidad y evitar data leakage:
+
+\begin{lstlisting}
+pipe = Pipeline([
+    ('scaler', StandardScaler()),
+    ('classifier', RandomForestClassifier())
+])
+\end{lstlisting}
+
+\subsection{Modelos Evaluados}
+
+\begin{table}[H]
+\centering
+\caption{Modelos y configuración inicial}
+\label{tab:modelos}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Modelo} & \textbf{Parámetros} \\ \midrule
+Regresión Logística & max\_iter=1000 \\
+Random Forest & n\_estimators=100 \\
+SVM & kernel=rbf, C=1.0 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Métricas}
+
+Al tratarse de un problema de clasificación multiclase, utilicé las siguientes métricas:
+\begin{itemize}
+    \item \textbf{Accuracy}: Proporción de predicciones correctas
+    \item \textbf{Precision} (weighted): Precisión ponderada por clase
+    \item \textbf{Recall} (weighted): Sensibilidad ponderada por clase
+    \item \textbf{F1-Score} (weighted): Media armónica de precision y recall
+\end{itemize}
+
+\section{Resultados}
+
+\subsection{Comparación de Modelos}
+
+\begin{table}[H]
+\centering
+\caption{Resultados de los modelos en el conjunto de test}
+\label{tab:resultados}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Modelo} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\ \midrule
+Reg. Logística & 0.86 & 0.86 & 0.86 & 0.86 \\
+Random Forest & 0.95 & 0.95 & 0.95 & 0.95 \\
+SVM & 0.93 & 0.93 & 0.93 & 0.93 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Matriz de Confusión}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{images/confusion_matrices.png}
+\caption{Matrices de confusión de los tres modelos evaluados}
+\label{fig:confusion}
+\end{figure}
+
+Las matrices de confusión muestran que Random Forest comete menos errores entre clases adyacentes (por ejemplo, confundir Sobrepeso I con Sobrepeso II).
+
+\subsection{Validación Cruzada}
+
+Los resultados de validación cruzada (5-fold) confirmaron la estabilidad de los modelos:
+\begin{itemize}
+    \item Regresión Logística: Accuracy = 0.85 ± 0.02
+    \item Random Forest: Accuracy = 0.94 ± 0.01
+    \item SVM: Accuracy = 0.92 ± 0.02
+\end{itemize}
+
+La baja desviación estándar indica que los modelos son estables y generalizan bien.
+
+\subsection{Optimización}
+
+Apliqué GridSearchCV para optimizar los hiperparámetros de Random Forest:
+
+\begin{table}[H]
+\centering
+\caption{Mejores hiperparámetros encontrados}
+\label{tab:best_params}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} \\ \midrule
+n\_estimators & 200 \\
+max\_depth & 20 \\
+min\_samples\_split & 2 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\section{Análisis y Discusión}
+
+El modelo Random Forest obtuvo el mejor rendimiento con un F1-Score de 0.95, superando tanto a Regresión Logística como a SVM. Esto tiene sentido considerando que Random Forest puede capturar relaciones no lineales complejas y es robusto a diferentes escalas de variables.
+
+La Regresión Logística, aunque tuvo el peor rendimiento relativo (0.86), sigue siendo un resultado muy respetable para un problema de 7 clases. Su menor rendimiento se debe probablemente a que las fronteras de decisión entre clases adyacentes de obesidad no son perfectamente lineales.
+
+El preprocesamiento fue crucial para el éxito de los modelos. En particular, la codificación adecuada de las variables categóricas (usando One-Hot para evitar imponer orden falso en variables nominales) y la estandarización permitieron que todos los algoritmos funcionaran correctamente.
+
+Una limitación importante es que el 77\% de los datos fueron generados sintéticamente con SMOTE. Aunque esto ayuda con el balance de clases, puede introducir patrones artificiales que no existen en datos reales.
+
+Los pipelines demostraron ser una herramienta invaluable para evitar data leakage. Al encapsular el preprocesamiento y el modelo, me aseguré de que el scaler se ajustara únicamente con los datos de entrenamiento durante cada fold de validación cruzada.
+
+\section{Conclusiones}
+
+En este trabajo completé exitosamente el flujo completo de Machine Learning sobre el dataset de niveles de obesidad:
+
+\begin{itemize}
+    \item \textbf{Objetivo alcanzado}: Logré predecir el nivel de obesidad con alta precisión (95\% F1-Score)
+    \item \textbf{Principal hallazgo}: Random Forest fue el mejor modelo, probablemente debido a su capacidad de capturar relaciones no lineales
+    \item \textbf{Modelo final}: Random Forest con n\_estimators=200 y max\_depth=20
+    \item \textbf{Aprendizaje clave}: La importancia de los pipelines para evitar data leakage y asegurar reproducibilidad
+    \item \textbf{Mejoras futuras}: Probar técnicas de feature engineering basadas en IMC (Weight/Height²) y explorar modelos de ensamble más sofisticados como XGBoost
+\end{itemize}
+
+\end{document}
