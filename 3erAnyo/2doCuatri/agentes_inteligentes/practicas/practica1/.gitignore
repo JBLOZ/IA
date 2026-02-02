@@ -1,0 +1,22 @@
+# Datasets (no incluir en entrega)
+data/
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos temporales de LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# Checkpoints de modelos
+*.pt
+*.pth
+checkpoints/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
