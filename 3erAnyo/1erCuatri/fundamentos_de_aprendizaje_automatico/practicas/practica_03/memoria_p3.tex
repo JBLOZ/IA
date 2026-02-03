@@ -1,0 +1,241 @@
+%%%%%%%% ICML 2025 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+
+\documentclass{article}
+\usepackage[T1]{fontenc}
+% Recommended, but optional, packages for figures and better typesetting:
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs} % for professional tables
+
+% hyperref makes hyperlinks in the resulting PDF.
+% If your build breaks (sometimes temporarily if a hyperlink spans a page)
+% please comment out the following usepackage line and replace
+% \usepackage{icml2025} with \usepackage[nohyperref]{icml2025} above.
+\usepackage{hyperref}
+
+
+% Attempt to make hyperref and algorithmic work together better:
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Use the following line for the initial blind version submitted for review:
+% \usepackage{icml2025}
+
+% If accepted, instead use the following line for the camera-ready submission:
+\usepackage[accepted]{icml2025}
+
+% Eliminar el texto de "Proceedings of ICML..." de la primera página
+\makeatletter
+\renewcommand{\ICML@appearing}{}
+\makeatother
+
+% For theorems and such
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+
+% if you use cleveref..
+\usepackage[capitalize,noabbrev]{cleveref}
+
+% Custom table spacing
+\usepackage{tabla}
+
+% Pie de página personalizado en la última página
+\usepackage{lastpage}
+\makeatletter
+\fancypagestyle{lastpagestyle}{%
+  \fancyhf{}
+  \fancyhead{}
+  \chead{}
+  \cfoot{\thepage\\[0.3cm]\small\hypertarget{author1}{}\textsuperscript{1}Jordi Blasco Lozano -- DNI: 74527208D -- jordiblloz@gmail.com}
+  \renewcommand{\headrulewidth}{1pt}
+}
+\AtEndDocument{\thispagestyle{lastpagestyle}}
+\makeatother
+
+
+
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{Reducción de Dimensionalidad y Clasificación con PCA, Autoencoders, k-NN y MLP}
+
+\begin{document}
+
+\twocolumn[
+\icmltitle{Análisis Comparativo de Técnicas de Reducción de Dimensionalidad \\ y Clasificadores: PCA, Autoencoders, k-NN y Perceptrón Multicapa}
+
+% It is OKAY to include author information, even for blind
+% submissions: the style file will automatically remove it for you
+% unless you've provided the [accepted] option to the icml2025
+% package.
+
+\begin{icmlauthorlist}
+\icmlauthor{Jordi Blasco Lozano\hyperlink{author1}{\textsuperscript{1}}}{}
+\end{icmlauthorlist}
+
+% You may provide any keywords that you
+% find helpful for describing your paper; these are used to populate
+% the "keywords" metadata in the PDF but will not be shown in the document
+\icmlkeywords{Machine Learning, Dimensionality Reduction, PCA, Autoencoders, k-NN, Neural Networks, Statistical Testing}
+
+\vskip 0.3in
+]
+
+% this must go after the closing bracket ] following \twocolumn[ ...
+
+\begin{abstract}
+Este trabajo aborda la práctica 3 en la asignatura de Fundamentos del Aprendizaje Automático, comparando técnicas de reducción de dimensionalidad (PCA y Autoencoders) combinadas con dos clasificadores (k-NN y Perceptrón Multicapa). Se evalúa el rendimiento sobre cinco datasets mediante validación cruzada 5-fold estratificada, empleando pruebas estadísticas de Wilcoxon para validar diferencias significativas.
+\end{abstract}
+
+\section{Introducción}
+\label{introduction}
+
+La reducción de dimensionalidad es un componente esencial en el aprendizaje automático moderno, permitiendo mitigar la maldición de la dimensionalidad, reducir el coste computacional y eliminar redundancias en los datos. Esta práctica investiga dos enfoques fundamentales: \textbf{PCA} (Principal Component Analysis), una técnica lineal clásica que maximiza la varianza preservada, y \textbf{Autoencoders}, arquitecturas neuronales capaces de aprender representaciones no lineales mediante compresión-reconstrucción.
+
+Complementariamente, se evalúan dos clasificadores de naturaleza distinta: \textbf{k-NN} (k-Nearest Neighbors), un método no paramétrico basado en proximidad local, y \textbf{MLP} (Multi-Layer Perceptron), una red neuronal feedforward que aprende fronteras de decisión complejas mediante retropropagación. La combinación sistemática de estas técnicas sobre los cinco datasets permite analizar cuándo la reducción de dimensionalidad es beneficiosa y qué tipo de clasificador se adapta mejor a cada escenario.
+
+\section{Datasets Utilizados}
+\label{dataset}
+
+Se han empleado cinco datasets con características diversas, permitiendo evaluar la generalización de las técnicas:
+
+\textbf{1. Breast Tissue (106 instancias, 9 características, 6 clases):} Dataset médico de impedancia eléctrica en tejido mamario, clasificando tipos de tejido (carcinoma, fibroadenoma, mastopía, tejido glandular, conjuntivo, adiposo). Presenta alta dimensionalidad relativa ($d/N \approx 0.085$) y clases con solapamiento conceptual, dificultando la separación lineal.
+
+\textbf{2. Cinema (1500 instancias, 14 características, 2 clases):} Dataset binario sobre ocupación de salas de cine según características temporales, meteorológicas y de tráfico. Con 1500 instancias bien balanceadas, representa un escenario favorable para clasificación con datos suficientes y estructura clara.
+
+\textbf{3. Spotify (50,000 instancias, 17 características, 10 clases):} Dataset masivo de clasificación de géneros musicales basado en características acústicas extraídas por Spotify (danceability, energy, loudness, speechiness, acousticness, etc.). La alta dimensionalidad ($d=17$) combinada con 10 géneros genera solapamientos complejos entre categorías musicales cercanas (e.g., rock-metal, jazz-blues).
+
+\textbf{4. Wine Quality (1600 instancias, 11 características, 6 clases):} Dataset sobre calidad del vino basado en pruebas fisicoquímicas (acidez, azúcar, pH, alcohol, etc.). Originalmente un problema de regresión (puntuación 3-8), se trata aquí como clasificación. Es un dataset difícil donde las fronteras entre calidades adyacentes son difusas.
+
+\textbf{5. Zoo (101 instancias, 16 características, 7 clases):} Dataset clásico de clasificación de animales en 7 tipos (mamíferos, aves, reptiles, peces, anfibios, invertebrados, insectos) mediante 16 atributos binarios (pelo, plumas, huevos, vuela, etc.). Con solo 101 instancias, representa un escenario de datos escasos donde la reducción puede causar pérdida crítica de información.
+
+
+\section{Metodología}
+\label{methodology}
+
+\subsection{Preprocesamiento y Corrección de Datos}
+
+Durante la implementación se identificaron y resolvieron dos problemas que afectaban la integridad de los datasets:
+
+\textbf{Problema 1: Inconsistencia en columnas de clase.} En {breast\_tissue}, la columna \texttt{class} aparecía como primera columna en lugar de última, violando el formato estándar. En \textit{cinema}, existían dos columnas redundantes (\texttt{occupancy\_class} y \texttt{class}) con información idéntica. Esto causaba errores al procesar automáticamente los archivos CSV. Por ello, normalicé los CSV unificando el nombre de la clase a \texttt{class}, eliminando columnas redundantes en \textit{cinema} y reubicando la clase al final para garantizar un formato uniforme.
+
+\textbf{Problema 2: Colapso de salidas en Autoencoder.} El uso inicial de activación ReLU provocó representaciones latentes nulas ("neuronas muertas"), especialmente en \textit{breast\_tissue}. Para solucionarlo, cambié la activación a \texttt{tanh}, que preserva mejor la información al mapear valores en $(-1, 1)$, y aumenté \texttt{max\_iter} a 2000. Esta configuración se aplicó uniformemente a todos los datasets para garantizar la coherencia experimental.  
+
+\subsection{Técnicas de Reducción de Dimensionalidad}
+
+\textbf{PCA (Principal Component Analysis):} Se aplica PCA estándar preservando \textbf{60\% de varianza acumulada}. Esta es una reducción bastante fuerte que probablemente cause una pérdida de rendimiento en los datasets que tienen pocas dimensiones, ya que cada característica original suele ser importante. Al quedarnos solo con el 60\% de la varianza, el algoritmo selecciona las componentes principales más relevantes y descarta el resto. Esto simplifica los datos, pero conlleva el riesgo de perder detalles necesarios para una buena clasificación.
+
+\textbf{Autoencoder Neuronal:} Hemos utilizado la función \texttt{MLPRegressor} de la librería \texttt{scikit-learn} para configurar una red neuronal que aprende a comprimir los datos reduciendo sus dimensiones a la mitad. La idea es forzar a la red a pasar la información por un "cuello de botella" (una capa con menos neuronas), obligándola a quedarse solo con lo más importante para poder reconstruir el dato original después. Para asegurar que funcione bien y no pierda información valiosa (evitando neuronas "muertas"), hemos ajustado la configuración interna usando funciones suaves (\texttt{tanh}) y permitiendo un entrenamiento más largo. Una vez entrenada la red, nos quedamos con la información comprimida de la capa central.
+
+\subsection{Clasificadores}
+
+\textbf{k-Nearest Neighbors (k-NN):} Clasificador no paramétrico que asigna la clase mayoritaria entre los $k$ vecinos más cercanos según distancia Euclidiana. Hiperparámetro $k$ optimizado mediante búsqueda en $k \in \{1, 3, 5, 7, 9, 11\}$ usando validación cruzada anidada. Con $k=1$, el método se vuelve determinista (asigna clase del vecino más próximo); valores mayores suavizan fronteras de decisión pero pueden diluir información local.
+
+\textbf{Multi-Layer Perceptron (MLP):} Es una red neuronal artificial clásica que aprende relaciones complejas y no lineales en los datos. Hemos utilizado una arquitectura con una capa oculta, probando diferentes tamaños (50, 100 o 200 neuronas) y funciones de activación (ReLU o tangente hiperbólica) para encontrar la mejor configuración. El entrenamiento se realizó mediante el optimizador Adam, ajustando los pesos de la red para minimizar el error de clasificación, permitiendo hasta 2000 iteraciones para asegurar que el modelo converja adecuadamente.
+
+
+\section{Resultados}
+
+\begin{figure}[ht]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=\columnwidth]{knn_comparison_barplot.png}}
+\caption{Comparación de resultados F1-macro para k-NN en los 5 datasets.}
+\label{fig:knn_barplot}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+\begin{figure}[ht]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=\columnwidth]{mlp_comparison_barplot.png}}
+\caption{Comparación de resultados F1-macro para MLP en los 5 datasets.}
+\label{fig:mlp_barplot}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+
+
+\subsection{Análisis por Dataset}
+
+\textbf{Breast Tissue:} El mejor resultado se obtiene con los datos originales usando k-NN (F1=0.659). La reducción de dimensionalidad afecta negativamente, especialmente a MLP con PCA, que cae drásticamente a F1=0.175. El Autoencoder mejora ligeramente respecto a PCA (F1=0.516 con k-NN), pero no logra superar al original, indicando que la compresión elimina información relevante en un dataset con pocas instancias.
+
+\textbf{Cinema:} MLP con datos originales alcanza un rendimiento casi perfecto (F1=0.987). La reducción con PCA disminuye el rendimiento (F1=0.871 con MLP), mientras que el Autoencoder recupera parte de la información (F1=0.951), aunque sin igualar al original. Esto sugiere que las características originales son necesarias para una separación óptima.
+
+\textbf{Spotify:} PCA mejora notablemente el rendimiento, subiendo de F1=0.405 (k-NN original) a F1=0.679. MLP con PCA obtiene el mejor resultado global (F1=0.696). Esto confirma la presencia de ruido y redundancia en los datos originales que PCA logra filtrar eficazmente. El Autoencoder, sin embargo, no logra capturar esta ventaja (F1=0.381 con k-NN).
+
+\textbf{Wine Quality:} El rendimiento general es bajo. PCA mejora levemente a k-NN (F1=0.348 vs 0.333 original), sugiriendo cierta redundancia. MLP tiene dificultades en todas las configuraciones (F1 $\approx$ 0.23-0.25), lo que indica una complejidad en los datos que los modelos actuales no logran modelar adecuadamente.
+
+\textbf{Zoo:} Los datos originales dominan con k-NN (F1=0.932). PCA reduce ligeramente el rendimiento (F1=0.895), mientras que el Autoencoder se mantiene muy competitivo (F1=0.922), demostrando capacidad para comprimir características binarias sin gran pérdida de información, a pesar del tamaño reducido del dataset.
+
+\subsection{Análisis Estadístico: Test de Wilcoxon}
+
+Para validar si las diferencias observadas son estadísticamente significativas, se aplica el \textbf{test de Wilcoxon signed-rank} con $\alpha=0.05$, comparando rendimientos F1 sobre los 25 folds totales (5 folds $\times$ 5 datasets). La \cref{tab:wilcoxon} muestra los resultados.
+
+\begin{table}[h]
+\caption{Resultados del test de Wilcoxon (nivel $\alpha=0.05$)}
+\label{tab:wilcoxon}
+\vskip 0.15in
+\begin{center}
+\begin{small}
+\begin{sc}
+\begin{tabular}{lccl}
+\toprule
+\textbf{Comparación} & \textbf{n} & \textbf{p-valor} & \textbf{Sig.} \\
+\midrule
+k-NN Orig. vs k-NN PCA & 25 & 0.5249 & ⚪ No \\
+k-NN Orig. vs k-NN AE & 25 & 0.0626 & ⚪ No \\
+k-NN PCA vs k-NN AE & 25 & 0.8532 & ⚪ No \\
+MLP Orig. vs MLP PCA & 25 & 0.2411 & ⚪ No \\
+MLP Orig. vs MLP AE & 25 & \textbf{0.0096} & ✅ Sí \\
+MLP PCA vs MLP AE & 25 & 0.5424 & ⚪ No \\
+\bottomrule
+\end{tabular}
+\end{sc}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+La única diferencia estadísticamente significativa se encuentra entre \textbf{MLP Original y MLP Autoencoder} (p=0.0096), donde el modelo original supera consistentemente a la versión con Autoencoder. Esto confirma que, para redes neuronales, la pérdida de información al comprimir los datos (incluso con un Autoencoder no lineal) perjudica el rendimiento global más que el beneficio que podría aportar la reducción de ruido o dimensionalidad. Las comparaciones con k-NN no muestran diferencias significativas globales, lo que indica que la efectividad de la reducción depende totalmente del dataset específico (mejorando en Spotify/Wine, empeorando en otros), cancelándose los efectos al promediar.
+
+
+
+
+\section{Discusión y Conclusiones}
+\label{discussion}
+
+Este trabajo revela patrones críticos sobre cuándo aplicar reducción de dimensionalidad y qué clasificador emplear según las características del dataset:
+
+\textbf{1. La reducción NO siempre mejora:} Contraintuitivamente, en 3 de 5 datasets (breast\_tissue, cinema, zoo) los datos originales superan las versiones reducidas. Esto desmitifica la noción de que "menos dimensiones = mejor rendimiento". La reducción solo aporta valor cuando: (a) existe redundancia significativa (caso Spotify), (b) el ruido en features originales corrompe señal, o (c) el dataset es tan masivo que el coste computacional de dimensiones altas es prohibitivo. En datasets pequeños y cuidadosamente diseñados (zoo, breast\_tissue), cada feature contiene información única que PCA o Autoencoders descartan al comprimir.
+
+\textbf{2. PCA destaca en datos ruidosos con alta redundancia:} El caso Spotify es paradigmático: 17 características acústicas (danceability, energy, valence, etc.) presentan correlaciones evidentes (e.g., energy-loudness, acousticness-valence), y PCA al proyectar sobre direcciones de máxima varianza elimina ruido efectivamente. Mejora del 67\% en F1 (0.405$\rightarrow$0.679) demuestra que PCA es una técnica simple pero poderosa cuando las asunciones lineales son válidas. Sin embargo, falla en espacios donde la estructura es intrínsecamente no lineal o donde pocas dimensiones contienen toda la información (breast\_tissue).
+
+\textbf{3. Autoencoders requieren datos abundantes:} La arquitectura neuronal del Autoencoder necesita miles de muestras para aprender representaciones útiles. Con 101 instancias (zoo), el Autoencoder entrena pero no generaliza óptimamente, quedando ligeramente por debajo del original. Con 50,000 instancias (Spotify), sin embargo, el Autoencoder falla porque la reducción a la mitad ($17 \rightarrow 8$ dimensiones) es demasiado agresiva para un problema de 10 clases. Esto sugiere que el \textit{bottleneck} debe ajustarse dinámicamente: mantener más dimensiones en problemas complejos ($k \approx 2d/3$ en lugar de $d/2$).
+
+\textbf{4. k-NN vs MLP: complementariedad:} El test de Wilcoxon revela que MLP sufre significativamente más que k-NN al usar Autoencoders (p=0.0096). Esto es lógico: MLP ya tiene capacidad de aprender representaciones internas en sus capas ocultas; forzar una compresión externa previa con otro MLP (el Autoencoder) puede interferir con su aprendizaje. k-NN, al ser un método basado en distancias, es más agnóstico al origen de las características, pero se beneficia enormemente de la limpieza de ruido que hace PCA en datasets como Spotify.
+
+
+
+\textbf{Conclusión final:} Este estudio demuestra que no existe una solución universal en reducción de dimensionalidad. La efectividad de PCA, Autoencoders, k-NN y MLP depende críticamente de la estructura intrínseca de los datos: redundancia, ruido, tamaño muestral y complejidad de clases. El análisis riguroso mediante validación cruzada y tests estadísticos permite tomar decisiones informadas, evitando aplicar técnicas sin justificación empírica.
+
+\end{document}
+
+
+% This document was modified from the file originally made available by
+% Pat Langley and Andrea Danyluk for ICML-2K. This version was created
+% by Iain Murray in 2018, and modified by Alexandre Bouchard in
+% 2019 and 2021 and by Csaba Szepesvari, Gang Niu and Sivan Sabato in 2022.
+% Modified again in 2023 and 2024 by Sivan Sabato and Jonathan Scarlett.
+% Previous contributors include Dan Roy, Lise Getoor and Tobias
+% Scheffer, which was slightly modified from the 2010 version by
+% Thorsten Joachims & Johannes Fuernkranz, slightly modified from the
+% 2009 version by Kiri Wagstaff and Sam Roweis's 2008 version, which is
+% slightly modified from Prasad Tadepalli's 2007 version which is a
+% lightly changed version of the previous year's version by Andrew
+% Moore, which was in turn edited from those of Kristian Kersting and
+% Codrina Lauth. Alex Smola contributed to the algorithmic style files.
