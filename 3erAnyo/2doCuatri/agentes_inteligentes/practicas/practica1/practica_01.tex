@@ -70,27 +70,25 @@
 ]
 
 \begin{abstract}
-Este trabajo documenta el desarrollo y análisis de la Práctica 1 sobre Graph Neural Networks (GNNs). Se ha investigado el comportamiento de las GNNs frente a modelos tradicionales (MLP) utilizando tanto un dataset sintético diseñado específicamente para aislar el valor de la estructura del grafo, como datasets de referencia (Cora y Citeseer). Los experimentos demuestran que las GCN superan dramáticamente a los MLP (99.9\% vs 32.2\% de accuracy) en escenarios donde las características de los nodos son ruidosas pero la homofilia es alta, confirmando que el mecanismo de \textit{message passing} es crucial para recuperar la señal subyacente.
+Práctica 1 Graph Neural Networks (GNNs). Se ha investigado el comportamiento de las GNNs frente a modelos tradicionales (MLP) utilizando tanto un dataset sintético diseñado específicamente para aislar el valor de la estructura del grafo, como datasets de referencia (Cora y Citeseer). Los experimentos demuestran que las GCN superan dramáticamente a los MLP (99.9\% vs 32.2\% de accuracy) en escenarios donde las características de los nodos son ruidosas pero la homofilia es alta, confirmando que el mecanismo de message passing es crucial para recuperar la señal subyacente.
 \end{abstract}
 
-\section{Introducción y Motivación}
+\section{Introducción}
 \label{introduction}
 
-La mayoría de los algoritmos de aprendizaje profundo asumen que los datos residen en una cuadrícula regular (como las imágenes) o son secuencias (como el texto). Sin embargo, una gran parte de la información del mundo real se estructura en forma de grafos, donde las relaciones entre entidades son tan importantes como las entidades mismas.
+En esta práctica, nos centramos en la tarea de \textbf{clasificación de nodos semi-supervisada}, donde solo una pequeña fracción de los nodos tiene etiquetas conocidas y debemos predecir el resto. El objetivo central es evidenciar las limitaciones de los modelos que ignoran la estructura relacional, como el Perceptrón Multicapa (MLP), y contrastarlos con modelos mejor diseñados para operar sobre grafos, específicamente las Graph Convolutional Networks (GCN).
 
-En esta práctica, nos centramos en la tarea de \textbf{clasificación de nodos semi-supervisada}, donde solo una pequeña fracción de los nodos tiene etiquetas conocidas y debemos predecir el resto. El objetivo central es evidenciar las limitaciones de los modelos que ignoran la estructura relacional, como el Perceptrón Multicapa (MLP), y contrastarlos con modelos diseñados para operar sobre grafos, específicamente las Graph Convolutional Networks (GCN).
-
-La hipótesis fundamental que validaremos es que el mecanismo de \textit{message passing} (paso de mensajes) de las GCN permite mitigar el ruido en las características individuales mediante la agregación de información del vecindario, un proceso que es imposible para un MLP que asume independencia entre muestras ($iid$).
+La hipótesis fundamental que validaremos es que el mecanismo de \textit{message passing} de las GCN permite mitigar el ruido en las características individuales mediante la agregación de información del vecindario, un proceso que es imposible para un MLP que asume independencia entre muestras.
 
 \section{Creación del Dataset Sintético}
 \label{dataset}
 
-Para realizar un análisis riguroso, no basta con usar datasets estándar donde no controlamos las propiedades de los datos. Por ello, he diseñado y generado un dataset sintético (\textit{Custom Dataset}) con el objetivo de llevar los modelos al límite y demostrar sus diferencias fundamentales.
+Para el análisis, no basta con usar datasets estándar donde no controlamos las propiedades de los datos. Se ha diseñado y generado el (\textit{Custom Dataset}) con el objetivo de demostrar las diferencias fundamentales entre los modelos.
 
-\textbf{Generación de la Estructura (Topología):}
-Se utilizó el modelo \textbf{Stochastic Block Model (SBM)} para generar un grafo con las siguientes características:
+\textbf{Generación de la Estructura:}
+Se utilizó el modelo \textbf{Stochastic Block Model} para generar un grafo con las siguientes características:
 \begin{itemize}
-    \item \textbf{Nodos:} 2000 nodos divididos en 4 comunidades (clases) de tamaño equilibrado.
+    \item \textbf{Nodos:} 2000 nodos divididos en 4 comunidades del mismo tamaño.
     \item \textbf{Homofilia Estructural:} Se definió una probabilidad de conexión intra-clase $p_{in}=0.02$ y una inter-clase $p_{out}=0.001$. Esto asegura que, topológicamente, los nodos de la misma clase estén densamente conectados, creando comunidades bien definidas.
 \end{itemize}
 
@@ -103,7 +101,7 @@ Si las características fueran perfectas, un MLP obtendría casi 100\% de aciert
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.87\columnwidth]{images/image.png}
+    \includegraphics[width=\columnwidth]{images/image.png}
 \end{figure}
 
 \begin{figure}[h]
@@ -111,14 +109,13 @@ Si las características fueran perfectas, un MLP obtendría casi 100\% de aciert
     \label{fig:graph_structure}
 \end{figure}
 
-\newpage
 Tal como se aprecia en la \cref{fig:graph_structure}, la topología resultante es muy informativa. A pesar del ruido en los nodos individuales, un nodo está casi siempre conectado a nodos de su misma clase, lo cual es la premisa que explota la GCN.
 
 \section{Modelos Implementados}
 \label{models}
 
 \subsection{Multi-Layer Perceptron (MLP)}
-El MLP actúa como nuestro \textit{baseline} agnóstico del grafo. Se implementó como una red feedforward con:
+Se implementó como una red feedforward con:
 \begin{itemize}
     \item Capa de entrada: Proyección lineal de dimensiones de entrada a ocultas.
     \item Función de activación: ReLU.
@@ -130,8 +127,7 @@ Matemáticamente, para un nodo $i$, la salida depende exclusivamente de $\mathbf
 \subsection{Graph Convolutional Network (GCN)}
 Cada capa realiza la operación:
 $$ \mathbf{H}^{(l+1)} = \sigma(\tilde{\mathbf{D}}^{-1/2}\tilde{\mathbf{A}}\tilde{\mathbf{D}}^{-1/2} \mathbf{H}^{(l)} \mathbf{W}^{(l)}) $$
-Donde $\tilde{\mathbf{A}}$ es la matriz de adyacencia con self-loops.
-Interpretación: Esta operación realiza una suma ponderada de las características del propio nodo y las de sus vecinos, seguido de una transformación lineal y una no-linealidad. En nuestro contexto de ruido gaussiano, este promedio local reduce la varianza del ruido en un factor proporcional al grado del nodo (por la Ley de los Grandes Números), permitiendo que emerja la señal del centroide de la clase.
+Donde $\tilde{\mathbf{A}}$ es la matriz de adyacencia con self-loops. Esta operación realiza una suma ponderada de las características del propio nodo y las de sus vecinos, seguido de una transformación lineal y una no-linealidad. En nuestro contexto de ruido gaussiano, este promedio local reduce la varianza del ruido en un factor proporcional al grado del nodo (por la Ley de los Grandes Números), permitiendo que emerja la señal del centroide de la clase.
 
 \section{Resultados y Análisis}
 \label{results}
@@ -153,8 +149,8 @@ Los resultados en el dataset sintético son contundentes y confirman nuestra hip
 \toprule
 \textbf{Modelo} & \textbf{Acc Media} & \textbf{Std Dev} & \textbf{Gap} \\
 \midrule
-MLP & 0.3223 & $\pm$ 0.02 & - \\
-GCN & \textbf{0.9998} & $\pm$ 0.00 & +67.7\% \\
+MLP & 0.3223 & $\pm$ 0.0175 & - \\
+GCN & \textbf{0.9998} & $\pm$ 0.0007 & +67.7\% \\
 \bottomrule
 \end{tabular}
 \end{sc}
@@ -162,11 +158,11 @@ GCN & \textbf{0.9998} & $\pm$ 0.00 & +67.7\% \\
 \end{center}
 \vskip -0.1in
 \end{table}
-\newpage
+
 \textbf{Análisis del colapso del MLP (0.322):}
 Dado que hay 4 clases, un clasificador aleatorio obtendría un 0.25 (25\%). El MLP con 0.32 apenas supera el azar. Esto indica que el ruido introducido en las características es tan alto que destruye casi toda la información discriminativa a nivel individual. El MLP no puede ver más allá del ruido de cada feature aislada.
 
-\textbf{Análisis del éxito de la GCN (0.998):}
+\textbf{Análisis del éxito de la GCN (0.999):}
 La GCN alcanza la perfección. A pesar de que cada nodo individualmente es ruidoso e inclasificable, el colectivo (la comunidad) contiene la información perfecta. La topología SBM que creamos actúa como un mecanismo de corrección de errores extremadamente potente. La GCN ha aprendido a suavizar las características usando la estructura, recuperando la señal original casi intacta.
 
 \subsection{Validación en Benchmarks Reales}
@@ -197,12 +193,12 @@ GCN & \textbf{0.807} & +24.7\% & \textbf{0.690} & +14.1\% \\
 \end{table}
 
 \textbf{Disminución del Gap:}
-Aunque la GCN sigue siendo muy superior (+24.7\% en Cora), el MLP ya no falla estrepitosamente (0.56 vs 0.32). Esto se debe a que, en Cora, las características son palabras (Bag-of-Words). La presencia de palabras técnicas específicas (ej: "genoma") es por sí misma un predictor fuerte de la clase, independientemente de las citas. Sin embargo, la GCN logra un salto cualitativo al 80\% al combinar esta información semántica con la información de citación (quién cita a quién).
+Aunque la GCN sigue siendo muy superior (+24.7\% en Cora), el MLP ya no falla estrepitosamente (0.56 vs 0.32). Esto se debe a que, en Cora, las características son palabras (Bag-of-Words). La presencia de palabras técnicas específicas (ej: "genoma") es por sí misma un predictor fuerte de la clase, independientemente de las citas. Sin embargo, la GCN en Cora logra un 80\% al combinar esta información semántica con la información de citación (quién cita a quién). También hay que recalcar que la GCN, pese a tener un rendimiento decente en ambos datasets, no llega a la perfección de nuestro dataset sintético. Y esto se debe a que los grafos reales presentan una homofilia imperfecta y una estructura topológica más compleja. A diferencia del SBM, que impone comunidades matemáticamente segregadas, las redes de citación reales contienen enlaces transversales y fronteras difusas entre temas que limitan la capacidad de separación perfecta mediante la propagación de mensajes. 
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\columnwidth]{images/final_comparison.png}
-    \caption{Comparativa final de Accuracy en los tres datasets evaluados. La superioridad de la GCN es consistente.}
+    \caption{Comparativa final de Accuracy en los tres datasets evaluados.}
     \label{fig:final_comparison}
 \end{figure}
 
@@ -220,22 +216,67 @@ Observamos que la GCN converge mucho más rápido y a pérdidas mucho menores. E
     \label{fig:training_curves}
 \end{figure}
 
-En la \cref{fig:training_curves} se hace evidente la disparidad en la dinámica de aprendizaje. Mientras la loss de la GCN cae a casi cero, la del MLP permanece alta, indicando que el modelo no encuentra patrones fiables en las características aisladas.
+En la \cref{fig:training_curves} se hace evidente la disparidad en la dinámica de aprendizaje. Mientras la loss de la GCN cae a cero, la del MLP permanece alta, indicando que el modelo no encuentra patrones fiables en las características aisladas. Podemos observar como vemos un comportamiento extraño en el plot de training, vemos como pese a saber que MLP es un modelo malo para nuestro dataset, la curva roja sube en esta gráfica a mas de 0.8 mientras que en la gráfica de validación se mantiene en todo momento al rededor del 0.3, esto se debe a que el modelo está experimentando un \textbf{sobreajuste (overfitting) masivo}. El MLP, al no poder apoyarse en la estructura para cancelar el ruido, opta por memorizar el ruido específico de las muestras de entrenamiento para reducir la pérdida. Sin embargo, dado que este ruido es aleatorio y no contiene información generalizable, la exactitud en validación permanece estancada, revelando que el modelo no ha aprendido ninguna característica discriminativa real. 
 
-\textbf{Dimensiones Ocultas:}
-El análisis de hiperparámetros reveló que 64 unidades ocultas son óptimas. Reducir a 16 unidades causaba un cuello de botella de información (underfitting), mientras que 128 no aportaba mejoras significativas y aumentaba el riesgo de overfitting, especialmente en datasets pequeños como Citeseer.
+\textbf{Análisis de Hiperparámetros:}
+Para validar la robustez de los modelos, he extendido la búsqueda de hiperparámetros a los tres datasets (Custom, Cora, Citeseer).
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\columnwidth]{images/exp_hidden_dims.png}
-    \caption{Efecto de la dimensión oculta en el accuracy de test. Se observa un rendimiento óptimo en 64 unidades.}
+    \caption{Impacto de las dimensiones ocultas en los tres datasets (Accuracy).}
     \label{fig:hidden_dims}
 \end{figure}
 
-La \cref{fig:hidden_dims} ilustra este comportamiento, mostrando estabilidad en la GCN a través de diferentes tamaños, mientras que el MLP sufre más variaciones sin lograr despegar en rendimiento.
+\textbf{Dimensiones Ocultas (\cref{fig:hidden_dims}):}
+Al analizar las dimensiones [16, 32, 64, 128], la evidencia muestra un \textbf{estancamiento del rendimiento} más que una mejora progresiva. Pasar de 32 a 64 o 128 neuronas apenas varía el accuracy (se mantiene estable en $\approx 88\%$ en Cora). Esto indica que la complejidad del problema de clasificación satura rápidamente la capacidad del modelo; añadir más parámetros no permite extraer más información porque el límite viene dado por la calidad de los datos y la estructura, no por la potencia de cálculo. 16 dimensiones resultan suficientes para capturar la semántica latente.
 
-\textbf{Over-smoothing:}
-Un hallazgo teórico importante confirmado visualmente es la tendencia de las representaciones a volverse indistinguibles si aplicamos demasiadas capas de convolución. Con 2 capas, los resultados son óptimos. Experimentos preliminares con más capas mostraron degradación, validando la teoría de que el paso de mensajes reiterado bajo un grafo conexo tiende a promediar las características hacia un estado estacionario global no informativo.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{images/exp_learning_rate.png}
+    \caption{Sensibilidad al Learning Rate.}
+    \label{fig:learning_rate}
+\end{figure}
+
+\textbf{Learning Rate (\cref{fig:learning_rate}):}
+El LR de 0.01 se confirma como el punto óptimo. La caída drástica observada en 0.0001 (especialmente en Cora con GCN bajando al 77.5\%) se debe a una convergencia insuficiente. Con pasos de actualización tan pequeños y un número de épocas fijo (200), el optimizador no logra recorrer la superficie de error hasta el mínimo global, quedándose atascado en zonas subóptimas. En Cora, cuya superficie de optimización es más irregular que en el dataset sintético, este efecto se acentúa porque el modelo necesita actualizaciones más agresivas para escapar de los mínimos locales iniciales.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{images/exp_dropout.png}
+    \caption{Efecto del Dropout.}
+    \label{fig:dropout}
+\end{figure}
+
+\textbf{Regularización - Dropout (\cref{fig:dropout}):}
+El Dropout es una técnica que consiste en apagar aleatoriamente un porcentaje de neuronas durante el entrenamiento para evitar que co-adapten y memoricen ruido. Sorprendentemente, la GCN mantiene un rendimiento extremadamente estable (~88\% en Cora) incluso con dropouts agresivos. La razón de este fenómeno es la \textbf{redundancia estructural}: aunque anulemos características internas de un nodo, el mecanismo de agregación (message passing) recupera información similar promediando a los vecinos. El grafo actúa como una copia de seguridad distribuida de la información, haciendo al modelo inusualmente robusto a la eliminación de características individuales.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{images/exp_weight_decay.png}
+    \caption{Impacto del Weight Decay (L2).}
+    \label{fig:weight_decay}
+\end{figure}
+
+\textbf{Regularización - Weight Decay (\cref{fig:weight_decay}):}
+El Weight Decay aplica una penalización L2 a los pesos ($\lambda ||w||^2$) para mantenerlos pequeños y evitar funciones de decisión excesivamente complejas. Al igual que con el dropout, observamos que no importa demasiado el valor que pongamos, los resultados se mantienen planos. Esto sugiere que las GCN, por su naturaleza de promediado local (filtro paso-bajo), son intrínsecamente regulares. La propia operación de convolución ya suaviza la señal y previene cambios bruscos, actuando como una regularización implícita potente, lo que hace que la regularización explícita (L2) tenga un impacto marginal comparado con modelos no estructurados.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{images/exp_optimizer.png}
+    \caption{Comparativa de Optimizadores.}
+    \label{fig:optimizer}
+\end{figure}
+
+\textbf{Optimizadores (\cref{fig:optimizer}):}
+Para entender los resultados, primero definamos brevemente los optimizadores a utilizar:
+\begin{itemize}
+    \item \textbf{SGD:} Descenso de gradiente estocástico básico, actualiza pesos en dirección opuesta al gradiente.
+    \item \textbf{Adam:} Combina inercia (promedio de gradientes pasados para suavizar dirección) con adaptación (normalización por magnitudes históricas), ajustando tasa y estabilidad de forma autónoma.
+\end{itemize}
+
+Los resultados muestran como SGD fracasa estrepitosamente en los datasets reales (Cora 30\%, Citeseer 26\%), comportándose casi como el azar. Sin mecanismos adaptativos ni momentum, SGD es incapaz de navegar la geometría compleja y dispersa de los grafos, quedándose atascado inmediatamente. Por el contrario, Adam logra converger eficazmente a valores altos (88\% y 76\%), demostrando que para entrenar GNNs de forma fiable, el uso de optimizadores adaptativos que gestionen la escala de los gradientes es una muy buena práctica.
+
 
 \section{Espacio Latente (t-SNE)}
 
@@ -257,8 +298,8 @@ La visualización de los embeddings aprendidos mediante t-SNE proporciona la evi
 \end{figure}
 
 \begin{itemize}
-    \item \textbf{MLP (\cref{fig:mlp_tsne}):} Muestra una "nube" dispersa donde las clases están severamente mezcladas (puntos de distintos colores superpuestos). Dado que el modelo solo ve características ruidosas, no logra proyectar los datos a un espacio donde sean linealmente separables.
-    \item \textbf{GCN (\cref{fig:gcn_tsne}):} Muestra clústeres extremadamente compactos y bien separados, con márgenes amplios entre clases. La estructura del grafo ha actuado como una fuerza de cohesión, obligando a los nodos conectados a tener representaciones vectoriales similares, "limpiando" efectivamente el ruido.
+    \item \textbf{MLP (\cref{fig:mlp_tsne}):} Muestra una nube dispersa donde las clases están severamente mezcladas (puntos de distintos colores superpuestos). Dado que el modelo solo ve características ruidosas, no logra proyectar los datos a un espacio donde sean linealmente separables.
+    \item \textbf{GCN (\cref{fig:gcn_tsne}):} Muestra clústeres extremadamente compactos y bien separados, con márgenes amplios entre clases. La estructura del grafo ha actuado como una fuerza de cohesión, obligando a los nodos conectados a tener representaciones vectoriales similares, limpiando efectivamente el ruido.
 \end{itemize}
 
 \section{Conclusiones}
@@ -266,12 +307,12 @@ La visualización de los embeddings aprendidos mediante t-SNE proporciona la evi
 
 Esta práctica ha servido para deconstruir el funcionamiento de las Graph Neural Networks.
 \begin{enumerate}
-    \item Hemos demostrado que la \textbf{información estructural} es un recurso tan valioso como la información de características. Ignorarla, como hace el MLP, es desperdiciar la mitad de los datos disponibles.
+    \item Hemos demostrado que la información estructural es un recurso tan valioso como la información de características. Ignorarla, como hace el MLP, es desperdiciar la mitad de los datos disponibles.
     \item El dataset sintético probó que la GCN es extraordinariamente robusta al ruido de entrada (0.99 de acierto vs 0.32), comportándose como un potente filtro de denoising estructural.
     \item En datos reales, aunque las características sean informativas, la GCN proporciona una mejora crítica (+14-25\%) al modelar el contexto relacional.
 \end{enumerate}
 
-Como conclusión final, las GCN no son solo "otra arquitectura", sino un cambio de paradigma: pasamos de aprender de entidades aisladas a aprender de \textbf{sistemas interconectados}.
+Como conclusión final, las GCN no son solo otra arquitectura, sino un cambio de paradigma: pasamos de aprender de entidades aisladas a aprender de sistemas interconectados.
 
 
 \end{document}
