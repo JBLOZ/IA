@@ -1,0 +1,266 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{abstract}
+\usepackage{float}
+
+% Configuración de código Python
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray}
+}
+
+% Título y autores
+\title{\textbf{Ejercicio 2: Cuantización}}
+\author{Jordi Blasco Lozano}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\subsection*{Enunciado}
+Calcular la cuantización simétrica uniforme para un vector de entrada dado, convirtiendo valores de punto flotante (Float32) a enteros de 8 bits (INT8).
+
+\textbf{Datos iniciales:}
+\begin{itemize}
+    \item Entrada (valores en punto flotante): $x = [1.23, -0.87]$
+    \item Número de bits: $n = 8$
+    \item Los valores cuantizados son enteros: $q \in \mathbb{Z}$
+\end{itemize}
+
+\textbf{Fórmulas utilizadas:}
+\begin{itemize}
+    \item Valor mínimo cuantizado: $q_{min} = -2^{n-1}$
+    \item Valor máximo cuantizado: $q_{max} = 2^{n-1} - 1$
+    \item Valor absoluto máximo del vector: $\alpha = \max(|x|)$
+    \item Factor de escala: $s = \frac{\alpha}{q_{max}}$
+    \item Cuantización: $q = \text{round}\left(\frac{x}{s}\right)$
+\end{itemize}
+
+\section{Paso 1: Calcular el rango de valores cuantizados}
+
+Para una cuantización de $n = 8$ bits, calculamos el rango de valores enteros que podemos representar.
+
+\textbf{Cálculo de $q_{min}$:}
+\begin{align}
+q_{min} &= -2^{n-1} \\
+q_{min} &= -2^{8-1} \\
+q_{min} &= -2^{7}
+\end{align}
+
+\begin{center}
+\fbox{$q_{min} = -128$}
+\end{center}
+
+\textbf{Cálculo de $q_{max}$:}
+\begin{align}
+q_{max} &= 2^{n-1} - 1 \\
+q_{max} &= 2^{8-1} - 1 \\
+q_{max} &= 2^{7} - 1 \\
+q_{max} &= 128 - 1
+\end{align}
+
+\begin{center}
+\fbox{$q_{max} = 127$}
+\end{center}
+
+\textbf{Interpretación:} Con 8 bits en representación con signo (complemento a dos), podemos representar valores enteros desde $-128$ hasta $127$, lo que nos da un total de $2^8 = 256$ valores posibles.
+
+\section{Paso 2: Calcular el valor absoluto máximo ($\alpha$)}
+
+El valor $\alpha$ determina el rango dinámico de los datos originales. Tomamos el máximo de los valores absolutos del vector de entrada.
+
+\textbf{Cálculo de $\alpha$:}
+\begin{align}
+\alpha &= \max(|x|) \\
+\alpha &= \max(|x_1|, |x_2|) \\
+\alpha &= \max(|1.23|, |-0.87|) \\
+\alpha &= \max(1.23, 0.87)
+\end{align}
+
+\begin{center}
+\fbox{$\alpha = 1.23$}
+\end{center}
+
+\textbf{Interpretación:} El valor máximo absoluto en nuestros datos es $1.23$. Este valor se mapeará al límite del rango cuantizado ($q_{max} = 127$), y su negativo ($-1.23$) se mapearía aproximadamente a $q_{min}$.
+
+\section{Paso 3: Calcular el factor de escala ($s$)}
+
+El factor de escala $s$ relaciona los valores originales en punto flotante con los valores cuantizados enteros.
+
+\textbf{Cálculo de $s$:}
+\begin{align}
+s &= \frac{\alpha}{q_{max}} \\
+s &= \frac{1.23}{127} \\
+s &= 0.009685...
+\end{align}
+
+\begin{center}
+\fbox{$s \approx 0.00969$}
+\end{center}
+
+\textbf{Interpretación:} Cada unidad en el espacio cuantizado representa aproximadamente $0.00969$ en el espacio original. Este es el "paso" o resolución de nuestra cuantización.
+
+\section{Paso 4: Cuantizar cada valor del vector}
+
+Ahora aplicamos la fórmula de cuantización a cada elemento del vector $x$.
+
+\subsection{Cuantización de $x_1 = 1.23$}
+
+\textbf{Paso 4.1: Calcular $q_1$}
+\begin{align}
+q_1 &= \text{round}\left(\frac{x_1}{s}\right) \\
+q_1 &= \text{round}\left(\frac{1.23}{0.00969}\right) \\
+q_1 &= \text{round}(126.93...) \\
+q_1 &= \text{round}(127)
+\end{align}
+
+\begin{center}
+\fbox{$q_1 = 127$}
+\end{center}
+
+\textbf{Verificación:} El valor $1.23$ es el máximo absoluto ($\alpha$), por lo que se mapea exactamente a $q_{max} = 127$, como era de esperar en la cuantización simétrica.
+
+\subsection{Cuantización de $x_2 = -0.87$}
+
+\textbf{Paso 4.2: Calcular $q_2$}
+\begin{align}
+q_2 &= \text{round}\left(\frac{x_2}{s}\right) \\
+q_2 &= \text{round}\left(\frac{-0.87}{0.00969}\right) \\
+q_2 &= \text{round}(-89.78...) \\
+q_2 &= \text{round}(-90)
+\end{align}
+
+\begin{center}
+\fbox{$q_2 = -90$}
+\end{center}
+
+\textbf{Verificación:} El valor está dentro del rango válido $[-128, 127]$, por lo que no hay necesidad de recorte (clipping).
+
+\section{Paso 5: Vector cuantizado final}
+
+\begin{center}
+\framebox[0.9\linewidth]{
+\parbox{0.85\linewidth}{
+\centering
+\textbf{Vector cuantizado:} $q = [127, -90]$
+}
+}
+\end{center}
+
+\section{Paso 6: Decuantización (Reconstrucción)}
+
+Para verificar la precisión de la cuantización, podemos reconstruir los valores originales aproximados usando la operación inversa:
+
+\textbf{Fórmula de decuantización:}
+$$ \hat{x} = q \cdot s $$
+
+\subsection{Reconstrucción de $x_1$}
+\begin{align}
+\hat{x}_1 &= q_1 \cdot s \\
+\hat{x}_1 &= 127 \cdot 0.00969 \\
+\hat{x}_1 &= 1.2306
+\end{align}
+
+\begin{center}
+\fbox{$\hat{x}_1 \approx 1.23$}
+\end{center}
+
+\subsection{Reconstrucción de $x_2$}
+\begin{align}
+\hat{x}_2 &= q_2 \cdot s \\
+\hat{x}_2 &= (-90) \cdot 0.00969 \\
+\hat{x}_2 &= -0.8721
+\end{align}
+
+\begin{center}
+\fbox{$\hat{x}_2 \approx -0.87$}
+\end{center}
+
+\section{Paso 7: Cálculo del Error de Cuantización}
+
+El error de cuantización mide la diferencia entre los valores originales y los reconstruidos.
+
+\textbf{Error absoluto para cada elemento:}
+\begin{align}
+\epsilon_1 &= |x_1 - \hat{x}_1| = |1.23 - 1.2306| = 0.0006 \\
+\epsilon_2 &= |x_2 - \hat{x}_2| = |-0.87 - (-0.8721)| = 0.0021
+\end{align}
+
+\begin{center}
+\fbox{$\epsilon_1 = 0.0006$, \quad $\epsilon_2 = 0.0021$}
+\end{center}
+
+\textbf{Error cuadrático medio (MSE):}
+\begin{align}
+\text{MSE} &= \frac{1}{N} \sum_{i=1}^{N} (x_i - \hat{x}_i)^2 \\
+\text{MSE} &= \frac{1}{2} \left[(0.0006)^2 + (0.0021)^2\right] \\
+\text{MSE} &= \frac{1}{2} \left[0.00000036 + 0.00000441\right] \\
+\text{MSE} &= \frac{0.00000477}{2}
+\end{align}
+
+\begin{center}
+\fbox{$\text{MSE} \approx 2.39 \times 10^{-6}$}
+\end{center}
+
+\section{Resumen Final de Resultados}
+
+\begin{center}
+\framebox[0.95\linewidth]{
+\parbox{0.9\linewidth}{
+\textbf{Parámetros de cuantización (8 bits):}
+\begin{itemize}
+    \item Rango cuantizado: $q \in [-128, 127]$
+    \item Valor absoluto máximo: $\alpha = 1.23$
+    \item Factor de escala: $s = 0.00969$
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Valores originales y cuantizados:}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Elemento} & \textbf{Original ($x$)} & \textbf{Cuantizado ($q$)} & \textbf{Reconstruido ($\hat{x}$)} & \textbf{Error} \\
+\hline
+$x_1$ & 1.23 & 127 & 1.2306 & 0.0006 \\
+$x_2$ & $-0.87$ & $-90$ & $-0.8721$ & 0.0021 \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+
+\textbf{Resultados finales:}
+\begin{itemize}
+    \item Vector original: $x = [1.23, -0.87]$
+    \item Vector cuantizado: $q = [127, -90]$
+    \item Error cuadrático medio: MSE $\approx 2.39 \times 10^{-6}$
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Ventaja de la cuantización:}\\
+Reducción de memoria de $\frac{32 \text{ bits}}{8 \text{ bits}} = 4\times$ menos espacio de almacenamiento.
+}
+}
+\end{center}
+
+\end{document}
