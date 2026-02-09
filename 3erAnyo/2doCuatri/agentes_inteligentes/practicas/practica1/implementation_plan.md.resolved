@@ -1,0 +1,137 @@
+# Plan de Reestructuración del Notebook - Práctica 1: GNNs
+
+## Descripción del Problema
+
+El profesor ha solicitado que la memoria de la práctica se realice directamente en el notebook de Jupyter, en lugar del documento LaTeX ya elaborado. Se debe migrar todo el contenido del LaTeX al notebook, estructurándolo según los ejercicios del enunciado, con código limpio, tablas, gráficas de entrenamiento y justificaciones claras.
+
+## Revisión del Contenido Requerido
+
+> [!IMPORTANT]
+> La práctica tiene **2 ejercicios principales**:
+> - **Ejercicio 1**: Dataset Sintético Custom (SBM, características ruidosas, 10 splits)
+> - **Ejercicio 2**: Experimentos de Clasificación (MLP vs GCN en Custom, Cora, Citeseer + análisis de hiperparámetros)
+
+---
+
+## Propuestas de Cambios
+
+### Componente 1: Estructura General del Notebook
+
+#### [MODIFY] [practica_01.ipynb](file:///Users/jordiblascolozano/Documents/IA/3erAnyo/2doCuatri/agentes_inteligentes/practicas/practica1/practica_01.ipynb)
+
+Reorganizar completamente el notebook con la siguiente estructura:
+
+```markdown
+# 1. Introducción y Abstract (del LaTeX)
+# 2. Ejercicio 1: Dataset Sintético Custom
+   ## 2.1 Objetivo y Justificación del Diseño
+   ## 2.2 Generación del Grafo (SBM)
+   ## 2.3 Creación de Características con Ruido
+   ## 2.4 Conversión a PyTorch Geometric
+   ## 2.5 Creación de 10 Splits Train/Val/Test
+   ## 2.6 Visualización del Grafo
+# 3. Ejercicio 2: Experimentos de Clasificación
+   ## 3.1 Implementación de Modelos (MLP y GCN)
+   ## 3.2 Pipeline de Entrenamiento
+   ## 3.3 Resultados en Dataset Custom (Tabla + Análisis)
+   ## 3.4 Resultados en Cora y Citeseer (Tabla + Análisis)
+   ## 3.5 Curvas de Entrenamiento
+   ## 3.6 Análisis de Hiperparámetros
+      - Dimensiones Ocultas
+      - Learning Rate
+      - Dropout
+      - Weight Decay
+      - Optimizadores
+   ## 3.7 Visualizaciones t-SNE
+# 4. Discusión y Respuestas a Preguntas de Análisis
+# 5. Conclusiones
+```
+
+---
+
+### Componente 2: Contenido Teórico y Explicativo
+
+Migrar las siguientes secciones del LaTeX a celdas Markdown:
+
+| Sección LaTeX | Destino en Notebook |
+|---------------|---------------------|
+| Abstract | Sección 1 |
+| Introducción | Sección 1 |
+| Creación del Dataset | Sección 2.1 (justificación) |
+| Modelos Implementados | Sección 3.1 |
+| Resultados y Análisis | Secciones 3.3-3.6 |
+| Espacio Latente (t-SNE) | Sección 3.7 |
+| Conclusiones | Sección 5 |
+
+---
+
+### Componente 3: Mejoras en Código
+
+1. **Encapsular funciones auxiliares** en celdas dedicadas
+2. **Añadir curvas de entrenamiento** para:
+   - Comparación MLP vs GCN (pérdida y accuracy)
+   - Cada experimento de hiperparámetros
+3. **Crear tablas formateadas** con pandas/markdown para resultados
+4. **Usar el código del enunciado** como base (funciones `create_masks`, `train_epoch`, etc.)
+
+---
+
+### Componente 4: Gráficas Adicionales
+
+Añadir las siguientes visualizaciones:
+
+1. **Grafo SBM** con colores por comunidad
+2. **Curvas de entrenamiento base** (MLP vs GCN)
+3. **Comparativa final** (bar chart de accuracy en 3 datasets)
+4. **Gráficas de hiperparámetros**:
+   - `exp_hidden_dims.png`
+   - `exp_learning_rate.png`
+   - `exp_dropout.png`
+   - `exp_weight_decay.png`
+   - `exp_optimizer.png`
+5. **Visualizaciones t-SNE** (MLP vs GCN embeddings)
+
+---
+
+### Componente 5: Tablas de Resultados
+
+Incluir tablas claras con:
+
+| Modelo | Dataset | Acc Media | Std Dev | Gap |
+|--------|---------|-----------|---------|-----|
+| MLP | Custom | 0.3223 | ±0.0175 | - |
+| GCN | Custom | **0.9998** | ±0.0007 | +67.7% |
+| MLP | Cora | 0.560 | - | - |
+| GCN | Cora | **0.807** | - | +24.7% |
+| MLP | Citeseer | 0.549 | - | - |
+| GCN | Citeseer | **0.690** | - | +14.1% |
+
+---
+
+## Plan de Verificación
+
+### Verificación Automática
+
+No aplica para este caso ya que es un notebook de Jupyter con código experimental.
+
+### Verificación Manual
+
+El usuario debe verificar:
+
+1. **Ejecución completa del notebook**:
+   - Abrir el notebook en Jupyter/Colab
+   - Ejecutar todas las celdas en orden (Kernel → Restart & Run All)
+   - Verificar que no hay errores de ejecución
+
+2. **Contenido visual**:
+   - Verificar que todas las gráficas se generan correctamente
+   - Comprobar que las tablas se muestran formateadas
+   - Revisar que el texto explicativo es claro y completo
+
+3. **Correspondencia con requisitos**:
+   - Comparar estructura con el enunciado ([practica1-es.md](file:///Users/jordiblascolozano/Documents/IA/3erAnyo/2doCuatri/agentes_inteligentes/practicas/practica1/practica1-es.md))
+   - Verificar que todo el análisis del LaTeX está incluido
+   - Comprobar que se responden las preguntas de análisis
+
+> [!NOTE]
+> El notebook actual ya tiene código funcional ejecutado. El trabajo principal es reorganizar, añadir explicaciones del LaTeX, y asegurar que las gráficas de hiperparámetros están bien integradas.
