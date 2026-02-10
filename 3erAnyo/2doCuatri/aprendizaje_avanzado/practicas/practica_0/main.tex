@@ -238,7 +238,7 @@ TUE & 0 & 0.00\% \\ \bottomrule
 \end{figure}
 
 \paragraph{Fase 1: Eliminación de outliers de Weight y Height.}
-Para estas dos variables, los outliers detectados por IQR fueron mínimos (1 valor atípico en cada una). Decidí eliminar directamente las filas correspondientes, ya que representan casos extremos aislados que podrían distorsionar la estandarización posterior. El resultado fue la eliminación de 2 filas, un impacto negligible en el tamaño del dataset.
+Para estas dos variables, los outliers detectados por IQR fueron mínimos (1 valor atípico en cada una). Decidí eliminar directamente las filas correspondientes, ya que representan casos extremos aislados que podrían distorsionar la estandarización posterior. El resultado fue la eliminación de 2 filas, un impacto imperceptible en el tamaño del dataset.
 
 \paragraph{Fase 2: Transformación Box-Cox para Age.}
 La variable Age presentaba 168 outliers (7.96\%), todos concentrados en la cola derecha de la distribución (personas mayores de $\sim$35 años). En lugar de eliminar directamente estas 168 filas (lo que supondría perder un 8\% de los datos), opté por aplicar una transformación Box-Cox para corregir el sesgo de la distribución antes de filtrar outliers.
