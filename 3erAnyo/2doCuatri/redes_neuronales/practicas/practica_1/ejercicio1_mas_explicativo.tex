@@ -1,0 +1,263 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+% Estilo de recuadros para resultados
+\newcommand{\resultadofinal}[1]{%
+\begin{center}
+\fbox{\parbox{0.86\linewidth}{\centering \textbf{Resultado final:} #1}}
+\end{center}}
+
+\newcommand{\resultadointermedio}[2]{%
+\begin{center}
+\fbox{\parbox{0.82\linewidth}{\textbf{#1} \hfill $#2$}}
+\end{center}}
+
+\newcommand{\reglacadena}[3]{%
+\[
+#1 = #2 = #3
+\]}
+
+\title{\textbf{Ejercicio 1: Backpropagation (versión más explicativa)}}
+\author{Jordi Blasco Lozano}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Objetivo del ejercicio}
+Calcular paso a paso el \textbf{forward pass} y el \textbf{backward pass} de una red neuronal sencilla.
+Además de obtener los valores finales, se explica \textbf{de dónde sale cada derivada} y se \textbf{recuadran resultados intermedios y finales} para facilitar el seguimiento.
+
+\section*{Datos de partida}
+\begin{itemize}
+    \item Entrada: $x = 1$
+    \item Pesos iniciales: $W^{(L-2)} = 0.32$, $W^{(L-1)} = 0.18$, $W^{(L)} = 0.23$
+    \item Bias iniciales: $b^{(L-2)} = 0$, $b^{(L-1)} = 0$, $b^{(L)} = 0$
+    \item Learning rate: $\alpha = 0.1$
+    \item Valor objetivo: $y = 1$
+\end{itemize}
+
+\section*{Fórmulas que usaremos (y por qué)}
+\begin{itemize}
+    \item \textbf{Preactivación de una neurona:}
+    \[
+    z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)}
+    \]
+    Sale del modelo lineal de la neurona (peso por entrada más sesgo).
+
+    \item \textbf{Activación sigmoide:}
+    \[
+    a^{(l)} = \sigma(z^{(l)}) = \frac{1}{1+e^{-z^{(l)}}}
+    \]
+    Convierte la salida lineal en un valor entre 0 y 1.
+
+    \item \textbf{Pérdida cuadrática:}
+    \[
+    L = (\hat y - y)^2
+    \]
+    Mide cuánto se aleja la predicción del objetivo.
+
+    \item \textbf{Derivada de la sigmoide:}
+    \[
+    \sigma'(z) = \sigma(z)(1-\sigma(z))
+    \]
+    Se usa continuamente en backpropagation.
+\end{itemize}
+
+\section{Forward pass (cálculo de salidas)}
+
+\subsection*{1) Capa $L-2$}
+\textbf{Paso 1.1: calcular $z^{(L-2)}$}
+\begin{align*}
+z^{(L-2)} &= W^{(L-2)}x + b^{(L-2)} \\
+z^{(L-2)} &= 0.32\cdot 1 + 0 = 0.32
+\end{align*}
+\resultadointermedio{Preactivación en $L-2$}{z^{(L-2)}=0.32}
+
+\textbf{Paso 1.2: calcular $a^{(L-2)}$}
+\begin{align*}
+a^{(L-2)} &= \sigma(z^{(L-2)}) = \frac{1}{1+e^{-0.32}} \\
+&= \frac{1}{1+0.7261} = \frac{1}{1.7261} = 0.5793
+\end{align*}
+\resultadointermedio{Activación en $L-2$}{a^{(L-2)}=0.5793}
+
+\subsection*{2) Capa $L-1$}
+\textbf{Paso 2.1: calcular $z^{(L-1)}$}
+\begin{align*}
+z^{(L-1)} &= W^{(L-1)}a^{(L-2)} + b^{(L-1)} \\
+z^{(L-1)} &= 0.18\cdot 0.5793 + 0 = 0.1043
+\end{align*}
+\resultadointermedio{Preactivación en $L-1$}{z^{(L-1)}=0.1043}
+
+\textbf{Paso 2.2: calcular $a^{(L-1)}$}
+\begin{align*}
+a^{(L-1)} &= \sigma(z^{(L-1)}) = \frac{1}{1+e^{-0.1043}} \\
+&= \frac{1}{1+0.9009} = \frac{1}{1.9009} = 0.5260
+\end{align*}
+\resultadointermedio{Activación en $L-1$}{a^{(L-1)}=0.5260}
+
+\subsection*{3) Capa de salida $L$}
+\textbf{Paso 3.1: calcular $z^{(L)}$}
+\begin{align*}
+z^{(L)} &= W^{(L)}a^{(L-1)} + b^{(L)} \\
+z^{(L)} &= 0.23\cdot 0.5260 + 0 = 0.1210
+\end{align*}
+\resultadointermedio{Preactivación en $L$}{z^{(L)}=0.1210}
+
+\textbf{Paso 3.2: calcular predicción $\hat y=a^{(L)}$}
+\begin{align*}
+\hat y &= \sigma(z^{(L)}) = \frac{1}{1+e^{-0.1210}} \\
+&= \frac{1}{1+0.8860} = \frac{1}{1.8860} = 0.5302
+\end{align*}
+\resultadointermedio{Predicción de la red}{\hat y=a^{(L)}=0.5302}
+
+\subsection*{4) Cálculo de la pérdida}
+\begin{align*}
+L &= (\hat y-y)^2 = (0.5302-1)^2 = (-0.4698)^2 = 0.2207
+\end{align*}
+\resultadofinal{\(L=0.2207\)}
+
+\section{Backward pass (cálculo de gradientes)}
+La idea clave es aplicar \textbf{regla de la cadena} desde la salida hacia atrás.
+
+\subsection*{5) Gradiente respecto a $W^{(L)}$}
+Queremos:
+\[
+\frac{\partial L}{\partial W^{(L)}}
+=\frac{\partial L}{\partial a^{(L)}}
+\cdot
+\frac{\partial a^{(L)}}{\partial z^{(L)}}
+\cdot
+\frac{\partial z^{(L)}}{\partial W^{(L)}}.
+\]
+
+\textbf{Paso 5.1: término $\frac{\partial L}{\partial a^{(L)}}$}
+\begin{align*}
+L &= (a^{(L)}-y)^2 \\
+\frac{\partial L}{\partial a^{(L)}} &= 2(a^{(L)}-y) = 2(0.5302-1) = -0.9396
+\end{align*}
+\resultadointermedio{Error propagado desde la pérdida}{\frac{\partial L}{\partial a^{(L)}}=-0.9396}
+
+\textbf{Paso 5.2: término $\frac{\partial a^{(L)}}{\partial z^{(L)}}$}
+\begin{align*}
+\frac{\partial a^{(L)}}{\partial z^{(L)}} &= \sigma'(z^{(L)}) = a^{(L)}(1-a^{(L)}) \\
+&= 0.5302(1-0.5302)=0.5302\cdot 0.4698=0.2491
+\end{align*}
+\resultadointermedio{Pendiente local de la sigmoide en salida}{\frac{\partial a^{(L)}}{\partial z^{(L)}}=0.2491}
+
+\textbf{Paso 5.3: término $\frac{\partial z^{(L)}}{\partial W^{(L)}}$}
+Como $z^{(L)}=W^{(L)}a^{(L-1)}+b^{(L)}$, si derivamos respecto a $W^{(L)}$:
+\[
+\frac{\partial z^{(L)}}{\partial W^{(L)}}=a^{(L-1)}=0.5260.
+\]
+\resultadointermedio{Sensibilidad de $z^{(L)}$ al peso de salida}{\frac{\partial z^{(L)}}{\partial W^{(L)}}=0.5260}
+
+\textbf{Paso 5.4: juntar los tres términos (regla de la cadena)}
+\begin{align*}
+\frac{\partial L}{\partial W^{(L)}}
+&= (-0.9396)(0.2491)(0.5260) \\
+&= -0.1231
+\end{align*}
+\resultadofinal{\(\frac{\partial L}{\partial W^{(L)}}=-0.1231\)}
+
+\subsection*{6) Actualización de $W^{(L)}$}
+\begin{align*}
+W^{(L)}_{\text{nuevo}} &= W^{(L)}-\alpha\frac{\partial L}{\partial W^{(L)}} \\
+&= 0.23-0.1(-0.1231)=0.2423
+\end{align*}
+\resultadofinal{\(W^{(L)}_{\text{nuevo}}=0.2423\)}
+
+\subsection*{7) Gradiente respecto a $b^{(L-1)}$}
+Ahora bajamos una capa más. Queremos:
+\[
+\frac{\partial L}{\partial b^{(L-1)}}
+= \frac{\partial L}{\partial a^{(L-1)}}
+\cdot
+\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}}
+\cdot
+\frac{\partial z^{(L-1)}}{\partial b^{(L-1)}}.
+\]
+
+\textbf{Paso 7.1: primero $\frac{\partial L}{\partial a^{(L-1)}}$}
+Para llegar de $a^{(L-1)}$ a $L$, pasamos por $z^{(L)}$ y $a^{(L)}$:
+\begin{align*}
+\frac{\partial L}{\partial a^{(L-1)}}
+&=
+\frac{\partial L}{\partial a^{(L)}}
+\cdot
+\frac{\partial a^{(L)}}{\partial z^{(L)}}
+\cdot
+\frac{\partial z^{(L)}}{\partial a^{(L-1)}}.
+\end{align*}
+Y como $z^{(L)}=W^{(L)}a^{(L-1)}+b^{(L)}$, entonces:
+\[
+\frac{\partial z^{(L)}}{\partial a^{(L-1)}}=W^{(L)}=0.23.
+\]
+Sustituyendo:
+\begin{align*}
+\frac{\partial L}{\partial a^{(L-1)}}
+&=(-0.9396)(0.2491)(0.23)
+=-0.0538.
+\end{align*}
+\resultadointermedio{Error retropropagado a la capa $L-1$}{\frac{\partial L}{\partial a^{(L-1)}}=-0.0538}
+
+\textbf{Paso 7.2: término $\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}}$}
+\begin{align*}
+\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}}
+&= a^{(L-1)}(1-a^{(L-1)}) \\
+&= 0.5260(1-0.5260)=0.2493
+\end{align*}
+\resultadointermedio{Pendiente local de sigmoide en $L-1$}{\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}}=0.2493}
+
+\textbf{Paso 7.3: término $\frac{\partial z^{(L-1)}}{\partial b^{(L-1)}}$}
+Como $z^{(L-1)}=W^{(L-1)}a^{(L-2)}+b^{(L-1)}$, al derivar respecto a su bias:
+\[
+\frac{\partial z^{(L-1)}}{\partial b^{(L-1)}}=1.
+\]
+\resultadointermedio{Sensibilidad de $z^{(L-1)}$ al bias}{\frac{\partial z^{(L-1)}}{\partial b^{(L-1)}}=1}
+
+\textbf{Paso 7.4: combinar todo}
+\begin{align*}
+\frac{\partial L}{\partial b^{(L-1)}}
+&=(-0.0538)(0.2493)(1)
+=-0.0134
+\end{align*}
+\resultadofinal{\(\frac{\partial L}{\partial b^{(L-1)}}=-0.0134\)}
+
+\subsection*{8) Actualización de $b^{(L-1)}$}
+\begin{align*}
+b^{(L-1)}_{\text{nuevo}} &= b^{(L-1)}-\alpha\frac{\partial L}{\partial b^{(L-1)}} \\
+&= 0-0.1(-0.0134)=0.00134
+\end{align*}
+\resultadofinal{\(b^{(L-1)}_{\text{nuevo}}=0.00134\)}
+
+\section*{Resumen compacto en recuadro}
+\begin{center}
+\fbox{\parbox{0.9\linewidth}{
+\textbf{Forward pass}
+\begin{itemize}
+    \item $z^{(L-2)}=0.32$, \quad $a^{(L-2)}=0.5793$
+    \item $z^{(L-1)}=0.1043$, \quad $a^{(L-1)}=0.5260$
+    \item $z^{(L)}=0.1210$, \quad $\hat y=0.5302$
+    \item $L=0.2207$
+\end{itemize}
+\textbf{Backward pass}
+\begin{itemize}
+    \item $\frac{\partial L}{\partial W^{(L)}}=-0.1231$
+    \item $\frac{\partial L}{\partial b^{(L-1)}}=-0.0134$
+\end{itemize}
+\textbf{Parámetros actualizados}
+\begin{itemize}
+    \item $W^{(L)}_{\text{nuevo}}=0.2423$
+    \item $b^{(L-1)}_{\text{nuevo}}=0.00134$
+\end{itemize}
+}}
+\end{center}
+
+\end{document}
