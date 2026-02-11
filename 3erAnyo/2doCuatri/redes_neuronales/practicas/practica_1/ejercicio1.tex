@@ -2,326 +2,210 @@
 \usepackage[utf8]{inputenc}
 \usepackage[spanish,es-tabla]{babel}
 \usepackage[margin=2cm]{geometry}
-\usepackage{graphicx}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{hyperref}
-\usepackage{listings}
-\usepackage{xcolor}
-\usepackage{abstract}
-\usepackage{float}
 
-% Configuración de código Python
-\lstset{
-    language=Python,
-    basicstyle=\ttfamily\footnotesize,
-    keywordstyle=\color{blue},
-    commentstyle=\color{gray},
-    stringstyle=\color{red},
-    showstringspaces=false,
-    breaklines=true,
-    frame=single,
-    numbers=left,
-    numberstyle=\tiny\color{gray}
-}
-
-% Título y autores
 \title{\textbf{Ejercicio 1: Backpropagation}}
 \author{Jordi Blasco Lozano}
 \date{}
 
 \begin{document}
-
 \maketitle
 
-\subsection*{Enunciado}
-Calcular el Forward pass y Backward pass para una red neuronal con los siguientes datos:
+\section*{Planteamiento}
+Se considera una red neuronal feedforward con una neurona por capa. La arquitectura es:
+\[
+ a^{(0)}=x \;\longrightarrow\; (L-2) \;\longrightarrow\; (L-1) \;\longrightarrow\; (L) = \hat{y}.
+\]
+En cada capa se calcula una preactivación $z^{(l)}$ y una activación $a^{(l)}$.
 
-\textbf{Datos iniciales:}
+\subsection*{Datos iniciales}
 \begin{itemize}
-    \item Entrada: $x = 1$
-    \item Pesos iniciales: $W^{(L-2)} = 0.32$, $W^{(L-1)} = 0.18$, $W^{(L)} = 0.23$
-    \item Bias iniciales: $b^{(L-2)} = 0$, $b^{(L-1)} = 0$, $b^{(L)} = 0$
-    \item Learning rate: $\alpha = 0.1$
-    \item Valor objetivo (target): $y = 1$
+  \item Entrada: $x = 1$.
+  \item Pesos iniciales: $W^{(L-2)} = 0.32$, $W^{(L-1)} = 0.18$, $W^{(L)} = 0.23$.
+  \item Sesgos iniciales: $b^{(L-2)} = 0$, $b^{(L-1)} = 0$, $b^{(L)} = 0$.
+  \item Tasa de aprendizaje: $\alpha = 0.1$.
+  \item Etiqueta (target): $y = 1$.
 \end{itemize}
 
-\textbf{Fórmulas utilizadas:}
-\begin{itemize}
-    \item Función de coste: $L = C_0 = (\hat{y} - y)^2$
-    \item Función sigmoide: $\sigma(x) = \frac{1}{1+e^{-x}}$
-    \item Derivada de la sigmoide: $\sigma'(x) = \sigma(x)(1 - \sigma(x))$
-    \item Entrada de la neurona: $z^{(l)} = W^{(l)} \cdot a^{(l-1)} + b^{(l)}$
-    \item Activación: $a^{(l)} = \sigma(z^{(l)})$
-\end{itemize}
+\section*{Notación y fórmulas}
+Para cada capa $l$:
+\begin{align*}
+  z^{(l)} &= W^{(l)}\, a^{(l-1)} + b^{(l)}, \\
+  a^{(l)} &= \sigma\bigl(z^{(l)}\bigr).
+\end{align*}
+Se usa la sigmoide:
+\[
+\sigma(t)=\frac{1}{1+e^{-t}}, \qquad \sigma'(t)=\sigma(t)\,\bigl(1-\sigma(t)\bigr).
+\]
+Función de pérdida:
+\[
+L\,=\,(\hat{y}-y)^2.
+\]
+Al trabajar con un solo ejemplo, ``loss'' y ``cost'' coinciden numéricamente.
 
-\section{Apartado 1: Obtener las salidas (\( z, a \)) y la predicción (Forward Pass)}
+\section{Apartado 1: Forward pass (cálculo de $z$, $a$ y $\hat{y}$)}
+En el forward pass se calculan las activaciones desde la entrada hasta la salida.
 
-En el forward pass, calculamos las salidas de cada capa desde la entrada hasta la predicción final.
+\subsection*{Capa $L-2$}
+\begin{align*}
+z^{(L-2)} &= W^{(L-2)}\,x + b^{(L-2)} 
+          = 0.32\cdot 1 + 0
+          = 0.32,\\
+ a^{(L-2)} &= \sigma\bigl(z^{(L-2)}\bigr)
+           = \frac{1}{1+e^{-0.32}}
+           \approx \frac{1}{1+0.7261}
+           \approx 0.5793.
+\end{align*}
 
-\subsection{Capa L-2 (Primera capa oculta)}
+\subsection*{Capa $L-1$}
+\begin{align*}
+z^{(L-1)} &= W^{(L-1)}\,a^{(L-2)} + b^{(L-1)}
+          = 0.18\cdot 0.5793 + 0
+          \approx 0.1043,\\
+ a^{(L-1)} &= \sigma\bigl(z^{(L-1)}\bigr)
+           = \frac{1}{1+e^{-0.1043}}
+           \approx \frac{1}{1+0.9009}
+           \approx 0.5260.
+\end{align*}
 
-\textbf{Paso 1: Calcular $z^{(L-2)}$}
-\begin{align}
-z^{(L-2)} &= W^{(L-2)} \cdot x + b^{(L-2)} \\
-z^{(L-2)} &= 0.32 \cdot 1 + 0 \\
-z^{(L-2)} &= 0.32
-\end{align}
+\subsection*{Capa de salida $L$}
+\begin{align*}
+z^{(L)} &= W^{(L)}\,a^{(L-1)} + b^{(L)}
+       = 0.23\cdot 0.5260 + 0
+       \approx 0.1210,\\
+\hat{y} = a^{(L)} &= \sigma\bigl(z^{(L)}\bigr)
+                = \frac{1}{1+e^{-0.1210}}
+                \approx \frac{1}{1+0.8860}
+                \approx 0.5302.
+\end{align*}
 
-\textbf{Paso 2: Calcular la activación $a^{(L-2)}$}
-\begin{align}
-a^{(L-2)} &= \sigma(z^{(L-2)}) = \frac{1}{1 + e^{-z^{(L-2)}}} \\
-a^{(L-2)} &= \frac{1}{1 + e^{-0.32}} \\
-a^{(L-2)} &= \frac{1}{1 + 0.7261} \\
-a^{(L-2)} &= \frac{1}{1.7261}
-\end{align}
+\subsection*{Pérdida (loss)}
+\begin{align*}
+L &= (\hat{y}-y)^2
+  = (0.5302-1)^2
+  = (-0.4698)^2
+  \approx 0.2207.
+\end{align*}
 
-\begin{center}
-\fbox{$a^{(L-2)} = 0.5793$}
-\end{center}
-
-\subsection{Capa L-1 (Segunda capa oculta)}
-
-\textbf{Paso 3: Calcular $z^{(L-1)}$}
-\begin{align}
-z^{(L-1)} &= W^{(L-1)} \cdot a^{(L-2)} + b^{(L-1)} \\
-z^{(L-1)} &= 0.18 \cdot 0.5793 + 0 \\
-z^{(L-1)} &= 0.1043
-\end{align}
-
-\textbf{Paso 4: Calcular la activación $a^{(L-1)}$}
-\begin{align}
-a^{(L-1)} &= \sigma(z^{(L-1)}) = \frac{1}{1 + e^{-z^{(L-1)}}} \\
-a^{(L-1)} &= \frac{1}{1 + e^{-0.1043}} \\
-a^{(L-1)} &= \frac{1}{1 + 0.9009} \\
-a^{(L-1)} &= \frac{1}{1.9009}
-\end{align}
-
-\begin{center}
-\fbox{$a^{(L-1)} = 0.5260$}
-\end{center}
-
-\subsection{Capa L (Capa de salida)}
-
-\textbf{Paso 5: Calcular $z^{(L)}$}
-\begin{align}
-z^{(L)} &= W^{(L)} \cdot a^{(L-1)} + b^{(L)} \\
-z^{(L)} &= 0.23 \cdot 0.5260 + 0 \\
-z^{(L)} &= 0.1210
-\end{align}
-
-\textbf{Paso 6: Calcular la predicción $\hat{y} = a^{(L)}$}
-\begin{align}
-a^{(L)} = \hat{y} &= \sigma(z^{(L)}) = \frac{1}{1 + e^{-z^{(L)}}} \\
-\hat{y} &= \frac{1}{1 + e^{-0.1210}} \\
-\hat{y} &= \frac{1}{1 + 0.8860} \\
-\hat{y} &= \frac{1}{1.8860}
-\end{align}
-
-\begin{center}
-\fbox{$\hat{y} = a^{(L)} = 0.5302$}
-\end{center}
-
-\subsection{Cálculo del Error (Loss)}
-
-\textbf{Paso 7: Calcular la función de coste}
-\begin{align}
-L = C_0 &= (\hat{y} - y)^2 \\
-L &= (0.5302 - 1)^2 \\
-L &= (-0.4698)^2
-\end{align}
-
-\begin{center}
-\fbox{$L = 0.2207$}
-\end{center}
-
-\subsection{Resumen del Forward Pass}
-
-\begin{center}
-\framebox[0.9\linewidth]{
-\parbox{0.85\linewidth}{
-\textbf{Valores calculados en el Forward Pass:}
-\begin{itemize}
-    \item $z^{(L-2)} = 0.32$, \quad $a^{(L-2)} = 0.5793$
-    \item $z^{(L-1)} = 0.1043$, \quad $a^{(L-1)} = 0.5260$
-    \item $z^{(L)} = 0.1210$, \quad $\hat{y} = a^{(L)} = 0.5302$
-    \item Error (Loss): $L = 0.2207$
-\end{itemize}
-}
-}
-\end{center}
-
-\section{Apartado 2: Actualizar \( W^{(L)} \) y \( b^{(L-1)} \) usando el gradiente (Backward Pass)}
-
-En el backward pass, calculamos los gradientes de la función de coste respecto a cada parámetro usando la regla de la cadena, para luego actualizar los pesos.
-
-\subsection{Gradientes en la Capa L}
-
-\textbf{Paso 8: Calcular $\frac{\partial L}{\partial a^{(L)}}$}
-\begin{align}
-\frac{\partial L}{\partial a^{(L)}} &= \frac{\partial}{\partial a^{(L)}} (a^{(L)} - y)^2 \\
-\frac{\partial L}{\partial a^{(L)}} &= 2(a^{(L)} - y) \\
-\frac{\partial L}{\partial a^{(L)}} &= 2(0.5302 - 1) \\
-\frac{\partial L}{\partial a^{(L)}} &= 2(-0.4698)
-\end{align}
-
-\begin{center}
-\fbox{$\frac{\partial L}{\partial a^{(L)}} = -0.9396$}
-\end{center}
-
-\textbf{Paso 9: Calcular $\frac{\partial a^{(L)}}{\partial z^{(L)}}$ (derivada de la sigmoide)}
-\begin{align}
-\frac{\partial a^{(L)}}{\partial z^{(L)}} &= \sigma'(z^{(L)}) = \sigma(z^{(L)}) \cdot (1 - \sigma(z^{(L)})) \\
-\frac{\partial a^{(L)}}{\partial z^{(L)}} &= a^{(L)} \cdot (1 - a^{(L)}) \\
-\frac{\partial a^{(L)}}{\partial z^{(L)}} &= 0.5302 \cdot (1 - 0.5302) \\
-\frac{\partial a^{(L)}}{\partial z^{(L)}} &= 0.5302 \cdot 0.4698
-\end{align}
-
-\begin{center}
-\fbox{$\frac{\partial a^{(L)}}{\partial z^{(L)}} = 0.2491$}
-\end{center}
-
-\textbf{Paso 10: Calcular $\frac{\partial z^{(L)}}{\partial W^{(L)}}$}
-\begin{align}
-z^{(L)} &= W^{(L)} \cdot a^{(L-1)} + b^{(L)} \\
-\frac{\partial z^{(L)}}{\partial W^{(L)}} &= a^{(L-1)}
-\end{align}
-
-\begin{center}
-\fbox{$\frac{\partial z^{(L)}}{\partial W^{(L)}} = a^{(L-1)} = 0.5260$}
-\end{center}
-
-\textbf{Paso 11: Calcular el gradiente $\frac{\partial L}{\partial W^{(L)}}$ usando la regla de la cadena}
-\begin{align}
-\frac{\partial L}{\partial W^{(L)}} &= \frac{\partial L}{\partial a^{(L)}} \cdot \frac{\partial a^{(L)}}{\partial z^{(L)}} \cdot \frac{\partial z^{(L)}}{\partial W^{(L)}} \\
-\frac{\partial L}{\partial W^{(L)}} &= (-0.9396) \cdot (0.2491) \cdot (0.5260) \\
-\frac{\partial L}{\partial W^{(L)}} &= -0.2340 \cdot 0.5260
-\end{align}
-
-\begin{center}
-\fbox{$\frac{\partial L}{\partial W^{(L)}} = -0.1231$}
-\end{center}
-
-\subsection{Actualización del peso $W^{(L)}$}
-
-\textbf{Paso 12: Actualizar $W^{(L)}$}
-\begin{align}
-W^{(L)}_{nuevo} &= W^{(L)} - \alpha \cdot \frac{\partial L}{\partial W^{(L)}} \\
-W^{(L)}_{nuevo} &= 0.23 - 0.1 \cdot (-0.1231) \\
-W^{(L)}_{nuevo} &= 0.23 + 0.0123
-\end{align}
-
-\begin{center}
-\framebox[0.8\linewidth]{
-\parbox{0.75\linewidth}{
+\subsection*{Resumen del forward pass}
+\begin{table}[h]
 \centering
-\textbf{Peso actualizado:} $W^{(L)}_{nuevo} = 0.2423$
-}
-}
-\end{center}
+\begin{tabular*}{0.8\linewidth}{@{\extracolsep{\fill}}cccc@{}}
+\toprule
+Capa & $z^{(l)}$ & $a^{(l)}$ & Comentario \\ \midrule
+$L-2$ & $0.32$ & $0.5793$ & $a^{(0)}=x=1$ \\
+$L-1$ & $0.1043$ & $0.5260$ & $\sigma(z)$ \\
+$L$ & $0.1210$ & $\hat{y}=0.5302$ & salida \\ \bottomrule
+\end{tabular*}
+\end{table}
 
-\subsection{Gradientes en la Capa L-1}
+\section{Apartado 2: Backward pass (gradientes y actualización)}
+El objetivo es actualizar $W^{(L)}$ y $b^{(L-1)}$ mediante descenso por gradiente.
 
-\textbf{Paso 13: Calcular $\frac{\partial z^{(L)}}{\partial a^{(L-1)}}$}
-\begin{align}
-\frac{\partial z^{(L)}}{\partial a^{(L-1)}} &= W^{(L)}
-\end{align}
+\subsection*{Mapa de dependencias (para justificar la regla de la cadena)}
+\[
+W^{(L)} \to z^{(L)} \to \hat{y} \to L,
+\qquad
+b^{(L-1)} \to z^{(L-1)} \to a^{(L-1)} \to z^{(L)} \to \hat{y} \to L.
+\]
+Para simplificar, definimos el ``error'' (delta) por capa:
+\[
+\delta^{(l)} := \frac{\partial L}{\partial z^{(l)}}.
+\]
+Los gradientes se calculan con los parámetros del forward actual (antes de aplicar la actualización).
 
-\begin{center}
-\fbox{$\frac{\partial z^{(L)}}{\partial a^{(L-1)}} = W^{(L)} = 0.23$}
-\end{center}
+\subsection*{Capa de salida $L$}
+\paragraph{1) Derivada de la pérdida respecto a la salida}
+\begin{align*}
+\frac{\partial L}{\partial \hat{y}} &= \frac{\partial}{\partial \hat{y}}(\hat{y}-y)^2
+= 2(\hat{y}-y)
+=2(0.5302-1)
+\approx -0.9396.
+\end{align*}
 
-\textbf{Paso 14: Calcular $\frac{\partial L}{\partial a^{(L-1)}}$ (propagación del error)}
-\begin{align}
-\frac{\partial L}{\partial a^{(L-1)}} &= \frac{\partial L}{\partial a^{(L)}} \cdot \frac{\partial a^{(L)}}{\partial z^{(L)}} \cdot \frac{\partial z^{(L)}}{\partial a^{(L-1)}} \\
-\frac{\partial L}{\partial a^{(L-1)}} &= (-0.9396) \cdot (0.2491) \cdot (0.23) \\
-\frac{\partial L}{\partial a^{(L-1)}} &= -0.2340 \cdot 0.23
-\end{align}
+\paragraph{2) Delta de la capa de salida}
+\begin{align*}
+\delta^{(L)} = \frac{\partial L}{\partial z^{(L)}}
+&= \frac{\partial L}{\partial \hat{y}}\,\frac{\partial \hat{y}}{\partial z^{(L)}}
+= \frac{\partial L}{\partial \hat{y}}\,\sigma'(z^{(L)})\\
+&= (-0.9396)\,\bigl(\hat{y}(1-\hat{y})\bigr)
+= (-0.9396)\,(0.5302\cdot 0.4698)
+\approx (-0.9396)\cdot 0.2491
+\approx -0.2340.
+\end{align*}
 
-\begin{center}
-\fbox{$\frac{\partial L}{\partial a^{(L-1)}} = -0.0538$}
-\end{center}
+\paragraph{3) Gradiente respecto a $W^{(L)}$}
+\leavevmode\\
+Como $z^{(L)} = W^{(L)}a^{(L-1)} + b^{(L)}$, se tiene
+\(
+\frac{\partial z^{(L)}}{\partial W^{(L)}} = a^{(L-1)}
+\).
+Por tanto:
+\begin{align*}
+\frac{\partial L}{\partial W^{(L)}}
+&= \frac{\partial L}{\partial z^{(L)}}\,\frac{\partial z^{(L)}}{\partial W^{(L)}}
+= \delta^{(L)}\,a^{(L-1)}
+\approx (-0.2340)\cdot 0.5260
+\approx -0.1231.
+\end{align*}
 
-\textbf{Paso 15: Calcular $\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}}$}
-\begin{align}
-\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}} &= \sigma'(z^{(L-1)}) = a^{(L-1)} \cdot (1 - a^{(L-1)}) \\
-\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}} &= 0.5260 \cdot (1 - 0.5260) \\
-\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}} &= 0.5260 \cdot 0.4740
-\end{align}
+\paragraph{4) Actualización de $W^{(L)}$}
+\begin{align*}
+W^{(L)}_{\text{nuevo}}
+&= W^{(L)} - \alpha\,\frac{\partial L}{\partial W^{(L)}}
+= 0.23 - 0.1\cdot(-0.1231)
+\approx 0.2423.
+\end{align*}
 
-\begin{center}
-\fbox{$\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}} = 0.2493$}
-\end{center}
+\subsection*{Capa $L-1$ (para actualizar $b^{(L-1)}$)}
+\paragraph{5) Propagación del delta a la capa anterior}
 
-\textbf{Paso 16: Calcular $\frac{\partial z^{(L-1)}}{\partial b^{(L-1)}}$}
-\begin{align}
-z^{(L-1)} &= W^{(L-1)} \cdot a^{(L-2)} + b^{(L-1)} \\
-\frac{\partial z^{(L-1)}}{\partial b^{(L-1)}} &= 1
-\end{align}
+\[
+\delta^{(L-1)} = \frac{\partial L}{\partial z^{(L-1)}}
+= \underbrace{\frac{\partial L}{\partial z^{(L)}}}_{\delta^{(L)}}\,\underbrace{\frac{\partial z^{(L)}}{\partial a^{(L-1)}}}_{W^{(L)}}\,\underbrace{\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}}}_{\sigma'(z^{(L-1)})}.
+\]
+Sustituyendo valores del forward (con $W^{(L)}=0.23$ antes de actualizar):
+\begin{align*}
+\delta^{(L-1)}
+&= \delta^{(L)}\,W^{(L)}\,\sigma'(z^{(L-1)})\\
+&\approx (-0.2340)\cdot 0.23 \cdot \bigl(a^{(L-1)}(1-a^{(L-1)})\bigr)\\
+&\approx (-0.2340)\cdot 0.23 \cdot (0.5260\cdot 0.4740)\\
+&\approx (-0.2340)\cdot 0.23 \cdot 0.2493
+\approx -0.0134.
+\end{align*}
 
-\begin{center}
-\fbox{$\frac{\partial z^{(L-1)}}{\partial b^{(L-1)}} = 1$}
-\end{center}
+\paragraph{6) Gradiente y actualización de $b^{(L-1)}$}
+\leavevmode\\
+Como $z^{(L-1)} = W^{(L-1)}a^{(L-2)} + b^{(L-1)}$, se cumple
+\(
+\frac{\partial z^{(L-1)}}{\partial b^{(L-1)}}=1
+\), y por tanto:
+\[
+\frac{\partial L}{\partial b^{(L-1)}} = \delta^{(L-1)} \approx -0.0134.
+\]
+La actualización queda:
+\begin{align*}
+ b^{(L-1)}_{\text{nuevo}} &= b^{(L-1)} - \alpha\,\frac{\partial L}{\partial b^{(L-1)}}
+= 0 - 0.1\cdot(-0.0134)
+\approx 0.00134.
+\end{align*}
 
-\textbf{Paso 17: Calcular el gradiente $\frac{\partial L}{\partial b^{(L-1)}}$}
-\begin{align}
-\frac{\partial L}{\partial b^{(L-1)}} &= \frac{\partial L}{\partial a^{(L-1)}} \cdot \frac{\partial a^{(L-1)}}{\partial z^{(L-1)}} \cdot \frac{\partial z^{(L-1)}}{\partial b^{(L-1)}} \\
-\frac{\partial L}{\partial b^{(L-1)}} &= (-0.0538) \cdot (0.2493) \cdot (1) \\
-\frac{\partial L}{\partial b^{(L-1)}} &= -0.0134
-\end{align}
-
-\begin{center}
-\fbox{$\frac{\partial L}{\partial b^{(L-1)}} = -0.0134$}
-\end{center}
-
-\subsection{Actualización del bias $b^{(L-1)}$}
-
-\textbf{Paso 18: Actualizar $b^{(L-1)}$}
-\begin{align}
-b^{(L-1)}_{nuevo} &= b^{(L-1)} - \alpha \cdot \frac{\partial L}{\partial b^{(L-1)}} \\
-b^{(L-1)}_{nuevo} &= 0 - 0.1 \cdot (-0.0134) \\
-b^{(L-1)}_{nuevo} &= 0 + 0.00134
-\end{align}
-
-\begin{center}
-\framebox[0.8\linewidth]{
-\parbox{0.75\linewidth}{
+\section*{Resumen final}
+\begin{table}[h]
 \centering
-\textbf{Bias actualizado:} $b^{(L-1)}_{nuevo} = 0.00134$
-}
-}
-\end{center}
-
-\section{Resumen Final de Resultados}
-
-\begin{center}
-\framebox[0.95\linewidth]{
-\parbox{0.9\linewidth}{
-\textbf{Forward Pass - Valores calculados:}
-\begin{itemize}
-    \item $z^{(L-2)} = 0.32$, \quad $a^{(L-2)} = 0.5793$
-    \item $z^{(L-1)} = 0.1043$, \quad $a^{(L-1)} = 0.5260$
-    \item $z^{(L)} = 0.1210$, \quad $\hat{y} = a^{(L)} = 0.5302$
-    \item Error (Loss): $L = 0.2207$
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Backward Pass - Gradientes calculados:}
-\begin{itemize}
-    \item $\frac{\partial L}{\partial W^{(L)}} = -0.1231$
-    \item $\frac{\partial L}{\partial b^{(L-1)}} = -0.0134$
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Parámetros actualizados (con $\alpha = 0.1$):}
-\begin{itemize}
-    \item $W^{(L)}_{nuevo} = 0.2423$
-    \item $b^{(L-1)}_{nuevo} = 0.00134$
-\end{itemize}
-}
-}
-\end{center}
+\begin{tabular*}{0.8\linewidth}{@{\extracolsep{\fill}}ll@{}}
+\toprule
+Magnitud & Valor \\ \midrule
+$\hat{y}$ & $0.5302$ \\
+$L=(\hat{y}-y)^2$ & $0.2207$ \\
+$\frac{\partial L}{\partial W^{(L)}}$ & $-0.1231$ \\
+$W^{(L)}_{\text{nuevo}}$ & $0.2423$ \\
+$\frac{\partial L}{\partial b^{(L-1)}}$ & $-0.0134$ \\
+$b^{(L-1)}_{\text{nuevo}}$ & $0.00134$ \\ \bottomrule
+\end{tabular*}
+\end{table}
 
 \end{document}
+
