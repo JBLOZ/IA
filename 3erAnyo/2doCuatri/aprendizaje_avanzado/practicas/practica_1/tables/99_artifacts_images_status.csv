@@ -1,0 +1,13 @@
+image,exists
+distribuciones_univariadas.png,True
+boxplots.png,True
+correlacion_matrix.png,True
+scatter_plots.png,True
+class_distribution.png,True
+pca_visualization.png,True
+confusion_matrix_svm.png,True
+decision_tree.png,True
+confusion_matrix_tree.png,True
+confusion_matrix_rf.png,True
+confusion_matrix_boosting.png,True
+confusion_matrix_final.png,True

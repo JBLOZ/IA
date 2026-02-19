@@ -1,0 +1,4 @@
+Nombre y apellidos alumno 1: 
+Nombre y apellidos alumno 2 (si aplica): 
+DNI: 
+Turno de prácticas: 
