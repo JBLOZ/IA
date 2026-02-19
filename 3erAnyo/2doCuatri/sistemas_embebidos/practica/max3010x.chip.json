@@ -1,0 +1,11 @@
+{
+  "name": "MAX3010x",
+  "author": "you",
+  "version": 1,
+  "description": "MAX3010x pulse and proximity sensor",
+  "pins": ["GND", "SCL", "SDA", "VIN", "", "", "", ""],
+  "controls": [
+    { "id": "bpm", "label": "BPM", "type": "range", "min": 40, "max": 180, "step": 1 },
+    { "id": "finger", "label": "Dedo (0=NO, 1=SI)", "type": "range", "min": 0, "max": 1, "step": 1 }
+  ]
+}
