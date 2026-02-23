@@ -1,2 +1,0 @@
-raw_rows,rows_after_weight_height,rows_after_age,lambda_age_boxcox,split_train,split_test,rows_removed_train_zscore
-2111,2109,2107,-1.6415145930569806,1685,422,0

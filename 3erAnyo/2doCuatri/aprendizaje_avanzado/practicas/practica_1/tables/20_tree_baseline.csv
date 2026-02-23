@@ -1,2 +1,0 @@
-configuracion,train_accuracy,cv_accuracy_mean,cv_accuracy_std,test_accuracy,f1_w,depth,n_leaves,fit_time_s
-Sin restricciones,1.0,0.9240356083086054,0.011039213790942564,0.9289099526066351,0.9297186556507485,12,101,0.010189155989792198

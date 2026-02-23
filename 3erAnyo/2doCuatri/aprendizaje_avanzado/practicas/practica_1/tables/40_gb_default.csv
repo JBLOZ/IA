@@ -1,2 +1,0 @@
-modelo,cv_accuracy_mean,cv_accuracy_std,test_accuracy,f1_w,fit_time_s
-Gradient Boosting default,0.9560830860534125,0.01813733743612595,0.966824644549763,0.967404931276427,2.6888294409873197
