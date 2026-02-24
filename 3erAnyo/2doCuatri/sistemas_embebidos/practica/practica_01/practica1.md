@@ -1,9 +1,5 @@
 # Práctica 1: Entorno y Simulación - Contenido Completo
 
-Aquí tienes la transcripción completa y fiel del PDF "Practica-1-Entorno-y-Simulacion.docx.pdf" convertida a Markdown, preservando todo el texto original sin omisiones ni resúmenes. 
-
-## Encabezado Principal
-
 **SISTEMAS EMBEBIDOS**  
 **PRÁCTICA 1: Entorno y simulación** 
 

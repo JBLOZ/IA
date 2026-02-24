@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-c3-devkitm-1", "id": "esp", "top": 38.1, "left": 5.82, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": 6, "left": -101.8, "attrs": { "color": "red" } },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 80.75,
+      "left": -67.2,
+      "attrs": { "value": "22" }
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled1",
+      "top": 214.34,
+      "left": 182.63,
+      "attrs": { "i2cAddress": "0x3c" }
+    },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": 37.1, "left": -201.8, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "led1:A", "r1:1", "red", [ "v0" ] ],
+    [ "r1:2", "esp:2", "red", [ "v0" ] ],
+    [ "led1:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "oled1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "oled1:SDA", "esp:8", "blue", [ "v0" ] ],
+    [ "oled1:SCL", "esp:9", "yellow", [ "h0.3", "v-124.8" ] ],
+    [ "pot1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "pot1:SIG", "esp:0", "orange", [ "v0.4", "h0.4", "v-86.8" ] ],
+    [ "esp:GND.6", "oled1:GND", "black", [ "h94.72" ] ],
+    [ "esp:GND.5", "pot1:GND", "black", [ "h0" ] ]
+  ],
+  "dependencies": {}
+}
