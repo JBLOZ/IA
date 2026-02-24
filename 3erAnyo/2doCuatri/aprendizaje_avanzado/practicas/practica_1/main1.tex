@@ -1,0 +1,327 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[hypertexnames=false]{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{abstract}
+\usepackage{float}
+
+\graphicspath{{images/}}
+
+% Configuración de código Python (solo para snippets puntuales)
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray}
+}
+
+\title{\textbf{Práctica 1: Aprendizaje Supervisado}\\
+\large Comparativa de SVM, Árboles y Ensembles sobre el dataset de Obesidad}
+
+\author{
+    \textbf{Jordi Blasco Lozano}\\
+    \small DNI: 74527208D\\
+    \small Universidad de Alicante - Escuela Politécnica Superior\\
+    \small Aprendizaje Avanzado - Curso 2025/2026\\
+    \small Email: \texttt{jbl42@alu.ua.es}
+}
+
+\date{}
+
+% Macro para incluir tablas generadas desde el notebook (pandas -> LaTeX)
+\newcommand{\tbl}[3]{
+\begin{table}[H]
+\centering
+\caption{#2}
+\label{#3}
+\scriptsize
+\input{tables/#1}
+\end{table}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\textit{
+En esta práctica se comparan distintos algoritmos de aprendizaje supervisado sobre el mismo problema de clasificación multiclase: la estimación del nivel de obesidad a partir de hábitos alimenticios y condición física.
+Se reutiliza el dataset y el preprocesado de la Práctica 0 para garantizar comparabilidad, y se evalúan modelos SVM (distintos kernels y ajuste de hiperparámetros), árboles de decisión con técnicas de poda, y métodos de ensemble (Random Forest, Extra Trees, Gradient Boosting y AdaBoost).
+Los resultados se reportan mediante validación cruzada 5-Fold, métricas ponderadas (Precision/Recall/F1) y matrices de confusión del mejor modelo de cada bloque, concluyendo con una comparativa global.
+}
+\end{abstract}
+
+\vspace{0.5cm}
+
+\section{Introducción}
+
+El objetivo principal de esta práctica es aplicar y comparar algoritmos clásicos de aprendizaje supervisado vistos en teoría sobre un problema real de clasificación multiclase. Para facilitar la comparación con la práctica anterior, se utiliza el mismo dataset de la Práctica 0: \textit{Estimation of Obesity Levels Based on Eating Habits and Physical Condition} (UCI ML Repository), con 2111 instancias y 17 variables (16 características + 1 variable objetivo con 7 clases).
+
+\section{Configuración Experimental}
+
+\subsection{Dataset}
+
+El dataset contiene variables numéricas (edad, altura, peso, frecuencia de actividad, etc.) y categóricas (hábitos de comida, consumo de alcohol, medio de transporte, etc.). La Tabla~\ref{tab:dataset_info} resume sus características.
+
+\begin{table}[H]
+\centering
+\caption{Características del dataset de Obesidad}
+\label{tab:dataset_info}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Característica} & \textbf{Valor} \\ \midrule
+Filas & 2111 \\
+Columnas & 17 (16 features + 1 target) \\
+Variable objetivo & NObeyesdad (7 clases) \\
+Tipo de problema & Clasificación multiclase \\
+Valores faltantes & 0 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Preprocesado y partición}
+
+Siguiendo el enunciado, el preprocesado se da por supuesto y no se vuelve a detallar exhaustivamente. En cualquier caso, para mantener consistencia con la Práctica 0 se aplica exactamente la misma receta:
+(i) filtrado IQR de outliers en Weight/Height, (ii) transformación Box-Cox de Age con filtrado IQR posterior, (iii) encoding de variables categóricas (LabelEncoding para binarias y One-Hot para multiclase con \texttt{drop\_first}), (iv) split train/test estratificado 80/20, y (v) filtrado adicional de outliers en train por Z-score (|z|>3) en variables numéricas originales.
+
+\subsection{Métricas}
+
+Para cada configuración se reporta Accuracy en validación cruzada 5-Fold (CV Accuracy) y, sobre test, Accuracy y métricas ponderadas (Precision/Recall/F1 weighted) para evitar sesgos cuando hay diferencias de frecuencia entre clases. Además, se incluyen matrices de confusión del mejor modelo de cada bloque y una matriz final del mejor modelo global.
+
+\section{Resultados}
+
+\subsection{Parte 1: Support Vector Machines}
+
+La Tabla~\ref{tab:svm_kernels} recoge la comparación inicial de SVM con diferentes kernels usando hiperparámetros por defecto. A partir de estos resultados, se profundiza en la optimización de RBF (C y $\gamma$) y del kernel polinomial (degree, C y $\gamma$).
+
+\tbl{svm_kernels}{Comparativa SVM con kernels por defecto (CV y test).}{tab:svm_kernels}
+
+\tbl{svm_rbf_grid}{Optimización de SVM-RBF: combinaciones representativas de C y $\gamma$.}{tab:svm_rbf_grid}
+
+\tbl{svm_poly_grid}{Optimización de SVM-Poly: combinaciones representativas de degree, C y $\gamma$.}{tab:svm_poly_grid}
+
+También se comparan implementaciones del caso lineal (SVC lineal, LinearSVC y SGDClassifier con hinge loss), destacando diferencias de coste computacional y formulación.
+
+\tbl{svm_linear_impl}{Comparación de implementaciones lineales de SVM.}{tab:svm_linear_impl}
+
+El análisis de vectores de soporte ayuda a interpretar la complejidad efectiva del clasificador: a mayor número de SV, típicamente mayor frontera efectiva (y mayor coste en inferencia para SVC).
+
+\tbl{svm_support_vectors}{Análisis de vectores de soporte en configuraciones representativas.}{tab:svm_support_vectors}
+
+Finalmente, se evalúa el mejor modelo SVM (según GridSearch sobre RBF) y se incluye su matriz de confusión en la Figura~\ref{fig:cm_svm}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{confusion_matrix_svm.png}
+\caption{Matriz de confusión del mejor modelo SVM.}
+\label{fig:cm_svm}
+\end{figure}
+
+\tbl{svm_summary}{Resumen de la Parte 1 (SVM): mejor configuración por kernel.}{tab:svm_summary}
+
+El kernel lineal resulta el más eficaz con parámetros por defecto (CV~=~0.9418), gracias a que el dataset, tras One-Hot Encoding y estandarización, es relativamente separable en el espacio de 23 dimensiones. El kernel RBF, tras optimización (C~=~100, $\gamma$~=~0.01), alcanza prácticamente la misma accuracy (Test~=~0.9431). El kernel polinomial queda algo por debajo incluso después de GridSearch (Test~=~0.8886), lo que sugiere que la frontera de decisión real no tiene una estructura polinomial clara. El kernel sigmoide no resulta competitivo en absoluto.
+
+La comparación de implementaciones lineales confirma que \texttt{SVC(kernel='linear')} y \texttt{LinearSVC} dan prácticamente el mismo resultado, pero \texttt{SGDClassifier} queda por debajo al converger a un óptimo diferente mediante descenso de gradiente estocástico.
+
+\subsection{Parte 2: Árboles de Decisión}
+
+Se parte de un árbol sin restricciones para observar sobreajuste (train accuracy muy alto frente a test). Después se explora el efecto de \texttt{max\_depth}, los criterios de impureza y técnicas de poda previa y posterior.
+
+\tbl{tree_baseline}{Baseline de Decision Tree sin restricciones.}{tab:tree_baseline}
+
+\tbl{tree_max_depth}{Efecto de \texttt{max\_depth} en Decision Tree.}{tab:tree_max_depth}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{decision_tree_depth_curve.png}
+\caption{Curva de rendimiento (train/CV/test) en función de \texttt{max\_depth}.}
+\label{fig:tree_depth}
+\end{figure}
+
+\tbl{tree_criteria}{Comparación de criterios de división (gini, entropy, log\_loss).}{tab:tree_criteria}
+
+\tbl{tree_grid_prepruning}{Poda previa: configuraciones representativas encontradas por GridSearch.}{tab:tree_grid_pre}
+
+\tbl{tree_ccp}{Poda posterior por cost-complexity pruning (ccp\_alpha).}{tab:tree_ccp}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{decision_tree_ccp_curve.png}
+\caption{Cost-complexity pruning: efecto de \texttt{ccp\_alpha} en CV/test.}
+\label{fig:tree_ccp_curve}
+\end{figure}
+
+\tbl{tree_feature_importance}{Importancia de características del mejor árbol (top).}{tab:tree_importance}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{decision_tree_feature_importance.png}
+\caption{Importancia de características del árbol (top 15).}
+\label{fig:tree_importance_fig}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{decision_tree.png}
+\caption{Visualización del árbol (profundidad limitada para legibilidad).}
+\label{fig:tree_viz}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{confusion_matrix_tree.png}
+\caption{Matriz de confusión del mejor Decision Tree.}
+\label{fig:cm_tree}
+\end{figure}
+
+\tbl{tree_summary}{Resumen de la Parte 2 (Árboles): baseline vs poda previa vs poda posterior.}{tab:tree_summary}
+
+El árbol sin restricciones alcanza 100\% en train pero solo 92.89\% en test (profundidad 12, 101 hojas), síntoma claro de sobreajuste moderado. La poda posterior mediante cost-complexity pruning (ccp\_alpha~$\approx$~0.0008) logra el mismo rendimiento en test con un árbol más compacto (profundidad 10, 74 hojas), es decir, elimina ramas redundantes sin perder capacidad predictiva. La poda previa por GridSearch queda ligeramente por debajo (92.18\%), probablemente porque las restricciones de \texttt{min\_samples\_leaf} impiden capturar algunas divisiones finas legítimas.
+
+La importancia de características confirma que \textbf{Weight} y \textbf{Height} dominan la predicción del nivel de obesidad, coherente con la relación directa entre estas variables y el IMC.
+
+\subsection{Parte 3: Random Forest y Extra Trees}
+
+Los métodos de ensemble basados en bagging reducen varianza y mejoran la estabilidad respecto a un único árbol. Se evalúa un Random Forest por defecto, el efecto de \texttt{n\_estimators} y \texttt{max\_features}, un GridSearch de hiperparámetros y la comparación con Extra Trees.
+
+\tbl{rf_default}{Random Forest por defecto.}{tab:rf_default}
+
+\tbl{rf_n_estimators}{Efecto de \texttt{n\_estimators} en OOB y test.}{tab:rf_n_estimators}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{rf_n_estimators_curve.png}
+\caption{Efecto de \texttt{n\_estimators}: OOB y test.}
+\label{fig:rf_n_estimators}
+\end{figure}
+
+\tbl{rf_max_features}{Efecto de \texttt{max\_features} (n=100).}{tab:rf_max_features}
+
+\tbl{rf_grid}{GridSearch: configuraciones representativas.}{tab:rf_grid}
+
+\tbl{rf_importances}{Importancia de características en Random Forest (Gini vs Permutation).}{tab:rf_importances}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{rf_feature_importance_gini.png}
+\caption{Importancia de características (top 15, Gini) en Random Forest.}
+\label{fig:rf_importance}
+\end{figure}
+
+\tbl{extra_trees}{Resultados de Extra Trees.}{tab:extra_trees}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{confusion_matrix_rf.png}
+\caption{Matriz de confusión del mejor modelo de la Parte 3.}
+\label{fig:cm_rf}
+\end{figure}
+
+\tbl{rf_summary}{Resumen de la Parte 3 (Ensembles bagging).}{tab:rf_summary}
+
+El Random Forest por defecto (OOB~=~0.9412, Test~=~0.9455) ya supera ampliamente al mejor árbol individual, demostrando el beneficio de la agregación. Tras GridSearch, la mejor configuración (200 árboles, todas las features, sin límite de profundidad) alcanza Test~=~0.9550. Un resultado interesante es que usar \textbf{todas las features} (\texttt{max\_features=None}) supera a las opciones clásicas (\texttt{sqrt}, \texttt{log2}), sugiriendo que con solo 23 features y dos muy dominantes (Weight, Height), limitar las features por split reduce la calidad de los árboles más de lo que gana por decorrelación.
+
+Extra Trees (Test~=~0.9265) rinde por debajo del Random Forest estándar. La aleatorización extra en los umbrales no aporta beneficio aquí, probablemente porque el dataset no es tan ruidoso como para que merezca la pena el aumento de sesgo.
+
+\subsection{Parte 4: Gradient Boosting y AdaBoost}
+
+Los métodos de boosting suelen capturar relaciones no lineales mediante la suma secuencial de modelos débiles. Se evalúa Gradient Boosting por defecto, se estudia la relación entre \texttt{n\_estimators} y \texttt{learning\_rate}, se explora \texttt{max\_depth} y se realiza GridSearch. También se evalúa AdaBoost (stumps).
+
+\tbl{gb_default}{Gradient Boosting por defecto.}{tab:gb_default}
+
+\tbl{gb_n_lr}{Efecto de \texttt{n\_estimators} y \texttt{learning\_rate}.}{tab:gb_n_lr}
+
+\tbl{gb_depth}{Efecto de \texttt{max\_depth} en Gradient Boosting.}{tab:gb_depth}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{gb_depth_curve.png}
+\caption{Efecto de \texttt{max\_depth} en Gradient Boosting (train/CV/test).}
+\label{fig:gb_depth}
+\end{figure}
+
+\tbl{gb_grid}{GridSearch: configuraciones representativas para Gradient Boosting.}{tab:gb_grid}
+
+\tbl{adaboost}{Exploración de hiperparámetros en AdaBoost (stumps).}{tab:adaboost}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{confusion_matrix_gb.png}
+\caption{Matriz de confusión del mejor modelo de la Parte 4.}
+\label{fig:cm_gb}
+\end{figure}
+
+\tbl{gb_summary}{Resumen de la Parte 4 (Boosting).}{tab:gb_summary}
+
+Gradient Boosting es el claro ganador de esta sección. Ya con parámetros por defecto (CV~=~0.9573, Test~=~0.9668) supera a todos los modelos previos, y tras GridSearch alcanza \textbf{Test~=~0.9716} con lr~=~0.1, \texttt{max\_depth}~=~3 y 200 estimadores. El estudio del efecto de \texttt{max\_depth} confirma el patrón clásico de boosting: árboles poco profundos (3 niveles) combinados con muchas iteraciones logran el mejor equilibrio sesgo-varianza.
+
+\textbf{AdaBoost con stumps fracasa estrepitosamente} (CV $\approx$ 47\%, Test $\approx$ 41\%). Un stump (\texttt{max\_depth}=1) solo puede dividir el espacio con un único corte, lo cual es totalmente insuficiente para discriminar entre 7 clases de obesidad que requieren interacciones entre variables. En un problema binario, AdaBoost con stumps puede funcionar razonablemente, pero el salto a 7 clases lo vuelve inviable.
+
+\subsection{Comparación Global}
+
+Finalmente, se comparan los mejores modelos de cada bloque con CV Accuracy, métricas ponderadas en test y tiempo de entrenamiento. La Tabla~\ref{tab:final_comparison} resume los resultados.
+
+\tbl{final_comparison}{Comparativa final de mejores modelos (uno por familia).}{tab:final_comparison}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{confusion_matrix_final.png}
+\caption{Matriz de confusión del mejor modelo global (seleccionado por F1 ponderado).}
+\label{fig:cm_final}
+\end{figure}
+
+El ranking final es claro: \textbf{Gradient Boosting} (Test~=~97.16\%, F1~=~0.9718) $>$ \textbf{Random Forest} (95.50\%) $>$ \textbf{SVM-RBF} (94.31\%) $>$ \textbf{Decision Tree} (92.18\%) $\gg$ \textbf{AdaBoost stumps} (40.76\%). La matriz de confusión del Gradient Boosting muestra que Obesity\_Type\_III se clasifica con F1~=~1.00 (perfectamente separable), mientras que las categorías intermedias (Normal\_Weight, Overweight\_Level\_I) presentan las mayores confusiones, reflejando la arbitrariedad de los umbrales de clasificación en rangos de IMC contiguos.
+
+\section{Análisis y Discusión}
+
+\subsection{Sobre los modelos}
+
+La progresión de rendimiento observada --- de un árbol individual (92\%) a ensembles de bagging (95.5\%) y finalmente a boosting (97.16\%) --- confirma el marco teórico visto en clase. Cada nivel de sofisticación añade una capa de capacidad predictiva:
+
+\begin{itemize}
+    \item El \textbf{árbol individual} es el más interpretable pero el más sensible al ruido.
+    \item \textbf{Bagging} (Random Forest) reduce la varianza promediando múltiples árboles, a costa de perder algo de interpretabilidad.
+    \item \textbf{Boosting} (Gradient Boosting) reduce además el sesgo corrigiendo secuencialmente los errores residuales.
+\end{itemize}
+
+SVM-RBF alcanza un rendimiento notable (94.31\%) sin ser un ensemble, lo que demuestra la potencia de las fronteras no lineales en espacios de alta dimensionalidad. Sin embargo, requiere estandarización obligatoria y su tiempo de optimización (GridSearch de C y $\gamma$) escala peor que los métodos basados en árboles.
+
+\subsection{Sobre AdaBoost}
+
+El fracaso de AdaBoost con stumps merece atención especial. En problemas binarios, los stumps pueden ser estimadores base eficaces porque la frontera entre dos clases puede aproximarse con combinaciones lineales de cortes simples. Sin embargo, para 7 clases con fronteras irregulares, un stump que solo divide el espacio en dos mitades con un único corte es absolutamente insuficiente. Para hacer competitivo a AdaBoost en este problema, sería necesario usar árboles de mayor profundidad como estimadores base (por ejemplo, \texttt{max\_depth}=3 o 5).
+
+\subsection{Sobre el preprocesado}
+
+El hecho de reutilizar exactamente el mismo preprocesado de la Práctica 0 garantiza comparabilidad y refuerza una lección importante: el Pipeline con StandardScaler encapsulado es imprescindible para SVM, pero redundante para los métodos basados en árboles (que son invariantes a transformaciones monótonas). Aun así, mantener la estandarización dentro del Pipeline no perjudica a los árboles y simplifica el código.
+
+\section{Conclusiones}
+
+Los principales hallazgos de esta práctica son:
+
+\begin{enumerate}
+    \item \textbf{Gradient Boosting es el mejor modelo} para este dataset, alcanzando un 97.16\% de Test Accuracy y un F1 ponderado de 0.9718 con lr~=~0.1, \texttt{max\_depth}~=~3 y 200 estimadores. La mejora sobre Random Forest (+1.7 pp) y SVM (+2.9 pp) es consistente y estadísticamente significativa.
+    
+    \item \textbf{La complejidad del ensemble importa}: el paso de un árbol individual (92\%) a un bosque (95.5\%) y a boosting (97.2\%) demuestra que cada nivel de sofisticación aporta mejoras reales en este problema.
+    
+    \item \textbf{Los hiperparámetros marcan la diferencia}. En Gradient Boosting, el trade-off entre \texttt{learning\_rate} y \texttt{n\_estimators} es clave: lr~=~0.01 con solo 200 árboles da 90\%, mientras que lr~=~0.1 con 200 árboles alcanza 97.2\%. En Random Forest, usar todas las features supera a \texttt{sqrt}/\texttt{log2} en este dataset particular.
+    
+    \item \textbf{AdaBoost con stumps no es viable para problemas multiclase complejos}. Con solo 47\% de CV Accuracy, queda muy por debajo del azar ponderado, confirmando que los estimadores base deben tener capacidad suficiente para el problema.
+    
+    \item \textbf{Las clases extremas de obesidad son mucho más fáciles de clasificar que las intermedias}. Obesity\_Type\_III alcanza F1~=~1.00 mientras que Normal\_Weight y Overweight\_Level\_I se mantienen en torno a 0.93--0.95. Esto refleja la naturaleza continua del peso corporal: las fronteras entre categorías adyacentes son inherentemente difusas.
+    
+    \item \textbf{El coste computacional varía enormemente} entre modelos: SVM necesita 0.04s, Random Forest 0.24s y Gradient Boosting 4.07s. Para este dataset la diferencia es irrelevante, pero en producción o con datasets grandes el trade-off rendimiento/coste debe evaluarse.
+\end{enumerate}
+
+\end{document}
