@@ -68,3 +68,8 @@ Default branch: `main`
 - [ ] PR summary includes impact and risks
 
 P26-02-26 17:40 UTC
+
+## OpenClaw Gateway Note
+- Las tareas que involucren a agentes deben coordinarse con el director-orquesta y documentarse aquí antes de crear ramas.
+- Siempre trabajamos en ramas dedicadas (ej. `future`), validamos localmente y abrimos PR; nunca se hace push directo a `main`.
+- Asegúrate de seguir el flujo recomendado (sync, start-task, validate, finish-task) y registra decisiones clave para referencia futura.
