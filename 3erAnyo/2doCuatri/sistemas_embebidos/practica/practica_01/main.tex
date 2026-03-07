@@ -1179,7 +1179,55 @@ Además, el mecanismo de \textit{fallback} (activado tras 3.5 segundos sin detec
 \section{Parte práctica (montaje físico)}
 % ============================================================
 
-\textit{[Pendiente: incluir fotografías del montaje físico en el laboratorio una vez realizadas.]}
+Una vez validada la funcionalidad completa en simulación, se procede al montaje físico en el laboratorio. El circuito se construye sobre una \textit{breadboard} utilizando los componentes reales: la microplaca ESP32-C3 SuperMini, el sensor de pulso MAX30102, la pantalla OLED SSD1306 y el LED RGB. Las conexiones se realizan de acuerdo al esquema desarrollado en la Parte~B, con especial atención a la correcta disposición del LED RGB (utilizando un componente de cátodo común real) y al correcto cableado del bus I2C para los dos dispositivos de comunicación.
+
+\subsection{Capturas del montaje físico}
+
+A continuación se presentan las fotografías del montaje físico funcionando en diferentes escenarios, que confirman la compatibilidad total entre la simulación y el hardware real:
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.31\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,height=10cm,keepaspectratio]{parte_b/images/real_falta_dedo.png}
+        \caption{Montaje sin dedo: la pantalla muestra ``Falta dedo'' y el LED está apagado, comportamiento idéntico al simulado.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.31\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,height=10cm,keepaspectratio]{parte_b/images/real_midiendo.jpeg}
+        \caption{Dedo detectado: el sistema detecta el dedo sobre el sensor y cambia a estado de medición. LED azul indicando que se está procesando información.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.31\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,height=10cm,keepaspectratio]{parte_b/images/real_bpm_66.jpeg}
+        \caption{Medición de 66~BPM en el montaje físico -- LED verde indicando ritmo cardíaco normal. La pantalla muestra el valor numérico sincronizado con los latidos detectados. Este resultado verifica que el algoritmo de detección de latidos y el cálculo del promedio móvil funcionan correctamente en hardware real.}
+    \end{subfigure}
+    \caption{Estados iniciales del pulsómetro en el montaje físico.}
+    \label{fig:montaje-real-estados}
+\end{figure}
+
+
+
+\subsection{Validación hardware vs. simulación}
+
+Las fotografías del montaje físico demuestran que el comportamiento del circuito y el software implementados en la Parte~B son completamente compatibles con el hardware real:
+
+\begin{itemize}
+    \item \textbf{Detección de dedo:} El sensor MAX30102 físico detecta correctamente la presencia del dedo sobre su superficie, con el mismo umbral de 50000 configurado en la simulación.
+    
+    \item \textbf{Indicación visual correcta:} El LED RGB responde de forma apropiada a los diferentes estados:
+    \begin{itemize}
+        \item Apagado cuando no hay dedo.
+        \item Azul durante la etapa de medición inicial.
+        \item Verde en ritmos cardíacos bajos (entre 40 y 70 BPM).
+    \end{itemize}
+    
+    \item \textbf{Pantalla OLED funcional:} La pantalla SSD1306 muestra correctamente los mensajes de estado y los valores de BPM con el mismo formato que en la simulación.
+    
+    \item \textbf{Algoritmos de procesamiento:} La convergencia progresiva del BPM hacia el valor real (visible en la transición de ``Midiendo...'' a un valor numérico) confirma que el promedio móvil funciona de forma esperada en condiciones reales.
+\end{itemize}
 
 \vspace{2cm}
 
