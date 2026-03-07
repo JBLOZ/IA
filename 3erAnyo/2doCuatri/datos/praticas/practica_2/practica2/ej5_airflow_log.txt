@@ -1,0 +1,13 @@
+PLANTILLA - REEMPLAZAR POR EL LOG REAL DE AIRFLOW
+
+Este archivo NO es un log real.
+Debes sustituirlo por el log descargado de una ejecucion correcta del DAG secuencial:
+- p2_ej2_b2s_pipeline_sequential.py
+
+Pasos:
+1. Ejecuta el DAG secuencial en Airflow.
+2. Comprueba el orden de tareas:
+   a) run_sf_police_incidents
+   b) run_sf_median_household_income
+   c) run_sf_neighborhoods_census_tracts
+3. Descarga el log real y reemplaza este archivo.
