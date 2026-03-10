@@ -1,0 +1,2918 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Keep aspect ratio if custom image width or height is specified
+    \setkeys{Gin}{keepaspectratio}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \makeatletter
+    \newsavebox\pandoc@box
+    \newcommand*\pandocbounded[1]{%
+      \sbox\pandoc@box{#1}%
+      % scaling factors for width and height
+      \Gscale@div\@tempa\textheight{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+      \Gscale@div\@tempb\linewidth{\wd\pandoc@box}%
+      % select the smaller of both
+      \ifdim\@tempb\p@<\@tempa\p@
+        \let\@tempa\@tempb
+      \fi
+      % scaling accordingly (\@tempa < 1)
+      \ifdim\@tempa\p@<\p@
+        \scalebox{\@tempa}{\usebox\pandoc@box}%
+      % scaling not needed, use as it is
+      \else
+        \usebox{\pandoc@box}%
+      \fi
+    }
+    \makeatother
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{practica\_01\_jordi\_blasco\_lozano}
+    
+    
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@ges}{\let\PY@bf=\textbf\let\PY@it=\textit}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+    \setcounter{secnumdepth}{0}
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \section{Práctica 1 --- Problema de Clique
+Máximo}\label{pruxe1ctica-1-problema-de-clique-muxe1ximo}
+
+\textbf{Autor:} Jordi Blasco Lozano
+
+    \paragraph{Índice}\label{uxedndice}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Resumen
+\item
+  Introducción
+\item
+  Carga de imports y conjuntos de datos
+\item
+  Tareas de implementación
+
+  \begin{itemize}
+  \tightlist
+  \item
+    4.1 Utilidades generales
+  \item
+    4.2 Fuerza bruta (parte 0)
+
+    \begin{itemize}
+    \tightlist
+    \item
+      Tarea 0.1: \texttt{is\_clique()}
+    \item
+      Tarea 0.2: \texttt{brute\_force\_max\_clique()}
+    \item
+      Tarea 0.3: \texttt{test\_brute\_force()}
+    \item
+      Tarea 0.4: evaluación sobre dataset
+    \end{itemize}
+  \item
+    4.3 Formulación de Motzkin-Straus (parte 1)
+
+    \begin{itemize}
+    \tightlist
+    \item
+      Tarea 1.1: funciones objetivo
+    \item
+      Tarea 1.2: verificación del teorema
+    \end{itemize}
+  \item
+    4.4 Dinámicas replicadoras (parte 2)
+
+    \begin{itemize}
+    \tightlist
+    \item
+      Tarea 2.1: \texttt{replicator\_dynamics()}
+    \item
+      Tarea 2.2: \texttt{decode\_clique()}
+    \item
+      Tarea 2.3: visualización de convergencia
+    \item
+      Tarea 2.4: evaluación sobre dataset
+    \end{itemize}
+  \item
+    4.5 GNN + Dinámicas replicadoras (parte 3)
+
+    \begin{itemize}
+    \tightlist
+    \item
+      Tarea 3.1: \texttt{compute\_node\_features()}
+    \item
+      Tarea 3.2: \texttt{MaxCliqueGNN}
+    \item
+      Tarea 3.3: RD diferenciable
+    \item
+      Tarea 3.4: \texttt{maxclique\_loss()}
+    \item
+      Tarea 3.5: entrenamiento
+    \item
+      Tarea 3.6: evaluación
+    \end{itemize}
+  \item
+    4.6 Presentación de resultados
+  \end{itemize}
+\item
+  Ejercicio 1
+
+  \begin{itemize}
+  \tightlist
+  \item
+    5.1 Implementar \texttt{is\_clique()} y
+    \texttt{brute\_force\_max\_clique()}
+  \item
+    5.2 Prueba en un grafo sintético pequeño
+  \item
+    5.3 Aplicación a los primeros 20 grafos de IMDB y contraste
+    adicional con COLLAB
+  \item
+    5.4 Informe del ejercicio
+  \end{itemize}
+\item
+  Ejercicio 2
+
+  \begin{itemize}
+  \tightlist
+  \item
+    6.1 Implementación de funciones objetivo
+  \item
+    6.2 Crear 3 grafos de test con máximas cliques conocidas
+  \item
+    6.3 Verificar que el teorema se cumple en cada caso
+  \item
+    6.4 Demostrar el problema de la solución espuria en el grafo cherry
+  \item
+    6.5 Demostrar que la regularización lo corrige
+  \item
+    6.6 Informe del ejercicio
+  \end{itemize}
+\item
+  Ejercicio 3
+
+  \begin{itemize}
+  \tightlist
+  \item
+    7.1 Implementar RD con el decodificador
+  \item
+    7.2 Visualización de la convergencia en un grafo pequeño
+  \item
+    7.3 Aplicación de RD en IMDB y COLLAB
+  \item
+    7.4 Comparación con fuerza bruta en los grafos pequeños de IMDB
+  \item
+    7.5 Informe del ejercicio
+  \end{itemize}
+\item
+  Ejercicio 4
+
+  \begin{itemize}
+  \tightlist
+  \item
+    8.1 Implementar el pipeline completo
+  \item
+    8.2 Entrenar en IMDB y evaluar en grafos hold-out
+  \item
+    8.3 Comparación de los tres enfoques
+
+    \begin{itemize}
+    \tightlist
+    \item
+      Fuerza Bruta
+    \item
+      RD puro desde el baricentro
+    \item
+      GNN + RD
+    \end{itemize}
+  \item
+    8.4 Ablación: variar el número de iteraciones de RD (train: 0,1,3,5;
+    test: 10,50,100)
+  \item
+    8.5 Informe del ejercicio
+  \end{itemize}
+\item
+  Ejercicio 5
+
+  \begin{itemize}
+  \tightlist
+  \item
+    9.1 Tabla resumen final
+  \item
+    9.2 Informe comparativo final
+  \end{itemize}
+\item
+  Conclusiones
+\end{enumerate}
+
+    \subsection{1. Resumen}\label{resumen}
+
+    En esta práctica se ha abordado el problema de clique máximo desde tres
+niveles de complejidad. En primer lugar se ha implementado una
+referencia exacta por fuerza bruta, útil para fijar un ground truth en
+grafos pequeños. Después se ha trabajado con la relajación continua de
+Motzkin-Straus y con Replicator Dynamics como procedimiento de
+optimización sobre el simplex. Por último se ha añadido un modelo
+híbrido GNN + RD para estudiar si una inicialización aprendida puede
+mejorar el comportamiento de RD puro.
+
+El notebook se ha reorganizado para que la sección de implementación
+quede separada de los ejercicios, pero respetando los apartados del
+enunciado.
+
+    \subsection{2. Introducción}\label{introducciuxf3n}
+
+    Una clique en un grafo no dirigido es un subconjunto de nodos en el que
+todos los pares posibles están conectados. La clique máxima es la de
+mayor tamaño, y encontrarla es un problema NP-hard. Esa dificultad
+explica por qué una estrategia exacta solo es útil en instancias
+pequeñas y por qué tiene sentido estudiar formulaciones relajadas y
+métodos iterativos.
+
+En esta práctica se ha seguido la secuencia natural del enunciado.
+Primero se ha programado fuerza bruta como referencia exacta. Después se
+ha comprobado numéricamente el teorema de Motzkin-Straus y el papel de
+la regularización frente a soluciones espurias. A continuación se ha
+implementado Replicator Dynamics y se ha evaluado sobre IMDB y COLLAB.
+Finalmente se ha entrenado un modelo híbrido GNN + RD para comparar su
+comportamiento frente a RD puro y analizar una pequeña ablación sobre el
+número de iteraciones de refinamiento.
+
+    \subsection{3. Carga de imports y conjuntos de
+datos}\label{carga-de-imports-y-conjuntos-de-datos}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{253}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{random}
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{time}
+\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{itertools}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{combinations}
+\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{pathlib}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{Path}
+
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{plt}
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{networkx}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{nx}
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{numpy}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{np}
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{pandas}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{pd}
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{torch}
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{torch}\PY{n+nn}{.}\PY{n+nn}{nn}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{nn}
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{torch}\PY{n+nn}{.}\PY{n+nn}{nn}\PY{n+nn}{.}\PY{n+nn}{functional}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{F}
+\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{IPython}\PY{n+nn}{.}\PY{n+nn}{display}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{Markdown}\PY{p}{,} \PY{n}{display}
+\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{torch\PYZus{}geometric}\PY{n+nn}{.}\PY{n+nn}{datasets}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{TUDataset}
+\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{torch\PYZus{}geometric}\PY{n+nn}{.}\PY{n+nn}{nn}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{GCNConv}
+\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{torch\PYZus{}geometric}\PY{n+nn}{.}\PY{n+nn}{utils}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{to\PYZus{}networkx}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{style}\PY{o}{.}\PY{n}{use}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{seaborn\PYZhy{}v0\PYZus{}8\PYZhy{}whitegrid}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{np}\PY{o}{.}\PY{n}{set\PYZus{}printoptions}\PY{p}{(}\PY{n}{precision}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{,} \PY{n}{suppress}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{pd}\PY{o}{.}\PY{n}{set\PYZus{}option}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{display.max\PYZus{}columns}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{k+kc}{None}\PY{p}{)}
+\PY{n}{pd}\PY{o}{.}\PY{n}{set\PYZus{}option}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{display.precision}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
+
+\PY{n}{SEED} \PY{o}{=} \PY{l+m+mi}{42}
+\PY{n}{random}\PY{o}{.}\PY{n}{seed}\PY{p}{(}\PY{n}{SEED}\PY{p}{)}
+\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{seed}\PY{p}{(}\PY{n}{SEED}\PY{p}{)}
+\PY{n}{torch}\PY{o}{.}\PY{n}{manual\PYZus{}seed}\PY{p}{(}\PY{n}{SEED}\PY{p}{)}
+
+\PY{n}{DEVICE} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{device}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cuda}\PY{l+s+s2}{\PYZdq{}} \PY{k}{if} \PY{n}{torch}\PY{o}{.}\PY{n}{cuda}\PY{o}{.}\PY{n}{is\PYZus{}available}\PY{p}{(}\PY{p}{)} \PY{k}{else} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cpu}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{BASE\PYZus{}DIR} \PY{o}{=} \PY{n}{Path}\PY{o}{.}\PY{n}{cwd}\PY{p}{(}\PY{p}{)}
+\PY{n}{DATA\PYZus{}DIR} \PY{o}{=} \PY{n}{BASE\PYZus{}DIR} \PY{o}{/} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{data}\PY{l+s+s2}{\PYZdq{}}
+\PY{n}{IMAGES\PYZus{}DIR} \PY{o}{=} \PY{n}{BASE\PYZus{}DIR} \PY{o}{/} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{images}\PY{l+s+s2}{\PYZdq{}}
+\PY{n}{IMAGES\PYZus{}DIR}\PY{o}{.}\PY{n}{mkdir}\PY{p}{(}\PY{n}{parents}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{exist\PYZus{}ok}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{imdb\PYZus{}dataset} \PY{o}{=} \PY{n}{TUDataset}\PY{p}{(}\PY{n}{root}\PY{o}{=}\PY{n+nb}{str}\PY{p}{(}\PY{n}{DATA\PYZus{}DIR}\PY{p}{)}\PY{p}{,} \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB\PYZhy{}BINARY}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{collab\PYZus{}dataset} \PY{o}{=} \PY{n}{TUDataset}\PY{p}{(}\PY{n}{root}\PY{o}{=}\PY{n+nb}{str}\PY{p}{(}\PY{n}{DATA\PYZus{}DIR}\PY{p}{)}\PY{p}{,} \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Dispositivo de trabajo: }\PY{l+s+si}{\PYZob{}}\PY{n}{DEVICE}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB\PYZhy{}BINARY: }\PY{l+s+si}{\PYZob{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{imdb\PYZus{}dataset}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ grafos}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB: }\PY{l+s+si}{\PYZob{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{collab\PYZus{}dataset}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ grafos}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n}{sample\PYZus{}graph} \PY{o}{=} \PY{n}{imdb\PYZus{}dataset}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{Ejemplo de IMDB\PYZhy{}BINARY:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{  Nodos: }\PY{l+s+si}{\PYZob{}}\PY{n}{sample\PYZus{}graph}\PY{o}{.}\PY{n}{num\PYZus{}nodes}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{  Aristas: }\PY{l+s+si}{\PYZob{}}\PY{n}{sample\PYZus{}graph}\PY{o}{.}\PY{n}{num\PYZus{}edges}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{  Etiqueta del grafo: }\PY{l+s+si}{\PYZob{}}\PY{n+nb}{int}\PY{p}{(}\PY{n}{sample\PYZus{}graph}\PY{o}{.}\PY{n}{y}\PY{o}{.}\PY{n}{item}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{+w}{ }\PY{k}{if}\PY{+w}{ }\PY{n+nb}{hasattr}\PY{p}{(}\PY{n}{sample\PYZus{}graph}\PY{p}{,}\PY{+w}{ }\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{+w}{ }\PY{k}{else}\PY{+w}{ }\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{N/D}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Dispositivo de trabajo: cuda
+IMDB-BINARY: 1000 grafos
+COLLAB: 5000 grafos
+
+Ejemplo de IMDB-BINARY:
+  Nodos: 20
+  Aristas: 146
+  Etiqueta del grafo: 0
+    \end{Verbatim}
+
+    \subsection{4. Tareas de
+implementación}\label{tareas-de-implementaciuxf3n}
+
+    En esta sección se han agrupado las funciones y clases reutilizables.
+
+    \paragraph{4.1 Utilidades generales}\label{utilidades-generales}
+
+    Aquí se han reunido funciones auxiliares de conversión, medida de
+tiempos, particionado y resumen de resultados. No pertenecen al
+enunciado como tareas específicas, pero permiten que los ejercicios
+posteriores queden más limpios.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{254}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{pyg\PYZus{}to\PYZus{}adjacency}\PY{p}{(}\PY{n}{data}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}Convierte un grafo de PyG a matriz de adyacencia densa de tipo float.\PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{G} \PY{o}{=} \PY{n}{to\PYZus{}networkx}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{to\PYZus{}undirected}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+    \PY{n}{A} \PY{o}{=} \PY{n}{nx}\PY{o}{.}\PY{n}{to\PYZus{}numpy\PYZus{}array}\PY{p}{(}\PY{n}{G}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+    \PY{n}{np}\PY{o}{.}\PY{n}{fill\PYZus{}diagonal}\PY{p}{(}\PY{n}{A}\PY{p}{,} \PY{l+m+mf}{0.0}\PY{p}{)}
+    \PY{k}{return} \PY{n}{A}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{clique\PYZus{}to\PYZus{}simplex}\PY{p}{(}\PY{n}{clique}\PY{p}{,} \PY{n}{n}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}Construye el punto del simplex asociado uniformemente a una clique.\PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{n}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+    \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{clique}\PY{p}{)} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+        \PY{k}{return} \PY{n}{x}
+    \PY{n}{x}\PY{p}{[}\PY{n}{clique}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{1.0} \PY{o}{/} \PY{n+nb}{len}\PY{p}{(}\PY{n}{clique}\PY{p}{)}
+    \PY{k}{return} \PY{n}{x}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{timed\PYZus{}call}\PY{p}{(}\PY{n}{fn}\PY{p}{,} \PY{o}{*}\PY{n}{args}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}Ejecuta una función y devuelve resultado y tiempo transcurrido.\PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{start} \PY{o}{=} \PY{n}{time}\PY{o}{.}\PY{n}{time}\PY{p}{(}\PY{p}{)}
+    \PY{n}{out} \PY{o}{=} \PY{n}{fn}\PY{p}{(}\PY{o}{*}\PY{n}{args}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{kwargs}\PY{p}{)}
+    \PY{n}{elapsed} \PY{o}{=} \PY{n}{time}\PY{o}{.}\PY{n}{time}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{start}
+    \PY{k}{return} \PY{n}{out}\PY{p}{,} \PY{n}{elapsed}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{summarize\PYZus{}results}\PY{p}{(}\PY{n}{results}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}Resume una lista de diccionarios homogéneos en un DataFrame y estadísticas básicas.\PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{results}\PY{p}{)} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+        \PY{k}{return} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+
+    \PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{results}\PY{p}{)}
+    \PY{n}{summary} \PY{o}{=} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+    \PY{k}{for} \PY{n}{column} \PY{o+ow}{in} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{iterations}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{:}
+        \PY{k}{if} \PY{n}{column} \PY{o+ow}{in} \PY{n}{df}\PY{o}{.}\PY{n}{columns}\PY{p}{:}
+            \PY{n}{summary}\PY{p}{[}\PY{n}{column}\PY{p}{]} \PY{o}{=} \PY{p}{\PYZob{}}
+                \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{df}\PY{p}{[}\PY{n}{column}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+                \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{std}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{df}\PY{p}{[}\PY{n}{column}\PY{p}{]}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{ddof}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+            \PY{p}{\PYZcb{}}
+    \PY{k}{if} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{valid}\PY{l+s+s2}{\PYZdq{}} \PY{o+ow}{in} \PY{n}{df}\PY{o}{.}\PY{n}{columns}\PY{p}{:}
+        \PY{n}{summary}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{valid\PYZus{}rate}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n+nb}{float}\PY{p}{(}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{valid}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+    \PY{n}{summary}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{num\PYZus{}graphs}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{df}\PY{p}{)}\PY{p}{)}
+    \PY{k}{return} \PY{n}{df}\PY{p}{,} \PY{n}{summary}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{format\PYZus{}metric}\PY{p}{(}\PY{n}{value}\PY{p}{,} \PY{n}{digits}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{:}
+    \PY{k}{if} \PY{n}{value} \PY{o+ow}{is} \PY{k+kc}{None} \PY{o+ow}{or} \PY{p}{(}\PY{n+nb}{isinstance}\PY{p}{(}\PY{n}{value}\PY{p}{,} \PY{n+nb}{float}\PY{p}{)} \PY{o+ow}{and} \PY{n}{np}\PY{o}{.}\PY{n}{isnan}\PY{p}{(}\PY{n}{value}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        \PY{k}{return} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{N/D}\PY{l+s+s2}{\PYZdq{}}
+    \PY{k}{return} \PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{value}\PY{l+s+si}{:}\PY{l+s+s2}{.}\PY{l+s+si}{\PYZob{}}\PY{n}{digits}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{results}\PY{p}{)}\PY{p}{:}
+    \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{results}\PY{p}{)} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+        \PY{k}{return} \PY{p}{\PYZob{}}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{num\PYZus{}graphs}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+m+mi}{0}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{valid\PYZus{}rate}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+        \PY{p}{\PYZcb{}}
+    \PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{results}\PY{p}{)}
+    \PY{n}{clique\PYZus{}series} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{to\PYZus{}numeric}\PY{p}{(}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{errors}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{coerce}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{k}{if} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}} \PY{o+ow}{in} \PY{n}{df} \PY{k}{else} \PY{n}{pd}\PY{o}{.}\PY{n}{Series}\PY{p}{(}\PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+    \PY{n}{time\PYZus{}series} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{to\PYZus{}numeric}\PY{p}{(}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{errors}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{coerce}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{k}{if} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{time}\PY{l+s+s2}{\PYZdq{}} \PY{o+ow}{in} \PY{n}{df} \PY{k}{else} \PY{n}{pd}\PY{o}{.}\PY{n}{Series}\PY{p}{(}\PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+    \PY{n}{valid\PYZus{}series} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{to\PYZus{}numeric}\PY{p}{(}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{valid}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{errors}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{coerce}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{k}{if} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{valid}\PY{l+s+s2}{\PYZdq{}} \PY{o+ow}{in} \PY{n}{df} \PY{k}{else} \PY{n}{pd}\PY{o}{.}\PY{n}{Series}\PY{p}{(}\PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+    \PY{k}{return} \PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{num\PYZus{}graphs}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{df}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{clique\PYZus{}series}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)} \PY{k}{if} \PY{o+ow}{not} \PY{n}{clique\PYZus{}series}\PY{o}{.}\PY{n}{empty} \PY{k}{else} \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{time\PYZus{}series}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)} \PY{k}{if} \PY{o+ow}{not} \PY{n}{time\PYZus{}series}\PY{o}{.}\PY{n}{empty} \PY{k}{else} \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{valid\PYZus{}rate}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{valid\PYZus{}series}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)} \PY{k}{if} \PY{o+ow}{not} \PY{n}{valid\PYZus{}series}\PY{o}{.}\PY{n}{empty} \PY{k}{else} \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+    \PY{p}{\PYZcb{}}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{plot\PYZus{}weighted\PYZus{}graph}\PY{p}{(}\PY{n}{A}\PY{p}{,} \PY{n}{weights}\PY{p}{,} \PY{n}{title}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}Dibuja el grafo coloreando cada nodo según un peso.\PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{G} \PY{o}{=} \PY{n}{nx}\PY{o}{.}\PY{n}{from\PYZus{}numpy\PYZus{}array}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+    \PY{n}{pos} \PY{o}{=} \PY{n}{nx}\PY{o}{.}\PY{n}{spring\PYZus{}layout}\PY{p}{(}\PY{n}{G}\PY{p}{,} \PY{n}{seed}\PY{o}{=}\PY{n}{SEED}\PY{p}{)}
+    \PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+    \PY{n}{nodes} \PY{o}{=} \PY{n}{nx}\PY{o}{.}\PY{n}{draw\PYZus{}networkx\PYZus{}nodes}\PY{p}{(}
+        \PY{n}{G}\PY{p}{,}
+        \PY{n}{pos}\PY{p}{,}
+        \PY{n}{node\PYZus{}color}\PY{o}{=}\PY{n}{weights}\PY{p}{,}
+        \PY{n}{cmap}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{viridis}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{node\PYZus{}size}\PY{o}{=}\PY{l+m+mi}{350}\PY{p}{,}
+        \PY{n}{ax}\PY{o}{=}\PY{n}{ax}\PY{p}{,}
+    \PY{p}{)}
+    \PY{n}{nx}\PY{o}{.}\PY{n}{draw\PYZus{}networkx\PYZus{}edges}\PY{p}{(}\PY{n}{G}\PY{p}{,} \PY{n}{pos}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{width}\PY{o}{=}\PY{l+m+mf}{1.2}\PY{p}{,} \PY{n}{ax}\PY{o}{=}\PY{n}{ax}\PY{p}{)}
+    \PY{n}{nx}\PY{o}{.}\PY{n}{draw\PYZus{}networkx\PYZus{}labels}\PY{p}{(}\PY{n}{G}\PY{p}{,} \PY{n}{pos}\PY{p}{,} \PY{n}{font\PYZus{}size}\PY{o}{=}\PY{l+m+mi}{9}\PY{p}{,} \PY{n}{ax}\PY{o}{=}\PY{n}{ax}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{colorbar}\PY{p}{(}\PY{n}{nodes}\PY{p}{,} \PY{n}{ax}\PY{o}{=}\PY{n}{ax}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Peso final}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{n}{title}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{axis}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{off}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{split\PYZus{}dataset}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{n}{train\PYZus{}ratio}\PY{o}{=}\PY{l+m+mf}{0.8}\PY{p}{,} \PY{n}{max\PYZus{}graphs}\PY{o}{=}\PY{k+kc}{None}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}Crea una partición secuencial sencilla train/test sobre un subconjunto del dataset.\PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{total} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{dataset}\PY{p}{)} \PY{k}{if} \PY{n}{max\PYZus{}graphs} \PY{o+ow}{is} \PY{k+kc}{None} \PY{k}{else} \PY{n+nb}{min}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{dataset}\PY{p}{)}\PY{p}{,} \PY{n}{max\PYZus{}graphs}\PY{p}{)}
+    \PY{n}{subset} \PY{o}{=} \PY{p}{[}\PY{n}{dataset}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{total}\PY{p}{)}\PY{p}{]}
+    \PY{n}{split\PYZus{}idx} \PY{o}{=} \PY{n+nb}{max}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{n}{total} \PY{o}{*} \PY{n}{train\PYZus{}ratio}\PY{p}{)}\PY{p}{)}
+    \PY{n}{split\PYZus{}idx} \PY{o}{=} \PY{n+nb}{min}\PY{p}{(}\PY{n}{split\PYZus{}idx}\PY{p}{,} \PY{n}{total} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1}\PY{p}{)}
+    \PY{k}{return} \PY{n}{subset}\PY{p}{[}\PY{p}{:}\PY{n}{split\PYZus{}idx}\PY{p}{]}\PY{p}{,} \PY{n}{subset}\PY{p}{[}\PY{n}{split\PYZus{}idx}\PY{p}{:}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsubsection{4.2 Fuerza bruta (tarea 0)}\label{fuerza-bruta-tarea-0}
+
+    Tarea 0.1: \texttt{is\_clique()}
+
+En esta tarea se ha implementado la función elemental que comprueba si
+un conjunto de nodos forma realmente una clique. Es la base sobre la que
+descansa toda la enumeración exhaustiva posterior.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{255}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{is\PYZus{}clique}\PY{p}{(}\PY{n}{nodes}\PY{p}{,} \PY{n}{A}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Check if a set of nodes forms a clique.}
+
+\PY{l+s+sd}{    Args:}
+\PY{l+s+sd}{        nodes: list of node indices}
+\PY{l+s+sd}{        A: numpy array of shape (n, n) \PYZhy{} adjacency matrix}
+
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{        bool: True if nodes form a clique, False otherwise}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{j} \PY{o+ow}{in} \PY{n}{combinations}\PY{p}{(}\PY{n}{nodes}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{:}
+        \PY{k}{if} \PY{n}{A}\PY{p}{[}\PY{n}{i}\PY{p}{,} \PY{n}{j}\PY{p}{]} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+            \PY{k}{return} \PY{k+kc}{False}
+    \PY{k}{return} \PY{k+kc}{True}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 0.2: \texttt{brute\_force\_max\_clique()}
+
+En esta tarea se ha implementado la búsqueda exhaustiva. El recorrido se
+hace desde subconjuntos grandes a pequeños para poder detener la
+búsqueda en cuanto aparece la primera clique máxima.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{256}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{brute\PYZus{}force\PYZus{}max\PYZus{}clique}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Find the maximum clique by brute force enumeration.}
+
+\PY{l+s+sd}{    Args:}
+\PY{l+s+sd}{        A: numpy array of shape (n, n) \PYZhy{} adjacency matrix}
+
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{        list: nodes forming the maximum clique}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{n} \PY{o}{=} \PY{n}{A}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+
+    \PY{k}{for} \PY{n}{k} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{subset} \PY{o+ow}{in} \PY{n}{combinations}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{,} \PY{n}{k}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{is\PYZus{}clique}\PY{p}{(}\PY{n}{subset}\PY{p}{,} \PY{n}{A}\PY{p}{)}\PY{p}{:}
+                \PY{k}{return} \PY{n+nb}{list}\PY{p}{(}\PY{n}{subset}\PY{p}{)}
+    \PY{k}{return} \PY{p}{[}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 0.3: \texttt{test\_brute\_force()}
+
+En esta tarea se ha preparado el ejemplo sintético del enunciado para
+comprobar rápidamente que la implementación exacta devuelve una clique
+válida y medir su tiempo de ejecución en un caso pequeño.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{257}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{test\PYZus{}brute\PYZus{}force}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Test brute force on small graphs and measure computation time.}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{A} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}
+        \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}
+    \PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+
+    \PY{n}{start} \PY{o}{=} \PY{n}{time}\PY{o}{.}\PY{n}{time}\PY{p}{(}\PY{p}{)}
+    \PY{n}{clique} \PY{o}{=} \PY{n}{brute\PYZus{}force\PYZus{}max\PYZus{}clique}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+    \PY{n}{elapsed} \PY{o}{=} \PY{n}{time}\PY{o}{.}\PY{n}{time}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{start}
+
+    \PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Maximum clique:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}\PY{n}{clique}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Clique size:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}\PY{n+nb}{len}\PY{p}{(}\PY{n}{clique}\PY{p}{)}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Time:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}\PY{n}{elapsed}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{is valid clique:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}\PY{n}{is\PYZus{}clique}\PY{p}{(}\PY{n}{clique}\PY{p}{,} \PY{n}{A}\PY{p}{)}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{)}
+    
+
+    \PY{k}{return} \PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 0.4: evaluación sobre dataset
+
+Aquí se ha preparado la evaluación por fuerza bruta sobre un subconjunto
+pequeño del dataset, omitiendo los grafos con demasiados nodos para
+evitar tiempos prohibitivos.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{258}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{evaluate\PYZus{}brute\PYZus{}force\PYZus{}on\PYZus{}dataset}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{n}{max\PYZus{}graphs}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{max\PYZus{}nodes}\PY{o}{=}\PY{l+m+mi}{25}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Evaluate brute force on dataset (only small graphs).}
+
+\PY{l+s+sd}{    Args:}
+\PY{l+s+sd}{        dataset: PyTorch Geometric dataset}
+\PY{l+s+sd}{        max\PYZus{}graphs: maximum number of graphs to evaluate}
+\PY{l+s+sd}{        max\PYZus{}nodes: skip graphs larger than this (too slow)}
+
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{        results: list of (graph\PYZus{}idx, clique\PYZus{}size, time) tuples}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{results} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{min}\PY{p}{(}\PY{n}{max\PYZus{}graphs}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{dataset}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        \PY{n}{data} \PY{o}{=} \PY{n}{dataset}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+
+        \PY{k}{if} \PY{n}{data}\PY{o}{.}\PY{n}{num\PYZus{}nodes} \PY{o}{\PYZgt{}} \PY{n}{max\PYZus{}nodes}\PY{p}{:}
+            \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Graph }\PY{l+s+si}{\PYZob{}}\PY{n}{i}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{: Skipping (too large: }\PY{l+s+si}{\PYZob{}}\PY{n}{data}\PY{o}{.}\PY{n}{num\PYZus{}nodes}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ nodes)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+            \PY{k}{continue}
+
+        \PY{n}{A} \PY{o}{=} \PY{n}{pyg\PYZus{}to\PYZus{}adjacency}\PY{p}{(}\PY{n}{data}\PY{p}{)}
+        \PY{n}{clique}\PY{p}{,} \PY{n}{elapsed} \PY{o}{=} \PY{n}{timed\PYZus{}call}\PY{p}{(}\PY{n}{brute\PYZus{}force\PYZus{}max\PYZus{}clique}\PY{p}{,} \PY{n}{A}\PY{p}{)}
+
+        \PY{n}{results}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{\PYZob{}}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{graph\PYZus{}idx}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{i}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{num\PYZus{}nodes}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n}{data}\PY{o}{.}\PY{n}{num\PYZus{}nodes}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{clique}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{clique}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{clique}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{valid}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{bool}\PY{p}{(}\PY{n}{is\PYZus{}clique}\PY{p}{(}\PY{n}{clique}\PY{p}{,} \PY{n}{A}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{elapsed}\PY{l+s+si}{:}\PY{l+s+s2}{.6f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{\PYZcb{}}\PY{p}{)}
+
+    
+    \PY{k}{return} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{results}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsubsection{4.3 Formulación de
+Motzkin-Straus}\label{formulaciuxf3n-de-motzkin-straus}
+
+    Tarea 1.1: funciones objetivo
+
+En esta tarea se han implementado la función objetivo original y su
+versión regularizada. La segunda es la que permite separar soluciones
+espurias en grafos como el cherry.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{259}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{motzkin\PYZus{}straus\PYZus{}objective}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{A}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Compute the Motzkin\PYZhy{}Straus objective f(x) = x\PYZca{}T A x}
+
+\PY{l+s+sd}{    Args:}
+\PY{l+s+sd}{        x: numpy array of shape (n,) \PYZhy{} point in the simplex}
+\PY{l+s+sd}{        A: numpy array of shape (n, n) \PYZhy{} adjacency matrix}
+
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{        float: objective value}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{k}{return} \PY{n+nb}{float}\PY{p}{(}\PY{n}{x} \PY{o}{@} \PY{n}{A} \PY{o}{@} \PY{n}{x}\PY{p}{)}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{regularized\PYZus{}objective}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{A}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Compute the regularized objective f\PYZus{}hat(x) = x\PYZca{}T (A + 0.5*I) x}
+
+\PY{l+s+sd}{    Args:}
+\PY{l+s+sd}{        x: numpy array of shape (n,) \PYZhy{} point in the simplex}
+\PY{l+s+sd}{        A: numpy array of shape (n, n) \PYZhy{} adjacency matrix}
+
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{        float: regularized objective value}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{k}{return} \PY{n+nb}{float}\PY{p}{(}\PY{n}{x} \PY{o}{@} \PY{p}{(}\PY{n}{A} \PY{o}{+} \PY{l+m+mf}{0.5} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{eye}\PY{p}{(}\PY{n}{A}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)} \PY{o}{@} \PY{n}{x}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 1.2: verificación del teorema
+
+En esta tarea se ha reunido en una sola función la comprobación numérica
+de los ejemplos del enunciado: triángulo, cuadrado con diagonal y
+cherry.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{260}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{verify\PYZus{}motzkin\PYZus{}straus}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Verify the Motzkin\PYZhy{}Straus theorem on test graphs.}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{A1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}
+        \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}
+    \PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+
+    \PY{n}{clique1} \PY{o}{=} \PY{n}{brute\PYZus{}force\PYZus{}max\PYZus{}clique}\PY{p}{(}\PY{n}{A1}\PY{p}{)}
+    \PY{n}{x1} \PY{o}{=} \PY{n}{clique\PYZus{}to\PYZus{}simplex}\PY{p}{(}\PY{n}{clique1}\PY{p}{,} \PY{n}{A1}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+
+    \PY{n}{A2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}
+        \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}
+    \PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+
+    \PY{n}{clique2} \PY{o}{=} \PY{n}{brute\PYZus{}force\PYZus{}max\PYZus{}clique}\PY{p}{(}\PY{n}{A2}\PY{p}{)}
+    \PY{n}{x2} \PY{o}{=} \PY{n}{clique\PYZus{}to\PYZus{}simplex}\PY{p}{(}\PY{n}{clique2}\PY{p}{,} \PY{n}{A2}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+
+    \PY{n}{A3} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}
+        \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}
+    \PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+
+    \PY{n}{true\PYZus{}x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mf}{0.0}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+    \PY{n}{spurious\PYZus{}x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mf}{0.25}\PY{p}{,} \PY{l+m+mf}{0.25}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+
+    \PY{k}{return} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}
+        \PY{p}{\PYZob{}}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{graph}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Triángulo K3}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{omega}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{len}\PY{p}{(}\PY{n}{clique1}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{f\PYZus{}x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{motzkin\PYZus{}straus\PYZus{}objective}\PY{p}{(}\PY{n}{x1}\PY{p}{,} \PY{n}{A1}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{theoretical}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+m+mi}{1} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1} \PY{o}{/} \PY{n+nb}{len}\PY{p}{(}\PY{n}{clique1}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{regularized\PYZus{}f\PYZus{}x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{regularized\PYZus{}objective}\PY{p}{(}\PY{n}{x1}\PY{p}{,} \PY{n}{A1}\PY{p}{)}\PY{p}{,}
+        \PY{p}{\PYZcb{}}\PY{p}{,}
+        \PY{p}{\PYZob{}}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{graph}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Cuadrado con diagonal}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{omega}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n+nb}{len}\PY{p}{(}\PY{n}{clique2}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{f\PYZus{}x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{motzkin\PYZus{}straus\PYZus{}objective}\PY{p}{(}\PY{n}{x2}\PY{p}{,} \PY{n}{A2}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{theoretical}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+m+mi}{1} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1} \PY{o}{/} \PY{n+nb}{len}\PY{p}{(}\PY{n}{clique2}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{regularized\PYZus{}f\PYZus{}x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{regularized\PYZus{}objective}\PY{p}{(}\PY{n}{x2}\PY{p}{,} \PY{n}{A2}\PY{p}{)}\PY{p}{,}
+        \PY{p}{\PYZcb{}}\PY{p}{,}
+        \PY{p}{\PYZob{}}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{graph}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Cherry \PYZhy{} solución verdadera}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{omega}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{f\PYZus{}x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{motzkin\PYZus{}straus\PYZus{}objective}\PY{p}{(}\PY{n}{true\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{theoretical}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+m+mf}{0.5}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{regularized\PYZus{}f\PYZus{}x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{regularized\PYZus{}objective}\PY{p}{(}\PY{n}{true\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)}\PY{p}{,}
+        \PY{p}{\PYZcb{}}\PY{p}{,}
+        \PY{p}{\PYZob{}}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{graph}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Cherry \PYZhy{} solución espuria}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{omega}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{f\PYZus{}x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{motzkin\PYZus{}straus\PYZus{}objective}\PY{p}{(}\PY{n}{spurious\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{theoretical}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+m+mf}{0.5}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{regularized\PYZus{}f\PYZus{}x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{regularized\PYZus{}objective}\PY{p}{(}\PY{n}{spurious\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)}\PY{p}{,}
+        \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsubsection{4.4 Dinámicas
+replicadoras}\label{dinuxe1micas-replicadoras}
+
+    Tarea 2.1: \texttt{replicator\_dynamics()}
+
+En esta tarea se ha implementado la dinámica multiplicativa de Pelillo
+sobre la matriz regularizada. La función devuelve tanto el punto final
+del simplex como la historia del objetivo para estudiar la convergencia.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{261}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{replicator\PYZus{}dynamics}\PY{p}{(}\PY{n}{A}\PY{p}{,} \PY{n}{max\PYZus{}iter}\PY{o}{=}\PY{l+m+mi}{1000}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}12}\PY{p}{,} \PY{n}{use\PYZus{}regularization}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Run Replicator Dynamics to find the maximum clique.}
+
+\PY{l+s+sd}{    This follows the formulation from Pelillo et al.:}
+\PY{l+s+sd}{    x\PYZus{}new = x * (A @ x)}
+\PY{l+s+sd}{    x\PYZus{}new = x\PYZus{}new / x\PYZus{}new.sum()}
+
+\PY{l+s+sd}{    Args:}
+\PY{l+s+sd}{        A: numpy array of shape (n, n) \PYZhy{} adjacency matrix}
+\PY{l+s+sd}{        max\PYZus{}iter: int \PYZhy{} maximum number of iterations}
+\PY{l+s+sd}{        tol: float \PYZhy{} convergence tolerance}
+\PY{l+s+sd}{        use\PYZus{}regularization: bool \PYZhy{} whether to use A + 0.5*I}
+
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{        x: numpy array of shape (n,) \PYZhy{} final simplex point}
+\PY{l+s+sd}{        history: dict with \PYZsq{}objectives\PYZsq{} and \PYZsq{}iterations\PYZsq{}}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{n} \PY{o}{=} \PY{n}{A}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+
+    \PY{k}{if} \PY{n}{use\PYZus{}regularization}\PY{p}{:}
+        \PY{n}{A\PYZus{}reg} \PY{o}{=} \PY{n}{A} \PY{o}{+} \PY{l+m+mf}{0.5} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{eye}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{A\PYZus{}reg} \PY{o}{=} \PY{n}{A}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
+
+    \PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{n}{n}\PY{p}{)} \PY{o}{/} \PY{n}{n}
+
+    \PY{n}{history} \PY{o}{=} \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{objectives}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{x} \PY{o}{@} \PY{n}{A\PYZus{}reg} \PY{o}{@} \PY{n}{x}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iterations}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{0}
+    \PY{p}{\PYZcb{}}
+
+    \PY{k}{for} \PY{n}{t} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{max\PYZus{}iter}\PY{p}{)}\PY{p}{:}
+        \PY{n}{x\PYZus{}old} \PY{o}{=} \PY{n}{x}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
+        \PY{n}{x} \PY{o}{=} \PY{n}{x} \PY{o}{*} \PY{p}{(}\PY{n}{A\PYZus{}reg} \PY{o}{@} \PY{n}{x}\PY{p}{)}
+        \PY{n}{x} \PY{o}{=} \PY{n}{x} \PY{o}{/} \PY{n+nb}{max}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+m+mf}{1e\PYZhy{}12}\PY{p}{)}
+        \PY{n}{history}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{objectives}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{n}{x} \PY{o}{@} \PY{n}{A\PYZus{}reg} \PY{o}{@} \PY{n}{x}\PY{p}{)}\PY{p}{)}
+        \PY{n}{history}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iterations}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{t} \PY{o}{+} \PY{l+m+mi}{1}
+        \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{x} \PY{o}{\PYZhy{}} \PY{n}{x\PYZus{}old}\PY{p}{,} \PY{n+nb}{ord}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{n}{tol}\PY{p}{:}
+            \PY{k}{break}
+
+    \PY{k}{return} \PY{n}{x}\PY{p}{,} \PY{n}{history}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 2.2: \texttt{decode\_clique()}
+
+En esta tarea se ha implementado el decodificador voraz que transforma
+la solución continua en una clique discreta válida.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{262}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{decode\PYZus{}clique}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{A}\PY{p}{,} \PY{n}{threshold}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}6}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Extract the maximum clique from the RD solution.}
+
+\PY{l+s+sd}{    Strategy: }
+\PY{l+s+sd}{    1. Sort nodes by x value (descending)}
+\PY{l+s+sd}{    2. Greedily add nodes that maintain clique property}
+
+\PY{l+s+sd}{    Args:}
+\PY{l+s+sd}{        x: numpy array of shape (n,) \PYZhy{} RD solution}
+\PY{l+s+sd}{        A: numpy array of shape (n, n) \PYZhy{} adjacency matrix}
+\PY{l+s+sd}{        threshold: float \PYZhy{} minimum x value to consider}
+
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{        clique: list of node indices}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{indices} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{argsort}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{x}\PY{p}{)}
+    \PY{n}{clique} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{indices}\PY{p}{:}
+        \PY{k}{if} \PY{n}{x}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{n}{threshold} \PY{o+ow}{and} \PY{n+nb}{len}\PY{p}{(}\PY{n}{clique}\PY{p}{)} \PY{o}{\PYZgt{}} \PY{l+m+mi}{0}\PY{p}{:}
+            \PY{k}{break}
+        \PY{k}{if} \PY{n+nb}{all}\PY{p}{(}\PY{n}{A}\PY{p}{[}\PY{n}{j}\PY{p}{,} \PY{n}{i}\PY{p}{]} \PY{o}{==} \PY{l+m+mi}{1} \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n}{clique}\PY{p}{)}\PY{p}{:}
+            \PY{n}{clique}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
+
+    \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{clique}\PY{p}{)} \PY{o}{==} \PY{l+m+mi}{0} \PY{o+ow}{and} \PY{n+nb}{len}\PY{p}{(}\PY{n}{indices}\PY{p}{)} \PY{o}{\PYZgt{}} \PY{l+m+mi}{0}\PY{p}{:}
+        \PY{n}{clique} \PY{o}{=} \PY{p}{[}\PY{n+nb}{int}\PY{p}{(}\PY{n}{indices}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{]}
+
+    \PY{k}{return} \PY{n}{clique}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 2.3: visualización de convergencia
+
+En esta tarea se ha preparado una visualización del objetivo, de los
+pesos finales y del grafo coloreado para interpretar mejor el
+comportamiento de RD.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{263}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{visualize\PYZus{}rd}\PY{p}{(}\PY{n}{A}\PY{p}{,} \PY{n}{graph\PYZus{}name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Test Graph}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Run RD and create visualization of convergence.}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{x\PYZus{}final}\PY{p}{,} \PY{n}{history} \PY{o}{=} \PY{n}{replicator\PYZus{}dynamics}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+
+    \PY{n}{fig}\PY{p}{,} \PY{n}{axes} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{12}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+
+    \PY{n}{axes}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{history}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{objectives}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}1f77b4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{axes}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Objective value over iterations}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{axes}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Iteration}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{axes}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f(x)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+    \PY{n}{axes}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x\PYZus{}final}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{x\PYZus{}final}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}2ca02c}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{axes}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Final node weights}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{axes}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Node}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{axes}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{x\PYZus{}i}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+    \PY{n}{plt}\PY{o}{.}\PY{n}{suptitle}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Replicator Dynamics: }\PY{l+s+si}{\PYZob{}}\PY{n}{graph\PYZus{}name}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+
+    \PY{n}{plot\PYZus{}weighted\PYZus{}graph}\PY{p}{(}\PY{n}{A}\PY{p}{,} \PY{n}{x\PYZus{}final}\PY{p}{,} \PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{graph\PYZus{}name}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ coloreado por x final}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{k}{return} \PY{n}{x\PYZus{}final}\PY{p}{,} \PY{n}{history}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 2.4: evaluación sobre dataset
+
+En esta tarea se ha implementado la evaluación de RD sobre un
+subconjunto de grafos y una comparación adicional con la referencia
+exacta allí donde existe ground truth.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{264}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{evaluate\PYZus{}rd\PYZus{}on\PYZus{}dataset}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{n}{dataset\PYZus{}name}\PY{p}{,} \PY{n}{num\PYZus{}graphs}\PY{o}{=}\PY{l+m+mi}{50}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Evaluate Replicator Dynamics on a dataset.}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{results} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{min}\PY{p}{(}\PY{n}{num\PYZus{}graphs}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{dataset}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        \PY{n}{data} \PY{o}{=} \PY{n}{dataset}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+        \PY{n}{A} \PY{o}{=} \PY{n}{pyg\PYZus{}to\PYZus{}adjacency}\PY{p}{(}\PY{n}{data}\PY{p}{)}
+
+        \PY{n}{start\PYZus{}time} \PY{o}{=} \PY{n}{time}\PY{o}{.}\PY{n}{time}\PY{p}{(}\PY{p}{)}
+        \PY{n}{x\PYZus{}final}\PY{p}{,} \PY{n}{history} \PY{o}{=} \PY{n}{replicator\PYZus{}dynamics}\PY{p}{(}\PY{n}{A}\PY{p}{,} \PY{n}{max\PYZus{}iter}\PY{o}{=}\PY{l+m+mi}{500}\PY{p}{)}
+        \PY{n}{clique} \PY{o}{=} \PY{n}{decode\PYZus{}clique}\PY{p}{(}\PY{n}{x\PYZus{}final}\PY{p}{,} \PY{n}{A}\PY{p}{)}
+        \PY{n}{elapsed} \PY{o}{=} \PY{n}{time}\PY{o}{.}\PY{n}{time}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{start\PYZus{}time}
+
+        \PY{n}{results}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{\PYZob{}}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{graph\PYZus{}idx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{i}\PY{p}{,}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n}{data}\PY{o}{.}\PY{n}{num\PYZus{}nodes}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{clique}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{clique}\PY{p}{,}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{bool}\PY{p}{(}\PY{n}{is\PYZus{}clique}\PY{p}{(}\PY{n}{clique}\PY{p}{,} \PY{n}{A}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{elapsed}\PY{p}{)}\PY{p}{,}
+            \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iterations}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n}{history}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iterations}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+        \PY{p}{\PYZcb{}}\PY{p}{)}
+
+    \PY{k}{return} \PY{n}{results}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{compare\PYZus{}rd\PYZus{}with\PYZus{}bruteforce}\PY{p}{(}\PY{n}{rd\PYZus{}results}\PY{p}{,} \PY{n}{bf\PYZus{}results}\PY{p}{)}\PY{p}{:}
+    \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{rd\PYZus{}results}\PY{p}{)} \PY{o}{==} \PY{l+m+mi}{0} \PY{o+ow}{or} \PY{n+nb}{len}\PY{p}{(}\PY{n}{bf\PYZus{}results}\PY{p}{)} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+        \PY{k}{return} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{)}
+
+    \PY{k}{if} \PY{n+nb}{isinstance}\PY{p}{(}\PY{n}{rd\PYZus{}results}\PY{p}{,} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{)}\PY{p}{:}
+        \PY{n}{rd\PYZus{}records} \PY{o}{=} \PY{n}{rd\PYZus{}results}\PY{o}{.}\PY{n}{to\PYZus{}dict}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{records}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{rd\PYZus{}records} \PY{o}{=} \PY{n}{rd\PYZus{}results}
+
+    \PY{k}{if} \PY{n+nb}{isinstance}\PY{p}{(}\PY{n}{bf\PYZus{}results}\PY{p}{,} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{)}\PY{p}{:}
+        \PY{n}{bf\PYZus{}records} \PY{o}{=} \PY{n}{bf\PYZus{}results}\PY{o}{.}\PY{n}{to\PYZus{}dict}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{records}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{bf\PYZus{}records} \PY{o}{=} \PY{n}{bf\PYZus{}results}
+
+    \PY{n}{rd\PYZus{}map} \PY{o}{=} \PY{p}{\PYZob{}}\PY{n}{row}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{graph\PYZus{}idx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{:} \PY{n}{row} \PY{k}{for} \PY{n}{row} \PY{o+ow}{in} \PY{n}{rd\PYZus{}records}\PY{p}{\PYZcb{}}
+    \PY{n}{rows} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{k}{for} \PY{n}{bf} \PY{o+ow}{in} \PY{n}{bf\PYZus{}records}\PY{p}{:}
+        \PY{n}{idx} \PY{o}{=} \PY{n}{bf}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{graph\PYZus{}idx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        \PY{k}{if} \PY{n}{idx} \PY{o+ow}{in} \PY{n}{rd\PYZus{}map}\PY{p}{:}
+            \PY{n}{rd} \PY{o}{=} \PY{n}{rd\PYZus{}map}\PY{p}{[}\PY{n}{idx}\PY{p}{]}
+            \PY{n}{rows}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{\PYZob{}}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{graph\PYZus{}idx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{idx}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bf\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{bf}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rd\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{same\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{bf}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{rd}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rd\PYZus{}valid}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{\PYZcb{}}\PY{p}{)}
+    \PY{k}{return} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{rows}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsubsection{4.5 GNN + Dinámicas
+replicadoras}\label{gnn-dinuxe1micas-replicadoras}
+
+    Tarea 3.1: \texttt{compute\_node\_features()}
+
+En esta tarea se han construido las features de nodo que alimentan a la
+GNN. Se han usado grado normalizado, coeficiente de clustering y
+\texttt{log(degree\ +\ 1)}.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{265}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{compute\PYZus{}node\PYZus{}features}\PY{p}{(}\PY{n}{data}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Compute informative node features for the GNN.}
+
+\PY{l+s+sd}{    Features:}
+\PY{l+s+sd}{    \PYZhy{} Normalized degree}
+\PY{l+s+sd}{    \PYZhy{} Clustering coefficient}
+\PY{l+s+sd}{    \PYZhy{} Log(degree + 1)}
+
+\PY{l+s+sd}{    Args:}
+\PY{l+s+sd}{        data: PyTorch Geometric Data object}
+
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{        x: torch.Tensor of shape (num\PYZus{}nodes, num\PYZus{}features)}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{G} \PY{o}{=} \PY{n}{to\PYZus{}networkx}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{to\PYZus{}undirected}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+    \PY{n}{degrees} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{n}{G}\PY{o}{.}\PY{n}{degree}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+    \PY{n}{clustering} \PY{o}{=} \PY{n}{nx}\PY{o}{.}\PY{n}{clustering}\PY{p}{(}\PY{n}{G}\PY{p}{)}
+    \PY{n}{max\PYZus{}degree} \PY{o}{=} \PY{n+nb}{max}\PY{p}{(}\PY{n}{degrees}\PY{o}{.}\PY{n}{values}\PY{p}{(}\PY{p}{)}\PY{p}{)} \PY{k}{if} \PY{n}{degrees} \PY{k}{else} \PY{l+m+mi}{1}
+
+    \PY{n}{features} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{k}{for} \PY{n}{node} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{G}\PY{o}{.}\PY{n}{number\PYZus{}of\PYZus{}nodes}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        \PY{n}{degree} \PY{o}{=} \PY{n}{degrees}\PY{p}{[}\PY{n}{node}\PY{p}{]}
+        \PY{n}{features}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{[}
+            \PY{n}{degree} \PY{o}{/} \PY{n+nb}{max}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{max\PYZus{}degree}\PY{p}{)}\PY{p}{,}
+            \PY{n}{clustering}\PY{p}{[}\PY{n}{node}\PY{p}{]}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{log1p}\PY{p}{(}\PY{n}{degree}\PY{p}{)}\PY{p}{,}
+        \PY{p}{]}\PY{p}{)}
+
+    \PY{k}{return} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{features}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float32}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 3.2: \texttt{MaxCliqueGNN}
+
+En esta tarea se ha implementado el modelo GNN encargado de producir un
+punto inicial del simplex mediante una salida \texttt{softmax} sobre los
+nodos.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{266}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{class}\PY{+w}{ }\PY{n+nc}{MaxCliqueGNN}\PY{p}{(}\PY{n}{nn}\PY{o}{.}\PY{n}{Module}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    GNN for predicting initial simplex point for Maximum Clique.}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+
+    \PY{k}{def}\PY{+w}{ }\PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{input\PYZus{}dim}\PY{p}{,} \PY{n}{hidden\PYZus{}dim}\PY{o}{=}\PY{l+m+mi}{32}\PY{p}{,} \PY{n}{num\PYZus{}layers}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{:}
+        \PY{n+nb}{super}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{p}{)}
+
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{convs} \PY{o}{=} \PY{n}{nn}\PY{o}{.}\PY{n}{ModuleList}\PY{p}{(}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{convs}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{GCNConv}\PY{p}{(}\PY{n}{input\PYZus{}dim}\PY{p}{,} \PY{n}{hidden\PYZus{}dim}\PY{p}{)}\PY{p}{)}
+        \PY{k}{for} \PY{n}{\PYZus{}} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{num\PYZus{}layers} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+            \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{convs}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{GCNConv}\PY{p}{(}\PY{n}{hidden\PYZus{}dim}\PY{p}{,} \PY{n}{hidden\PYZus{}dim}\PY{p}{)}\PY{p}{)}
+
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{output} \PY{o}{=} \PY{n}{nn}\PY{o}{.}\PY{n}{Linear}\PY{p}{(}\PY{n}{hidden\PYZus{}dim}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+
+    \PY{k}{def}\PY{+w}{ }\PY{n+nf}{forward}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{x}\PY{p}{,} \PY{n}{edge\PYZus{}index}\PY{p}{)}\PY{p}{:}
+\PY{+w}{        }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{        Forward pass.}
+\PY{l+s+sd}{        \PYZdq{}\PYZdq{}\PYZdq{}}
+        \PY{k}{for} \PY{n}{conv} \PY{o+ow}{in} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{convs}\PY{p}{:}
+            \PY{n}{x} \PY{o}{=} \PY{n}{conv}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{edge\PYZus{}index}\PY{p}{)}
+            \PY{n}{x} \PY{o}{=} \PY{n}{F}\PY{o}{.}\PY{n}{relu}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+        \PY{n}{logits} \PY{o}{=} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{output}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{o}{.}\PY{n}{squeeze}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+        \PY{k}{return} \PY{n}{torch}\PY{o}{.}\PY{n}{softmax}\PY{p}{(}\PY{n}{logits}\PY{p}{,} \PY{n}{dim}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 3.3: RD diferenciable
+
+En esta tarea se ha implementado la versión diferenciable de RD para
+integrarla dentro del bucle de entrenamiento.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{267}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{differentiable\PYZus{}rd\PYZus{}step}\PY{p}{(}\PY{n}{p}\PY{p}{,} \PY{n}{A}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    One step of differentiable Replicator Dynamics.}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{p\PYZus{}new} \PY{o}{=} \PY{n}{p} \PY{o}{*} \PY{p}{(}\PY{n}{A} \PY{o}{@} \PY{n}{p}\PY{p}{)}
+    \PY{n}{p\PYZus{}new} \PY{o}{=} \PY{n}{p\PYZus{}new} \PY{o}{/} \PY{n}{p\PYZus{}new}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{clamp}\PY{p}{(}\PY{n+nb}{min}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}12}\PY{p}{)}
+    \PY{k}{return} \PY{n}{p\PYZus{}new}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{differentiable\PYZus{}rd}\PY{p}{(}\PY{n}{p}\PY{p}{,} \PY{n}{A}\PY{p}{,} \PY{n}{num\PYZus{}iterations}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Multiple steps of differentiable RD.}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{A\PYZus{}reg} \PY{o}{=} \PY{n}{A} \PY{o}{+} \PY{l+m+mf}{0.5} \PY{o}{*} \PY{n}{torch}\PY{o}{.}\PY{n}{eye}\PY{p}{(}\PY{n}{A}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{device}\PY{o}{=}\PY{n}{A}\PY{o}{.}\PY{n}{device}\PY{p}{)}
+
+    \PY{k}{for} \PY{n}{\PYZus{}} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{num\PYZus{}iterations}\PY{p}{)}\PY{p}{:}
+        \PY{n}{p} \PY{o}{=} \PY{n}{differentiable\PYZus{}rd\PYZus{}step}\PY{p}{(}\PY{n}{p}\PY{p}{,} \PY{n}{A\PYZus{}reg}\PY{p}{)}
+
+    \PY{k}{return} \PY{n}{p}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 3.4: \texttt{maxclique\_loss()}
+
+En esta tarea se ha implementado la pérdida de Motzkin-Straus en signo
+negativo para poder minimizarla.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{268}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{maxclique\PYZus{}loss}\PY{p}{(}\PY{n}{p}\PY{p}{,} \PY{n}{A}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Motzkin\PYZhy{}Straus loss (negative because we minimize).}
+
+\PY{l+s+sd}{    Args:}
+\PY{l+s+sd}{        p: torch.Tensor (n,) \PYZhy{} simplex point}
+\PY{l+s+sd}{        A: torch.Tensor (n, n) \PYZhy{} adjacency matrix}
+
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{        loss: scalar tensor}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{k}{return} \PY{o}{\PYZhy{}}\PY{p}{(}\PY{n}{p} \PY{o}{@} \PY{n}{A} \PY{o}{@} \PY{n}{p}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 3.5: entrenamiento
+
+En esta tarea se ha implementado el bucle de entrenamiento de la GNN
+sobre listas de grafos, refinando con RD un pequeño número de
+iteraciones durante el aprendizaje.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{269}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{train\PYZus{}gnn}\PY{p}{(}\PY{n}{model}\PY{p}{,} \PY{n}{dataset}\PY{p}{,} \PY{n}{num\PYZus{}epochs}\PY{o}{=}\PY{l+m+mi}{12}\PY{p}{,} \PY{n}{lr}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{p}{,} \PY{n}{rd\PYZus{}train\PYZus{}iters}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Train the GNN model.}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{model} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{DEVICE}\PY{p}{)}
+    \PY{n}{optimizer} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{optim}\PY{o}{.}\PY{n}{Adam}\PY{p}{(}\PY{n}{model}\PY{o}{.}\PY{n}{parameters}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{lr}\PY{o}{=}\PY{n}{lr}\PY{p}{)}
+    \PY{n}{losses} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+
+    \PY{k}{for} \PY{n}{epoch} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{num\PYZus{}epochs}\PY{p}{)}\PY{p}{:}
+        \PY{n}{model}\PY{o}{.}\PY{n}{train}\PY{p}{(}\PY{p}{)}
+        \PY{n}{epoch\PYZus{}loss} \PY{o}{=} \PY{l+m+mf}{0.0}
+
+        \PY{k}{for} \PY{n}{data} \PY{o+ow}{in} \PY{n}{dataset}\PY{p}{:}
+            \PY{n}{optimizer}\PY{o}{.}\PY{n}{zero\PYZus{}grad}\PY{p}{(}\PY{p}{)}
+            \PY{n}{x} \PY{o}{=} \PY{n}{compute\PYZus{}node\PYZus{}features}\PY{p}{(}\PY{n}{data}\PY{p}{)}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{DEVICE}\PY{p}{)}
+            \PY{n}{edge\PYZus{}index} \PY{o}{=} \PY{n}{data}\PY{o}{.}\PY{n}{edge\PYZus{}index}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{DEVICE}\PY{p}{)}
+            \PY{n}{A} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{pyg\PYZus{}to\PYZus{}adjacency}\PY{p}{(}\PY{n}{data}\PY{p}{)}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float32}\PY{p}{,} \PY{n}{device}\PY{o}{=}\PY{n}{DEVICE}\PY{p}{)}
+            \PY{n}{p} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{edge\PYZus{}index}\PY{p}{)}
+            \PY{n}{p\PYZus{}refined} \PY{o}{=} \PY{n}{differentiable\PYZus{}rd}\PY{p}{(}\PY{n}{p}\PY{p}{,} \PY{n}{A}\PY{p}{,} \PY{n}{num\PYZus{}iterations}\PY{o}{=}\PY{n}{rd\PYZus{}train\PYZus{}iters}\PY{p}{)} \PY{k}{if} \PY{n}{rd\PYZus{}train\PYZus{}iters} \PY{o}{\PYZgt{}} \PY{l+m+mi}{0} \PY{k}{else} \PY{n}{p}
+            \PY{n}{loss} \PY{o}{=} \PY{n}{maxclique\PYZus{}loss}\PY{p}{(}\PY{n}{p\PYZus{}refined}\PY{p}{,} \PY{n}{A}\PY{p}{)}
+            \PY{n}{loss}\PY{o}{.}\PY{n}{backward}\PY{p}{(}\PY{p}{)}
+            \PY{n}{optimizer}\PY{o}{.}\PY{n}{step}\PY{p}{(}\PY{p}{)}
+            \PY{n}{epoch\PYZus{}loss} \PY{o}{+}\PY{o}{=} \PY{n+nb}{float}\PY{p}{(}\PY{n}{loss}\PY{o}{.}\PY{n}{item}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+
+        \PY{n}{epoch\PYZus{}loss} \PY{o}{/}\PY{o}{=} \PY{n+nb}{max}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{dataset}\PY{p}{)}\PY{p}{)}
+        \PY{n}{losses}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{epoch\PYZus{}loss}\PY{p}{)}
+
+        \PY{k}{if} \PY{p}{(}\PY{n}{epoch} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{)} \PY{o}{\PYZpc{}} \PY{n+nb}{max}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{num\PYZus{}epochs} \PY{o}{/}\PY{o}{/} \PY{l+m+mi}{4}\PY{p}{)} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+            \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Época }\PY{l+s+si}{\PYZob{}}\PY{n}{epoch}\PY{+w}{ }\PY{o}{+}\PY{+w}{ }\PY{l+m+mi}{1}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{/}\PY{l+s+si}{\PYZob{}}\PY{n}{num\PYZus{}epochs}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ \PYZhy{} loss media: }\PY{l+s+si}{\PYZob{}}\PY{n}{epoch\PYZus{}loss}\PY{l+s+si}{:}\PY{l+s+s2}{.4f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+    \PY{k}{return} \PY{n}{model}\PY{p}{,} \PY{n}{losses}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Tarea 3.6: evaluación
+
+En esta tarea se ha implementado la evaluación del modelo híbrido y una
+pequeña ablación de iteraciones RD en entrenamiento e inferencia.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{270}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{evaluate\PYZus{}gnn}\PY{p}{(}\PY{n}{model}\PY{p}{,} \PY{n}{dataset}\PY{p}{,} \PY{n}{rd\PYZus{}test\PYZus{}iters}\PY{o}{=}\PY{l+m+mi}{100}\PY{p}{)}\PY{p}{:}
+\PY{+w}{    }\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Evaluate the trained model.}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{model} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{DEVICE}\PY{p}{)}
+    \PY{n}{model}\PY{o}{.}\PY{n}{eval}\PY{p}{(}\PY{p}{)}
+    \PY{n}{results} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+
+    \PY{k}{with} \PY{n}{torch}\PY{o}{.}\PY{n}{no\PYZus{}grad}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{data} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{dataset}\PY{p}{)}\PY{p}{:}
+            \PY{n}{x} \PY{o}{=} \PY{n}{compute\PYZus{}node\PYZus{}features}\PY{p}{(}\PY{n}{data}\PY{p}{)}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{DEVICE}\PY{p}{)}
+            \PY{n}{edge\PYZus{}index} \PY{o}{=} \PY{n}{data}\PY{o}{.}\PY{n}{edge\PYZus{}index}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{DEVICE}\PY{p}{)}
+            \PY{n}{A\PYZus{}np} \PY{o}{=} \PY{n}{pyg\PYZus{}to\PYZus{}adjacency}\PY{p}{(}\PY{n}{data}\PY{p}{)}
+            \PY{n}{A} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{A\PYZus{}np}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float32}\PY{p}{,} \PY{n}{device}\PY{o}{=}\PY{n}{DEVICE}\PY{p}{)}
+
+            \PY{n}{start\PYZus{}time} \PY{o}{=} \PY{n}{time}\PY{o}{.}\PY{n}{time}\PY{p}{(}\PY{p}{)}
+            \PY{n}{p} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{edge\PYZus{}index}\PY{p}{)}
+            \PY{n}{p} \PY{o}{=} \PY{n}{differentiable\PYZus{}rd}\PY{p}{(}\PY{n}{p}\PY{p}{,} \PY{n}{A}\PY{p}{,} \PY{n}{num\PYZus{}iterations}\PY{o}{=}\PY{n}{rd\PYZus{}test\PYZus{}iters}\PY{p}{)}
+            \PY{n}{clique} \PY{o}{=} \PY{n}{decode\PYZus{}clique}\PY{p}{(}\PY{n}{p}\PY{o}{.}\PY{n}{detach}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{cpu}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{numpy}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{A\PYZus{}np}\PY{p}{)}
+            \PY{n}{elapsed} \PY{o}{=} \PY{n}{time}\PY{o}{.}\PY{n}{time}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{start\PYZus{}time}
+
+            \PY{n}{results}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{\PYZob{}}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{graph\PYZus{}idx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{i}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}nodes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n}{data}\PY{o}{.}\PY{n}{num\PYZus{}nodes}\PY{p}{)}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{clique}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{clique}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{bool}\PY{p}{(}\PY{n}{is\PYZus{}clique}\PY{p}{(}\PY{n}{clique}\PY{p}{,} \PY{n}{A\PYZus{}np}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{elapsed}\PY{p}{)}\PY{p}{,}
+            \PY{p}{\PYZcb{}}\PY{p}{)}
+
+    \PY{k}{return} \PY{n}{results}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{run\PYZus{}gnn\PYZus{}rd\PYZus{}ablation}\PY{p}{(}\PY{n}{train\PYZus{}dataset}\PY{p}{,} \PY{n}{test\PYZus{}dataset}\PY{p}{,} \PY{n}{train\PYZus{}iters\PYZus{}list}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{,} \PY{n}{test\PYZus{}iters\PYZus{}list}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{,} \PY{n}{num\PYZus{}epochs}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{,} \PY{n}{lr}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{p}{,} \PY{n}{hidden\PYZus{}dim}\PY{o}{=}\PY{l+m+mi}{32}\PY{p}{)}\PY{p}{:}
+    \PY{n}{rows} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{k}{for} \PY{n}{train\PYZus{}iters} \PY{o+ow}{in} \PY{n}{train\PYZus{}iters\PYZus{}list}\PY{p}{:}
+        \PY{n}{model} \PY{o}{=} \PY{n}{MaxCliqueGNN}\PY{p}{(}\PY{n}{input\PYZus{}dim}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} \PY{n}{hidden\PYZus{}dim}\PY{o}{=}\PY{n}{hidden\PYZus{}dim}\PY{p}{,} \PY{n}{num\PYZus{}layers}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+        \PY{n}{model}\PY{p}{,} \PY{n}{\PYZus{}} \PY{o}{=} \PY{n}{train\PYZus{}gnn}\PY{p}{(}\PY{n}{model}\PY{p}{,} \PY{n}{train\PYZus{}dataset}\PY{p}{,} \PY{n}{num\PYZus{}epochs}\PY{o}{=}\PY{n}{num\PYZus{}epochs}\PY{p}{,} \PY{n}{lr}\PY{o}{=}\PY{n}{lr}\PY{p}{,} \PY{n}{rd\PYZus{}train\PYZus{}iters}\PY{o}{=}\PY{n}{train\PYZus{}iters}\PY{p}{)}
+        \PY{k}{for} \PY{n}{test\PYZus{}iters} \PY{o+ow}{in} \PY{n}{test\PYZus{}iters\PYZus{}list}\PY{p}{:}
+            \PY{n}{eval\PYZus{}results} \PY{o}{=} \PY{n}{evaluate\PYZus{}gnn}\PY{p}{(}\PY{n}{model}\PY{p}{,} \PY{n}{test\PYZus{}dataset}\PY{p}{,} \PY{n}{rd\PYZus{}test\PYZus{}iters}\PY{o}{=}\PY{n}{test\PYZus{}iters}\PY{p}{)}
+            \PY{n}{summary} \PY{o}{=} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{eval\PYZus{}results}\PY{p}{)}
+            \PY{n}{rows}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{\PYZob{}}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}rd\PYZus{}iters}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{train\PYZus{}iters}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{test\PYZus{}rd\PYZus{}iters}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{test\PYZus{}iters}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+                \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{\PYZcb{}}\PY{p}{)}
+    \PY{k}{return} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{rows}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsubsection{4.6 Presentación de resultados y
+comparación}\label{presentaciuxf3n-de-resultados-y-comparaciuxf3n}
+
+En esta última parte de la implementación se han reunido las utilidades
+para representar pérdidas y visualizar la ablación.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{271}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{plot\PYZus{}training\PYZus{}losses}\PY{p}{(}\PY{n}{losses}\PY{p}{,} \PY{n}{title}\PY{p}{)}\PY{p}{:}
+    \PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{losses}\PY{p}{,} \PY{n}{marker}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{o}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}d62728}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{n}{title}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Época}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Loss media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+
+
+\PY{k}{def}\PY{+w}{ }\PY{n+nf}{plot\PYZus{}ablation\PYZus{}results}\PY{p}{(}\PY{n}{df}\PY{p}{,} \PY{n}{title}\PY{p}{)}\PY{p}{:}
+    \PY{n}{pivot} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{pivot}\PY{p}{(}\PY{n}{index}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{train\PYZus{}rd\PYZus{}iters}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{columns}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{test\PYZus{}rd\PYZus{}iters}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{values}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+    \PY{n}{im} \PY{o}{=} \PY{n}{ax}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{pivot}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{YlGnBu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticks}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{pivot}\PY{o}{.}\PY{n}{columns}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticklabels}\PY{p}{(}\PY{n}{pivot}\PY{o}{.}\PY{n}{columns}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}yticks}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{pivot}\PY{o}{.}\PY{n}{index}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}yticklabels}\PY{p}{(}\PY{n}{pivot}\PY{o}{.}\PY{n}{index}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Iteraciones RD en test}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Iteraciones RD en train}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{n}{title}\PY{p}{)}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{pivot}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{pivot}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+            \PY{n}{ax}\PY{o}{.}\PY{n}{text}\PY{p}{(}\PY{n}{j}\PY{p}{,} \PY{n}{i}\PY{p}{,} \PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{pivot}\PY{o}{.}\PY{n}{values}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{+w}{ }\PY{n}{j}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s2}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{ha}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{center}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{va}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{center}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{black}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{fig}\PY{o}{.}\PY{n}{colorbar}\PY{p}{(}\PY{n}{im}\PY{p}{,} \PY{n}{ax}\PY{o}{=}\PY{n}{ax}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsection{5. Ejercicio 1: Fuerza bruta para clique máximo (Parte
+0)}\label{ejercicio-1-fuerza-bruta-para-clique-muxe1ximo-parte-0}
+
+    \subsubsection{\texorpdfstring{5.1 Implementar \texttt{is\_clique()} y
+\texttt{brute\_force\_max\_clique()}}{5.1 Implementar is\_clique() y brute\_force\_max\_clique()}}\label{implementar-is_clique-y-brute_force_max_clique}
+
+La implementación de estas dos funciones ya se completó en la
+\textbf{tarea 0.1} y en la \textbf{tarea 0.2} de la sección de
+implementación. En este ejercicio no se vuelve a copiar ese código, sino
+que se reutiliza directamente para comprobar su comportamiento sobre
+ejemplos sintéticos y sobre los primeros grafos del dataset.
+
+    \subsubsection{5.2 Prueba en un grafo sintético
+pequeño}\label{prueba-en-un-grafo-sintuxe9tico-pequeuxf1o}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{272}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{brute\PYZus{}force\PYZus{}test} \PY{o}{=} \PY{n}{test\PYZus{}brute\PYZus{}force}\PY{p}{(}\PY{p}{)}
+\PY{n}{display}\PY{p}{(}\PY{n}{brute\PYZus{}force\PYZus{}test}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  Maximum clique:  Clique size:       Time:  is valid clique:
+0       [0, 1, 2]             3  2.3603e-05              True
+    \end{Verbatim}
+
+    
+    \subsubsection{5.3 Aplicación a los primeros 20 grafos de IMDB y
+contraste adicional con
+COLLAB}\label{aplicaciuxf3n-a-los-primeros-20-grafos-de-imdb-y-contraste-adicional-con-collab}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{273}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{bf\PYZus{}imdb\PYZus{}results} \PY{o}{=} \PY{n}{evaluate\PYZus{}brute\PYZus{}force\PYZus{}on\PYZus{}dataset}\PY{p}{(}\PY{n}{imdb\PYZus{}dataset}\PY{p}{,} \PY{n}{max\PYZus{}graphs}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{,} \PY{n}{max\PYZus{}nodes}\PY{o}{=}\PY{l+m+mi}{25}\PY{p}{)}
+
+\PY{n}{display}\PY{p}{(}\PY{n}{bf\PYZus{}imdb\PYZus{}results}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Graph 1: Skipping (too large: 32 nodes)
+Graph 3: Skipping (too large: 35 nodes)
+Graph 5: Skipping (too large: 63 nodes)
+Graph 14: Skipping (too large: 72 nodes)
+Graph 19: Skipping (too large: 46 nodes)
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+    graph\_idx  num\_nodes  clique\_size  \textbackslash{}
+0           0         20            9   
+1           2         21           10   
+2           4         14            9   
+3           6         12           12   
+4           7         15            9   
+5           8         18           18   
+6           9         12           12   
+7          10         12            8   
+8          11         20           20   
+9          12         13           10   
+10         13         20           12   
+11         15         20           20   
+12         16         18           13   
+13         17         12            8   
+14         18         19            6   
+
+                                               clique  valid      time  
+0                    [1, 2, 6, 8, 12, 14, 17, 18, 19]   True  0.335539  
+1                  [0, 2, 3, 5, 6, 7, 11, 12, 19, 20]   True  0.552813  
+2                      [0, 2, 5, 6, 8, 9, 11, 12, 13]   True  0.002884  
+3              [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]   True  0.000011  
+4                        [0, 1, 4, 5, 6, 7, 8, 9, 14]   True  0.003583  
+5   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,{\ldots}   True  0.000020  
+6              [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]   True  0.000010  
+7                           [0, 2, 3, 4, 5, 6, 8, 10]   True  0.000184  
+8   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,{\ldots}   True  0.000024  
+9                   [0, 1, 4, 5, 6, 7, 8, 10, 11, 12]   True  0.000105  
+10        [0, 1, 4, 7, 8, 10, 11, 12, 14, 17, 18, 19]   True  0.069988  
+11  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,{\ldots}   True  0.000026  
+12        [0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 13, 14]   True  0.014062  
+13                         [0, 1, 3, 6, 8, 9, 10, 11]   True  0.000540  
+14                               [0, 4, 8, 9, 10, 18]   True  0.156535  
+    \end{Verbatim}
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{274}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{bf\PYZus{}collab\PYZus{}results} \PY{o}{=} \PY{n}{evaluate\PYZus{}brute\PYZus{}force\PYZus{}on\PYZus{}dataset}\PY{p}{(}\PY{n}{collab\PYZus{}dataset}\PY{p}{,} \PY{n}{max\PYZus{}graphs}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{,} \PY{n}{max\PYZus{}nodes}\PY{o}{=}\PY{l+m+mi}{25}\PY{p}{)}
+
+\PY{n}{display}\PY{p}{(}\PY{n}{bf\PYZus{}collab\PYZus{}results}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Graph 0: Skipping (too large: 45 nodes)
+Graph 1: Skipping (too large: 52 nodes)
+Graph 2: Skipping (too large: 52 nodes)
+Graph 3: Skipping (too large: 32 nodes)
+Graph 4: Skipping (too large: 48 nodes)
+Graph 5: Skipping (too large: 39 nodes)
+Graph 6: Skipping (too large: 35 nodes)
+Graph 7: Skipping (too large: 81 nodes)
+Graph 8: Skipping (too large: 65 nodes)
+Graph 9: Skipping (too large: 49 nodes)
+Graph 10: Skipping (too large: 52 nodes)
+Graph 11: Skipping (too large: 49 nodes)
+Graph 12: Skipping (too large: 72 nodes)
+Graph 13: Skipping (too large: 138 nodes)
+Graph 14: Skipping (too large: 119 nodes)
+Graph 15: Skipping (too large: 44 nodes)
+Graph 16: Skipping (too large: 35 nodes)
+Graph 17: Skipping (too large: 48 nodes)
+Graph 18: Skipping (too large: 49 nodes)
+Graph 19: Skipping (too large: 68 nodes)
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Empty DataFrame
+Columns: []
+Index: []
+    \end{Verbatim}
+
+    
+    \subsubsection{5.4 Informe del ejercicio}\label{informe-del-ejercicio}
+
+En la comprobación mínima se ha recuperado la clique
+\texttt{{[}0,\ 1,\ 2{]}}, con tamaño \texttt{3} y validación positiva,
+por lo que la implementación básica ha quedado verificada en el caso
+sintético del enunciado. Ese primer resultado es importante porque
+confirma que las dos piezas esenciales del bloque exacto,
+\texttt{is\_clique()} y \texttt{brute\_force\_max\_clique()}, están
+coordinadas correctamente: la primera reconoce bien la propiedad de
+clique y la segunda sabe detenerse en cuanto encuentra la mejor solución
+posible.
+
+En la salida de \textbf{IMDB-BINARY} se ve que se han omitido
+exactamente 5 grafos por tamaño: \texttt{1}, \texttt{3}, \texttt{5},
+\texttt{14} y \texttt{19}. Eso significa que, incluso restringiéndose a
+solo 20 grafos, ya aparecen varias instancias que dejan de ser
+razonables para fuerza bruta con el umbral fijado de \texttt{25} nodos.
+En los 15 grafos que sí se han podido resolver, los tamaños de clique
+van desde \texttt{6} nodos en el grafo \texttt{18} hasta \texttt{20}
+nodos en los grafos \texttt{11} y \texttt{15}. Ese rango indica que el
+subconjunto evaluado es bastante heterogéneo: hay grafos donde la
+conectividad interna es moderada y la mejor clique sigue siendo
+relativamente pequeña, pero también aparecen grafos casi completos donde
+la clique máxima coincide prácticamente con todo el conjunto de nodos.
+Por eso la tabla no solo da una medida de rendimiento, sino también una
+primera intuición sobre la variedad estructural del dataset.
+
+También se aprecia que el coste temporal no depende solo del número de
+nodos, sino de cómo está distribuida la conectividad. Algunos casos se
+han resuelto casi instantáneamente, como los grafos \texttt{6} y
+\texttt{9}, ambos con \texttt{12} nodos y tiempo alrededor de
+\texttt{0.00001\ s}, lo que sugiere que la clique máxima se identifica
+muy pronto porque el grafo es extremadamente denso. En cambio, otros
+grafos con tamaños parecidos o solo ligeramente mayores han sido mucho
+más caros, como el grafo \texttt{2} con \texttt{21} nodos y
+\texttt{0.5528\ s}, el grafo \texttt{0} con \texttt{20} nodos y
+\texttt{0.3355\ s}, o el grafo \texttt{18} con \texttt{19} nodos y
+\texttt{0.1565\ s}. Esto encaja con el comportamiento esperado de la
+fuerza bruta: el algoritmo recorre combinaciones de nodos y su coste se
+dispara cuando necesita explorar muchos subconjuntos antes de poder
+certificar cuál es la clique máxima. Dicho de otro modo, no basta con
+que el grafo tenga pocos nodos; también influye mucho si la solución
+grande aparece pronto o si la estructura obliga a descartar una gran
+cantidad de candidatos.
+
+En \textbf{COLLAB} la limitación ha sido todavía más clara, porque los
+20 primeros grafos se han descartado todos por superar el umbral de
+\texttt{25} nodos. En los mensajes de salida se ve que esos tamaños van
+desde \texttt{32} hasta \texttt{138} nodos, de modo que aquí ni siquiera
+se llega a construir una tabla de resultados exactos. Eso tiene una
+lectura metodológica importante: la fuerza bruta sí sirve como
+referencia en instancias pequeñas y controladas, pero deja de ser una
+herramienta práctica en cuanto el tamaño del grafo crece un poco.
+Precisamente por eso tiene sentido el resto de la práctica. Este primer
+ejercicio no solo valida la implementación exacta, sino que justifica
+experimentalmente la necesidad de pasar después a formulaciones
+continuas y métodos aproximados como Motzkin-Straus, RD y el enfoque
+híbrido con GNN.
+
+    \subsection{6. Ejercicio 2: Formulación de Motzkin-Straus (Parte
+1)}\label{ejercicio-2-formulaciuxf3n-de-motzkin-straus-parte-1}
+
+    \subsubsection{6.1 Implementación de las dos funciones
+objetivo}\label{implementaciuxf3n-de-las-dos-funciones-objetivo}
+
+La implementación de \texttt{motzkin\_straus\_objective()} y
+\texttt{regularized\_objective()} ya se completó en la \textbf{tarea
+1.1} de la sección de implementación. En este ejercicio no se vuelve a
+copiar ese código, sino que se reutiliza directamente en los apartados
+de comprobación numérica.
+
+    \paragraph{6.2 Crear 3 grafos de test con máximas cliques
+conocidas}\label{crear-3-grafos-de-test-con-muxe1ximas-cliques-conocidas}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{275}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{A1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}
+    \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+    \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+    \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}
+\PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+
+\PY{n}{A2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}
+    \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+    \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+    \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+    \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}
+\PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+
+\PY{n}{A3} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}
+    \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+    \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+    \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}
+\PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+
+\PY{n}{exercise2\PYZus{}graphs} \PY{o}{=} \PY{p}{\PYZob{}}
+    \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Triángulo K3}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{A1}\PY{p}{,}
+    \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Cuadrado con diagonal}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{A2}\PY{p}{,}
+    \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Cherry}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{A3}\PY{p}{,}
+\PY{p}{\PYZcb{}}
+
+\PY{k}{for} \PY{n}{name}\PY{p}{,} \PY{n}{A} \PY{o+ow}{in} \PY{n}{exercise2\PYZus{}graphs}\PY{o}{.}\PY{n}{items}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+    \PY{n}{clique} \PY{o}{=} \PY{n}{brute\PYZus{}force\PYZus{}max\PYZus{}clique}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{name}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{: omega(G) = }\PY{l+s+si}{\PYZob{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{clique}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{, clique = }\PY{l+s+si}{\PYZob{}}\PY{n}{clique}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Triángulo K3: omega(G) = 3, clique = [0, 1, 2]
+Cuadrado con diagonal: omega(G) = 3, clique = [0, 1, 2]
+Cherry: omega(G) = 2, clique = [0, 2]
+    \end{Verbatim}
+
+    \subsubsection{6.3 Verificar que el teorema se cumple en cada
+caso}\label{verificar-que-el-teorema-se-cumple-en-cada-caso}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{276}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{ms\PYZus{}df} \PY{o}{=} \PY{n}{verify\PYZus{}motzkin\PYZus{}straus}\PY{p}{(}\PY{p}{)}
+\PY{n}{ms\PYZus{}theorem\PYZus{}df} \PY{o}{=} \PY{n}{ms\PYZus{}df}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{p}{:}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
+\PY{n}{ms\PYZus{}theorem\PYZus{}df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{error\PYZus{}abs}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{ms\PYZus{}theorem\PYZus{}df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{f\PYZus{}x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{ms\PYZus{}theorem\PYZus{}df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{theoretical}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{p}{)}
+\PY{n}{display}\PY{p}{(}\PY{n}{ms\PYZus{}theorem\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+                   graph  omega     f\_x  theoretical  regularized\_f\_x  \textbackslash{}
+0           Triángulo K3      3  0.6667       0.6667           0.8333   
+1  Cuadrado con diagonal      3  0.6667       0.6667           0.8333   
+
+    error\_abs  
+0  1.1102e-16  
+1  1.1102e-16  
+    \end{Verbatim}
+
+    
+    \subsubsection{6.4 Demostrar el problema de la solución espuria en el
+grafo
+cherry}\label{demostrar-el-problema-de-la-soluciuxf3n-espuria-en-el-grafo-cherry}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{277}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{true\PYZus{}x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mf}{0.0}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+\PY{n}{spurious\PYZus{}x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mf}{0.25}\PY{p}{,} \PY{l+m+mf}{0.25}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{f(x\PYZus{}true) =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{motzkin\PYZus{}straus\PYZus{}objective}\PY{p}{(}\PY{n}{true\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{f(x\PYZus{}spurious) =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{motzkin\PYZus{}straus\PYZus{}objective}\PY{p}{(}\PY{n}{spurious\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+f(x\_true) = 0.5
+f(x\_spurious) = 0.5
+    \end{Verbatim}
+
+    \subsubsection{6.5 Demostrar que la regularización lo
+corrige}\label{demostrar-que-la-regularizaciuxf3n-lo-corrige}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{278}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{f\PYZus{}hat(x\PYZus{}true) =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{regularized\PYZus{}objective}\PY{p}{(}\PY{n}{true\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{f\PYZus{}hat(x\PYZus{}spurious) =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{regularized\PYZus{}objective}\PY{p}{(}\PY{n}{spurious\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Diferencia a favor de la solución verdadera =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{regularized\PYZus{}objective}\PY{p}{(}\PY{n}{true\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{regularized\PYZus{}objective}\PY{p}{(}\PY{n}{spurious\PYZus{}x}\PY{p}{,} \PY{n}{A3}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+f\_hat(x\_true) = 0.75
+f\_hat(x\_spurious) = 0.6875
+Diferencia a favor de la solución verdadera = 0.0625
+    \end{Verbatim}
+
+    \subsubsection{6.6 Informe del ejercicio}\label{informe-del-ejercicio}
+
+En la celda de creación de ejemplos se ha visto que los tres grafos
+elegidos cumplen justo el papel que se buscaba: el triángulo tiene una
+clique máxima de tamaño \texttt{3}, el cuadrado con diagonal también
+tiene máxima clique \texttt{3}, y el cherry tiene máxima clique
+\texttt{2}. Es decir, se ha trabajado con casos pequeños donde se conoce
+exactamente la solución y donde la comprobación teórica puede hacerse de
+forma completamente transparente.
+
+En la verificación del teorema, los dos casos sin ambigüedad han
+encajado perfectamente con la predicción de Motzkin-Straus. Tanto en el
+triángulo K3 como en el cuadrado con diagonal se ha obtenido
+\texttt{f(x)\ =\ 0.6667}, exactamente igual al valor teórico
+\texttt{1\ -\ 1/omega(G)\ =\ 0.6667}, con error absoluto prácticamente
+nulo. Esto significa que, al menos en estos ejemplos, la relajación
+continua no solo conserva la información combinatoria sobre la clique
+máxima, sino que la expresa de forma numéricamente estable.
+
+El caso del cherry ha sido el más instructivo. En la celda 6.4 se ha
+comprobado que \texttt{f(x\_true)\ =\ 0.5} y
+\texttt{f(x\_spurious)\ =\ 0.5}, de modo que la formulación sin
+regularizar no distingue entre la solución verdadera y una distribución
+espuria que reparte masa sobre un soporte que no es una clique. Esa es
+precisamente la limitación conceptual importante del teorema cuando se
+usa directamente como criterio de optimización.
+
+La celda 6.5 muestra por qué se introduce la regularización:
+\texttt{f\_hat(x\_true)\ =\ 0.75} frente a
+\texttt{f\_hat(x\_spurious)\ =\ 0.6875}, con una diferencia positiva de
+\texttt{0.0625} a favor de la solución correcta. Por tanto, en este
+ejercicio no solo se ha verificado el teorema en ejemplos sencillos,
+sino que también se ha justificado experimentalmente la necesidad de
+añadir el término regularizador antes de pasar a Replicator Dynamics. La
+regularización no cambia la intuición básica de Motzkin-Straus, pero sí
+hace que el criterio sea más útil cuando se quiere optimizarlo en la
+práctica.
+
+    \subsection{7. Ejercicio 3: Dinámicas replicadoras (Parte
+2)}\label{ejercicio-3-dinuxe1micas-replicadoras-parte-2}
+
+    \subsubsection{7.1 Implementar RD con el
+decodificador}\label{implementar-rd-con-el-decodificador}
+
+La implementación de \texttt{replicator\_dynamics()} y
+\texttt{decode\_clique()} ya se completó en la \textbf{tarea 2.1} y en
+la \textbf{tarea 2.2} de la sección de implementación. En este ejercicio
+se reutiliza ese código para visualizar la convergencia, evaluarlo sobre
+IMDB y COLLAB y compararlo con la referencia exacta disponible en los
+grafos pequeños.
+
+    \paragraph{7.2 Visualización de la convergencia en un grafo
+pequeño}\label{visualizaciuxf3n-de-la-convergencia-en-un-grafo-pequeuxf1o}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{279}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{A\PYZus{}rd\PYZus{}demo} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}
+    \PY{p}{[}
+        \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+    \PY{p}{]}\PY{p}{,}
+    \PY{n}{dtype}\PY{o}{=}\PY{n+nb}{float}\PY{p}{,}
+\PY{p}{)}
+\PY{n}{rd\PYZus{}demo\PYZus{}x}\PY{p}{,} \PY{n}{rd\PYZus{}demo\PYZus{}history} \PY{o}{=} \PY{n}{visualize\PYZus{}rd}\PY{p}{(}\PY{n}{A\PYZus{}rd\PYZus{}demo}\PY{p}{,} \PY{n}{graph\PYZus{}name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Cuadrado con diagonal}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{rd\PYZus{}demo\PYZus{}clique} \PY{o}{=} \PY{n}{decode\PYZus{}clique}\PY{p}{(}\PY{n}{rd\PYZus{}demo\PYZus{}x}\PY{p}{,} \PY{n}{A\PYZus{}rd\PYZus{}demo}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Clique decodificada:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{rd\PYZus{}demo\PYZus{}clique}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Tamaño:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{rd\PYZus{}demo\PYZus{}clique}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Iteraciones:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{rd\PYZus{}demo\PYZus{}history}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{iterations}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{practica_01_jordi_blasco_lozano_files/practica_01_jordi_blasco_lozano_73_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{practica_01_jordi_blasco_lozano_files/practica_01_jordi_blasco_lozano_73_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Clique decodificada: [0, 2, 1]
+Tamaño: 3
+Iteraciones: 96
+    \end{Verbatim}
+
+    \subsubsection{7.3 Aplicación de RD en IMDB y
+COLLAB}\label{aplicaciuxf3n-de-rd-en-imdb-y-collab}
+
+    \begin{itemize}
+\tightlist
+\item
+  IMDB
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{293}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{rd\PYZus{}imdb\PYZus{}results} \PY{o}{=} \PY{n}{evaluate\PYZus{}rd\PYZus{}on\PYZus{}dataset}\PY{p}{(}\PY{n}{imdb\PYZus{}dataset}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB\PYZhy{}BINARY}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{num\PYZus{}graphs}\PY{o}{=}\PY{l+m+mi}{50}\PY{p}{)}
+
+\PY{n}{rd\PYZus{}imdb\PYZus{}df}\PY{p}{,} \PY{n}{rd\PYZus{}imdb\PYZus{}summary} \PY{o}{=} \PY{n}{summarize\PYZus{}results}\PY{p}{(}\PY{n}{rd\PYZus{}imdb\PYZus{}results}\PY{p}{)}
+
+\PY{n}{display}\PY{p}{(}\PY{n}{rd\PYZus{}imdb\PYZus{}df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Clique media IMDB: }\PY{l+s+si}{\PYZob{}}\PY{n}{rd\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s2}{.4f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Tiempo medio IMDB: }\PY{l+s+si}{\PYZob{}}\PY{n}{rd\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s2}{.4f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ s}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+   graph\_idx  num\_nodes  clique\_size  \textbackslash{}
+0          0         20            9   
+1          1         32           11   
+2          2         21           10   
+3          3         35            7   
+4          4         14            9   
+5          5         63            8   
+6          6         12           12   
+7          7         15            9   
+8          8         18           18   
+9          9         12           12   
+
+                                              clique  valid        time  \textbackslash{}
+0                   [2, 19, 6, 12, 14, 1, 17, 18, 8]   True  4.9584e-03   
+1          [14, 23, 13, 3, 26, 5, 4, 29, 20, 21, 28]   True  4.8256e-03   
+2                 [2, 5, 11, 19, 7, 6, 12, 3, 0, 20]   True  4.4360e-03   
+3                          [25, 17, 8, 2, 4, 30, 33]   True  3.8559e-03   
+4                     [0, 11, 8, 2, 12, 9, 6, 5, 13]   True  3.9346e-03   
+5                    [40, 4, 13, 10, 49, 50, 47, 23]   True  4.0765e-03   
+6             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]   True  7.0095e-05   
+7                       [1, 5, 6, 14, 9, 8, 7, 0, 4]   True  4.1919e-03   
+8  [17, 16, 0, 1, 4, 5, 2, 3, 8, 9, 10, 11, 12, 1{\ldots}   True  8.2016e-05   
+9             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]   True  6.3181e-05   
+
+   iterations  
+0         406  
+1         491  
+2         427  
+3         377  
+4         395  
+5         373  
+6           1  
+7         402  
+8           1  
+9           1  
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Clique media IMDB: 10.3800
+Tiempo medio IMDB: 0.0033 s
+    \end{Verbatim}
+
+    \begin{itemize}
+\tightlist
+\item
+  COLLAB
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{294}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{rd\PYZus{}collab\PYZus{}results} \PY{o}{=} \PY{n}{evaluate\PYZus{}rd\PYZus{}on\PYZus{}dataset}\PY{p}{(}\PY{n}{collab\PYZus{}dataset}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{num\PYZus{}graphs}\PY{o}{=}\PY{l+m+mi}{50}\PY{p}{)}
+
+\PY{n}{rd\PYZus{}collab\PYZus{}df}\PY{p}{,} \PY{n}{rd\PYZus{}collab\PYZus{}summary} \PY{o}{=} \PY{n}{summarize\PYZus{}results}\PY{p}{(}\PY{n}{rd\PYZus{}collab\PYZus{}results}\PY{p}{)}
+
+\PY{n}{display}\PY{p}{(}\PY{n}{rd\PYZus{}collab\PYZus{}df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Clique media COLLAB: }\PY{l+s+si}{\PYZob{}}\PY{n}{rd\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s2}{.4f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Tiempo medio COLLAB: }\PY{l+s+si}{\PYZob{}}\PY{n}{rd\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s2}{.4f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ s}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+   graph\_idx  num\_nodes  clique\_size  \textbackslash{}
+0          0         45           45   
+1          1         52           36   
+2          2         52           42   
+3          3         32           32   
+4          4         48           43   
+5          5         39            7   
+6          6         35           35   
+7          7         81           25   
+8          8         65           25   
+9          9         49           40   
+
+                                              clique  valid    time  \textbackslash{}
+0  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,{\ldots}   True  0.0003   
+1  [2, 10, 22, 36, 24, 26, 50, 14, 13, 5, 17, 7, {\ldots}   True  0.0052   
+2  [35, 48, 34, 38, 24, 4, 18, 22, 20, 49, 37, 41{\ldots}   True  0.0055   
+3  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,{\ldots}   True  0.0001   
+4  [15, 39, 40, 20, 24, 13, 9, 25, 33, 41, 45, 31{\ldots}   True  0.0051   
+5                          [21, 23, 3, 34, 33, 1, 5]   True  0.0034   
+6  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,{\ldots}   True  0.0001   
+7  [41, 70, 75, 22, 79, 27, 24, 53, 35, 69, 30, 4{\ldots}   True  0.0057   
+8  [53, 15, 38, 62, 58, 21, 34, 23, 16, 59, 19, 3{\ldots}   True  0.0052   
+9  [40, 7, 32, 0, 36, 14, 4, 30, 34, 28, 46, 48, {\ldots}   True  0.0052   
+
+   iterations  
+0           1  
+1         500  
+2         500  
+3           1  
+4         500  
+5         339  
+6           1  
+7         500  
+8         500  
+9         500  
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Clique media COLLAB: 27.3000
+Tiempo medio COLLAB: 0.0044 s
+    \end{Verbatim}
+
+    \subsubsection{7.4 Comparación con fuerza bruta en los grafos pequeños
+de
+IMDB}\label{comparaciuxf3n-con-fuerza-bruta-en-los-grafos-pequeuxf1os-de-imdb}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{282}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{rd\PYZus{}vs\PYZus{}bf\PYZus{}imdb} \PY{o}{=} \PY{n}{compare\PYZus{}rd\PYZus{}with\PYZus{}bruteforce}\PY{p}{(}\PY{n}{rd\PYZus{}imdb\PYZus{}results}\PY{p}{,} \PY{n}{bf\PYZus{}imdb\PYZus{}results}\PY{p}{)}
+\PY{n}{display}\PY{p}{(}\PY{n}{rd\PYZus{}vs\PYZus{}bf\PYZus{}imdb}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+    graph\_idx  bf\_clique\_size  rd\_clique\_size  same\_size  rd\_valid
+0           0               9               9       True      True
+1           2              10              10       True      True
+2           4               9               9       True      True
+3           6              12              12       True      True
+4           7               9               9       True      True
+5           8              18              18       True      True
+6           9              12              12       True      True
+7          10               8               8       True      True
+8          11              20              20       True      True
+9          12              10              10       True      True
+10         13              12              12       True      True
+11         15              20              20       True      True
+12         16              13              13       True      True
+13         17               8               8       True      True
+14         18               6               6       True      True
+    \end{Verbatim}
+
+    
+    \subsubsection{7.5 Informe del ejercicio}\label{informe-del-ejercicio}
+
+En el ejemplo del cuadrado con diagonal, la dinámica ha convergido en
+\texttt{96} iteraciones y la clique decodificada ha sido
+\texttt{{[}0,\ 2,\ 1{]}}, de tamaño \texttt{3}, exactamente la esperada.
+Ese resultado es importante porque muestra, en un caso pequeño y
+totalmente interpretable, cómo la masa de la solución continua termina
+concentrándose en los nodos que forman una subestructura densamente
+conectada. La visualización del objetivo y de los pesos finales ayuda a
+entender qué está ocurriendo: RD no prueba combinaciones de manera
+exhaustiva como la fuerza bruta, sino que redistribuye iterativamente la
+probabilidad hacia los nodos que reciben más apoyo del resto según la
+matriz de adyacencia regularizada.
+
+En IMDB-BINARY, la evaluación sobre los primeros 50 grafos ha producido
+cliques válidas en el \texttt{100\%} de los casos y una clique media de
+\texttt{10.380}, con tiempo medio alrededor de \texttt{0.0033\ s}. En
+COLLAB se ha mantenido también una validez del \texttt{100\%}, con una
+clique media de \texttt{27.300} y un tiempo medio cercano a
+\texttt{0.0044\ s}. Lo relevante no es solo que todas las soluciones
+finales sean cliques válidas, sino que se ha conseguido esa validez con
+un coste muy pequeño incluso en grafos donde la fuerza bruta ya no era
+utilizable. Esto indica que el paso desde una formulación exacta a una
+formulación continua no ha destruido la estructura del problema, sino
+que ha permitido capturarla de una forma mucho más escalable.
+
+La comparación con fuerza bruta en IMDB refuerza todavía más esa
+interpretación. En los \texttt{15} grafos pequeños donde sí existía
+ground truth exacto, RD ha coincidido en el tamaño de la clique en
+\texttt{15\ de\ 15} casos, es decir, \texttt{100\%} de acuerdo sobre ese
+subconjunto. Esa coincidencia no demuestra que RD sea exacto en general,
+pero sí aporta una evidencia muy fuerte de que la relajación
+regularizada está guiando la búsqueda hacia soluciones combinatoriamente
+correctas cuando el problema todavía se puede verificar de manera
+exhaustiva.
+
+También se aprecia un patrón interesante en los tiempos y en el número
+de iteraciones. En varios grafos muy densos, como algunos casos de IMDB
+o COLLAB donde la clique recuperada coincide casi con todo el grafo, la
+convergencia se ha producido casi de inmediato. En cambio, en otros
+ejemplos la dinámica ha necesitado muchas más iteraciones e incluso ha
+alcanzado con frecuencia el máximo fijado de \texttt{500}. Esto tiene
+una explicación estructural: cuando la mejor clique destaca de forma muy
+clara frente al resto del grafo, la dinámica se concentra rápidamente;
+cuando la estructura es más ambigua y existen varias zonas densas
+compitiendo entre sí, el proceso de concentración es más lento. Por
+tanto, el ejercicio no solo muestra que RD funciona bien, sino también
+por qué su comportamiento depende de la geometría del problema y no
+únicamente del número de nodos.
+
+    \subsection{8. Ejercicio 4: GNN + Dinámicas replicadoras (Parte
+3)}\label{ejercicio-4-gnn-dinuxe1micas-replicadoras-parte-3}
+
+    \subsubsection{8.1 Implementar el pipeline
+completo}\label{implementar-el-pipeline-completo}
+
+La implementación del pipeline completo ya se realizó en la
+\textbf{sección 4.5}. Para mantener el orden, se resume aquí qué piezas
+forman ese pipeline antes de pasar a los experimentos.
+
+    \begin{itemize}
+\item
+  Características de nodo -\textgreater{} GNN
+
+  En la \textbf{tarea 3.1} y en la \textbf{tarea 3.2} se implementaron
+  \texttt{compute\_node\_features()} y \texttt{MaxCliqueGNN}. Esas
+  piezas convierten cada grafo en un conjunto de features estructurales
+  y generan un punto inicial del simplex mediante una salida
+  \texttt{softmax} sobre los nodos.
+\end{itemize}
+
+    \begin{itemize}
+\item
+  RD diferenciable y función de pérdida
+
+  En la \textbf{tarea 3.3} y en la \textbf{tarea 3.4} se implementaron
+  \texttt{differentiable\_rd()} y \texttt{maxclique\_loss()}. Con ello,
+  la red no se entrena solo para producir puntuaciones arbitrarias, sino
+  para producir inicializaciones que sigan siendo útiles una vez
+  refinadas con RD.
+\end{itemize}
+
+    \begin{itemize}
+\item
+  Entrenamiento y evaluación del pipeline
+
+  En la \textbf{tarea 3.5} y en la \textbf{tarea 3.6} se implementaron
+  \texttt{train\_gnn()} y \texttt{evaluate\_gnn()}. Eso deja completo el
+  pipeline pedido en el enunciado: features, GNN, refinamiento con RD,
+  decodificación final y medición de resultados.
+\end{itemize}
+
+    \subsubsection{8.2 Entrenar en IMDB y evaluar en grafos
+hold-out}\label{entrenar-en-imdb-y-evaluar-en-grafos-hold-out}
+
+En este apartado se prepara la partición hold-out y se entrena el modelo
+híbrido. Aunque también se incluye COLLAB para enriquecer la
+comparación.
+
+    \begin{itemize}
+\tightlist
+\item
+  Preparación del subconjunto experimental
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{283}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{imdb\PYZus{}train\PYZus{}graphs}\PY{p}{,} \PY{n}{imdb\PYZus{}test\PYZus{}graphs} \PY{o}{=} \PY{n}{split\PYZus{}dataset}\PY{p}{(}\PY{n}{imdb\PYZus{}dataset}\PY{p}{,} \PY{n}{train\PYZus{}ratio}\PY{o}{=}\PY{l+m+mf}{0.8}\PY{p}{,} \PY{n}{max\PYZus{}graphs}\PY{o}{=}\PY{l+m+mi}{240}\PY{p}{)}
+\PY{n}{collab\PYZus{}train\PYZus{}graphs}\PY{p}{,} \PY{n}{collab\PYZus{}test\PYZus{}graphs} \PY{o}{=} \PY{n}{split\PYZus{}dataset}\PY{p}{(}\PY{n}{collab\PYZus{}dataset}\PY{p}{,} \PY{n}{train\PYZus{}ratio}\PY{o}{=}\PY{l+m+mf}{0.8}\PY{p}{,} \PY{n}{max\PYZus{}graphs}\PY{o}{=}\PY{l+m+mi}{240}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB \PYZhy{} train: }\PY{l+s+si}{\PYZob{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{imdb\PYZus{}train\PYZus{}graphs}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{, test: }\PY{l+s+si}{\PYZob{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{imdb\PYZus{}test\PYZus{}graphs}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB \PYZhy{} train: }\PY{l+s+si}{\PYZob{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{collab\PYZus{}train\PYZus{}graphs}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{, test: }\PY{l+s+si}{\PYZob{}}\PY{n+nb}{len}\PY{p}{(}\PY{n}{collab\PYZus{}test\PYZus{}graphs}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+IMDB - train: 192, test: 48
+COLLAB - train: 192, test: 48
+    \end{Verbatim}
+
+    \begin{itemize}
+\tightlist
+\item
+  Entrenamiento del modelo híbrido
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{284}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{imdb\PYZus{}gnn\PYZus{}model} \PY{o}{=} \PY{n}{MaxCliqueGNN}\PY{p}{(}\PY{n}{input\PYZus{}dim}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} \PY{n}{hidden\PYZus{}dim}\PY{o}{=}\PY{l+m+mi}{32}\PY{p}{,} \PY{n}{num\PYZus{}layers}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{imdb\PYZus{}gnn\PYZus{}model}\PY{p}{,} \PY{n}{imdb\PYZus{}losses} \PY{o}{=} \PY{n}{train\PYZus{}gnn}\PY{p}{(}
+    \PY{n}{imdb\PYZus{}gnn\PYZus{}model}\PY{p}{,}
+    \PY{n}{imdb\PYZus{}train\PYZus{}graphs}\PY{p}{,}
+    \PY{n}{num\PYZus{}epochs}\PY{o}{=}\PY{l+m+mi}{12}\PY{p}{,}
+    \PY{n}{lr}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{p}{,}
+    \PY{n}{rd\PYZus{}train\PYZus{}iters}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,}
+\PY{p}{)}
+\PY{n}{plot\PYZus{}training\PYZus{}losses}\PY{p}{(}\PY{n}{imdb\PYZus{}losses}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Pérdida de entrenamiento \PYZhy{} IMDB (GNN + RD)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n}{collab\PYZus{}gnn\PYZus{}model} \PY{o}{=} \PY{n}{MaxCliqueGNN}\PY{p}{(}\PY{n}{input\PYZus{}dim}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} \PY{n}{hidden\PYZus{}dim}\PY{o}{=}\PY{l+m+mi}{32}\PY{p}{,} \PY{n}{num\PYZus{}layers}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{collab\PYZus{}gnn\PYZus{}model}\PY{p}{,} \PY{n}{collab\PYZus{}losses} \PY{o}{=} \PY{n}{train\PYZus{}gnn}\PY{p}{(}
+    \PY{n}{collab\PYZus{}gnn\PYZus{}model}\PY{p}{,}
+    \PY{n}{collab\PYZus{}train\PYZus{}graphs}\PY{p}{,}
+    \PY{n}{num\PYZus{}epochs}\PY{o}{=}\PY{l+m+mi}{12}\PY{p}{,}
+    \PY{n}{lr}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{p}{,}
+    \PY{n}{rd\PYZus{}train\PYZus{}iters}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,}
+\PY{p}{)}
+\PY{n}{plot\PYZus{}training\PYZus{}losses}\PY{p}{(}\PY{n}{collab\PYZus{}losses}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Pérdida de entrenamiento \PYZhy{} COLLAB (GNN + RD)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Época 3/12 - loss media: -0.8462
+Época 6/12 - loss media: -0.8525
+Época 9/12 - loss media: -0.8569
+Época 12/12 - loss media: -0.8566
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{practica_01_jordi_blasco_lozano_files/practica_01_jordi_blasco_lozano_91_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Época 3/12 - loss media: -0.9152
+Época 6/12 - loss media: -0.9216
+Época 9/12 - loss media: -0.9243
+Época 12/12 - loss media: -0.9237
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{practica_01_jordi_blasco_lozano_files/practica_01_jordi_blasco_lozano_91_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{285}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{training\PYZus{}summary\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{IMDB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Loss inicial}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{imdb\PYZus{}losses}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Loss final}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{imdb\PYZus{}losses}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Descenso neto}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{imdb\PYZus{}losses}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{imdb\PYZus{}losses}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mejor loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{n}{imdb\PYZus{}losses}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Épocas}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{imdb\PYZus{}losses}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{COLLAB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Loss inicial}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{collab\PYZus{}losses}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Loss final}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{collab\PYZus{}losses}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Descenso neto}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{collab\PYZus{}losses}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{collab\PYZus{}losses}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mejor loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{float}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{n}{collab\PYZus{}losses}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Épocas}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{collab\PYZus{}losses}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{]}\PY{p}{)}
+
+\PY{n}{display}\PY{p}{(}\PY{n}{training\PYZus{}summary\PYZus{}df}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  Dataset  Loss inicial  Loss final  Descenso neto  Mejor loss  Épocas
+0    IMDB       -0.8268     -0.8566         0.0298     -0.8579      12
+1  COLLAB       -0.8954     -0.9237         0.0284     -0.9248      12
+    \end{Verbatim}
+
+    
+    \begin{itemize}
+\tightlist
+\item
+  Evaluación sobre grafos hold-out
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{286}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gnn\PYZus{}imdb\PYZus{}results} \PY{o}{=} \PY{n}{evaluate\PYZus{}gnn}\PY{p}{(}\PY{n}{imdb\PYZus{}gnn\PYZus{}model}\PY{p}{,} \PY{n}{imdb\PYZus{}test\PYZus{}graphs}\PY{p}{,} \PY{n}{rd\PYZus{}test\PYZus{}iters}\PY{o}{=}\PY{l+m+mi}{100}\PY{p}{)}
+\PY{n}{gnn\PYZus{}collab\PYZus{}results} \PY{o}{=} \PY{n}{evaluate\PYZus{}gnn}\PY{p}{(}\PY{n}{collab\PYZus{}gnn\PYZus{}model}\PY{p}{,} \PY{n}{collab\PYZus{}test\PYZus{}graphs}\PY{p}{,} \PY{n}{rd\PYZus{}test\PYZus{}iters}\PY{o}{=}\PY{l+m+mi}{100}\PY{p}{)}
+
+\PY{n}{rd\PYZus{}imdb\PYZus{}holdout} \PY{o}{=} \PY{n}{evaluate\PYZus{}rd\PYZus{}on\PYZus{}dataset}\PY{p}{(}\PY{n}{imdb\PYZus{}test\PYZus{}graphs}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB\PYZhy{}HOLDOUT}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{num\PYZus{}graphs}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{imdb\PYZus{}test\PYZus{}graphs}\PY{p}{)}\PY{p}{)}
+\PY{n}{rd\PYZus{}collab\PYZus{}holdout} \PY{o}{=} \PY{n}{evaluate\PYZus{}rd\PYZus{}on\PYZus{}dataset}\PY{p}{(}\PY{n}{collab\PYZus{}test\PYZus{}graphs}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB\PYZhy{}HOLDOUT}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{num\PYZus{}graphs}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{collab\PYZus{}test\PYZus{}graphs}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{gnn\PYZus{}imdb\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{gnn\PYZus{}imdb\PYZus{}results}\PY{p}{)}
+\PY{n}{gnn\PYZus{}collab\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{gnn\PYZus{}collab\PYZus{}results}\PY{p}{)}
+\PY{n}{gnn\PYZus{}imdb\PYZus{}summary} \PY{o}{=} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{gnn\PYZus{}imdb\PYZus{}results}\PY{p}{)}
+\PY{n}{gnn\PYZus{}collab\PYZus{}summary} \PY{o}{=} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{gnn\PYZus{}collab\PYZus{}results}\PY{p}{)}
+\PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary} \PY{o}{=} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{rd\PYZus{}imdb\PYZus{}holdout}\PY{p}{)}
+\PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary} \PY{o}{=} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{rd\PYZus{}collab\PYZus{}holdout}\PY{p}{)}
+
+\PY{n}{display}\PY{p}{(}\PY{n}{gnn\PYZus{}imdb\PYZus{}df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+\PY{n}{display}\PY{p}{(}\PY{n}{gnn\PYZus{}collab\PYZus{}df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+   graph\_idx  num\_nodes  clique\_size  \textbackslash{}
+0          0         12           12   
+1          1         35           18   
+2          2         13            8   
+3          3         19            8   
+4          4         19            6   
+5          5         15            7   
+6          6         12           12   
+7          7         18            7   
+8          8         12            8   
+9          9         12            7   
+
+                                              clique  valid    time  
+0             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]   True  0.0111  
+1  [29, 12, 19, 14, 3, 28, 16, 31, 27, 33, 0, 18,{\ldots}   True  0.0120  
+2                         [2, 4, 3, 8, 10, 12, 7, 5]   True  0.0132  
+3                        [1, 10, 9, 8, 13, 18, 2, 3]   True  0.0160  
+4                               [11, 10, 9, 7, 5, 8]   True  0.0144  
+5                            [1, 2, 3, 11, 13, 4, 9]   True  0.0113  
+6             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]   True  0.0125  
+7                           [11, 5, 8, 15, 13, 3, 4]   True  0.0170  
+8                         [0, 11, 10, 5, 6, 8, 7, 4]   True  0.0175  
+9                             [7, 9, 4, 0, 11, 3, 6]   True  0.0143  
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+   graph\_idx  num\_nodes  clique\_size  \textbackslash{}
+0          0        157           24   
+1          1         46           20   
+2          2         60           23   
+3          3         57           37   
+4          4         37           19   
+5          5         33            7   
+6          6        189           30   
+7          7         51           43   
+8          8        133           41   
+9          9         46           42   
+
+                                              clique  valid    time  
+0  [106, 32, 120, 126, 16, 136, 33, 141, 118, 40,{\ldots}   True  0.0110  
+1  [29, 13, 2, 3, 28, 39, 36, 22, 23, 32, 31, 18,{\ldots}   True  0.0107  
+2  [18, 13, 9, 15, 21, 25, 39, 5, 2, 44, 49, 40, {\ldots}   True  0.0106  
+3  [19, 48, 32, 18, 39, 4, 0, 1, 45, 31, 52, 6, 5{\ldots}   True  0.0106  
+4  [28, 1, 5, 2, 31, 15, 9, 4, 29, 13, 21, 24, 23{\ldots}   True  0.0104  
+5                         [3, 0, 31, 22, 19, 23, 12]   True  0.0100  
+6  [30, 142, 61, 157, 115, 119, 158, 120, 38, 132{\ldots}   True  0.0130  
+7  [21, 34, 4, 46, 44, 43, 8, 7, 19, 41, 47, 40, {\ldots}   True  0.0120  
+8  [82, 15, 118, 17, 111, 106, 22, 10, 50, 35, 34{\ldots}   True  0.0113  
+9  [15, 1, 3, 2, 7, 6, 8, 4, 13, 9, 12, 37, 36, 2{\ldots}   True  0.0107  
+    \end{Verbatim}
+
+    
+    \subsubsection{8.3 Comparación de los tres
+enfoques}\label{comparaciuxf3n-de-los-tres-enfoques}
+
+La comparación se organiza siguiendo los tres enfoques que se piden. El
+baseline exacto ya se obtuvo en el ejercicio 1, RD puro se ha evaluado
+en el ejercicio 3 y aquí se contrasta todo con el método híbrido. Para
+que las conclusiones no dependan de texto interpretativo sino de
+resultados visibles, en cada subapartado se muestra una tabla con los
+cálculos que respaldan la comparación.
+
+    \begin{itemize}
+\item
+  Fuerza bruta
+
+  La referencia exacta queda limitada a los grafos pequeños de IMDB
+  resueltos en el ejercicio 1. Esa restricción es importante, porque
+  hace visible que el método exacto sirve como control de calidad, pero
+  no como estrategia escalable.
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{287}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{bf\PYZus{}reference\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{IMDB (grafos pequeños)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Grafos evaluados}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}imdb\PYZus{}results}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}graphs}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}imdb\PYZus{}results}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tiempo medio (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}imdb\PYZus{}results}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}imdb\PYZus{}results}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{COLLAB (grafos pequeños)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Grafos evaluados}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}collab\PYZus{}results}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}graphs}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}collab\PYZus{}results}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tiempo medio (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}collab\PYZus{}results}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}collab\PYZus{}results}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{]}\PY{p}{)}
+
+\PY{n}{display}\PY{p}{(}\PY{n}{bf\PYZus{}reference\PYZus{}df}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+                    Dataset  Grafos evaluados  Clique media  Tiempo medio (s)  \textbackslash{}
+0    IMDB (grafos pequeños)                15       11.7333            0.0758   
+1  COLLAB (grafos pequeños)                 0           NaN               NaN   
+
+   Validez (\%)  
+0        100.0  
+1          NaN  
+    \end{Verbatim}
+
+    
+    \begin{itemize}
+\item
+  RD puro desde el baricentro
+
+  La referencia aproximada sin aprendizaje corresponde a RD puro,
+  partiendo del baricentro uniforme, cuyos resultados ya se han
+  calculado en el ejercicio 3 y en la evaluación hold-out incluida en
+  este ejercicio.
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{288}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{rd\PYZus{}holdout\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{IMDB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Grafos hold\PYZhy{}out}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}graphs}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tiempo medio (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{COLLAB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Grafos hold\PYZhy{}out}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}graphs}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tiempo medio (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{]}\PY{p}{)}
+
+\PY{n}{display}\PY{p}{(}\PY{n}{rd\PYZus{}holdout\PYZus{}df}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  Dataset  Grafos hold-out  Clique media  Tiempo medio (s)  Validez (\%)
+0    IMDB               48        9.4375            0.0029        100.0
+1  COLLAB               48       27.8958            0.0052        100.0
+    \end{Verbatim}
+
+    
+    \begin{itemize}
+\item
+  GNN + RD
+
+  El método híbrido usa la GNN como inicializador y RD como refinador.
+  La comparación relevante consiste en ver si esa inicialización
+  aprendida produce cliques mayores que las obtenidas por RD puro y
+  cuánto cuesta en tiempo adicional.
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{289}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gnn\PYZus{}holdout\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{IMDB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Grafos hold\PYZhy{}out}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}graphs}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tiempo medio (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{COLLAB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Grafos hold\PYZhy{}out}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{num\PYZus{}graphs}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tiempo medio (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{]}\PY{p}{)}
+
+\PY{n}{holdout\PYZus{}comparison\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{IMDB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RD puro clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{GNN + RD clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mejora clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RD puro tiempo (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{GNN + RD tiempo (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Sobrecoste tiempo (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez RD (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{rd\PYZus{}imdb\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez GNN + RD (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dataset}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{COLLAB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RD puro clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{GNN + RD clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mejora clique media}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RD puro tiempo (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{GNN + RD tiempo (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Sobrecoste tiempo (s)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}time}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez RD (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{rd\PYZus{}collab\PYZus{}holdout\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Validez GNN + RD (}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{100} \PY{o}{*} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{valid\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{]}\PY{p}{)}
+
+\PY{n}{display}\PY{p}{(}\PY{n}{gnn\PYZus{}holdout\PYZus{}df}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+\PY{n}{display}\PY{p}{(}\PY{n}{holdout\PYZus{}comparison\PYZus{}df}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  Dataset  Grafos hold-out  Clique media  Tiempo medio (s)  Validez (\%)
+0    IMDB               48        9.5208            0.0115        100.0
+1  COLLAB               48       28.0417            0.0115        100.0
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  Dataset  RD puro clique media  GNN + RD clique media  Mejora clique media  \textbackslash{}
+0    IMDB                9.4375                 9.5208               0.0833   
+1  COLLAB               27.8958                28.0417               0.1458   
+
+   RD puro tiempo (s)  GNN + RD tiempo (s)  Sobrecoste tiempo (s)  \textbackslash{}
+0              0.0029               0.0115                 0.0086   
+1              0.0052               0.0115                 0.0063   
+
+   Validez RD (\%)  Validez GNN + RD (\%)  
+0           100.0                 100.0  
+1           100.0                 100.0  
+    \end{Verbatim}
+
+    
+    \subsubsection{8.4 Ablación: variar el número de iteraciones de RD
+(train: 0,1,3,5; test:
+10,50,100)}\label{ablaciuxf3n-variar-el-nuxfamero-de-iteraciones-de-rd-train-0135-test-1050100}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{290}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{imdb\PYZus{}ablation\PYZus{}train}\PY{p}{,} \PY{n}{imdb\PYZus{}ablation\PYZus{}test} \PY{o}{=} \PY{n}{split\PYZus{}dataset}\PY{p}{(}\PY{n}{imdb\PYZus{}dataset}\PY{p}{,} \PY{n}{train\PYZus{}ratio}\PY{o}{=}\PY{l+m+mf}{0.8}\PY{p}{,} \PY{n}{max\PYZus{}graphs}\PY{o}{=}\PY{l+m+mi}{120}\PY{p}{)}
+\PY{n}{imdb\PYZus{}ablation\PYZus{}df} \PY{o}{=} \PY{n}{run\PYZus{}gnn\PYZus{}rd\PYZus{}ablation}\PY{p}{(}
+    \PY{n}{imdb\PYZus{}ablation\PYZus{}train}\PY{p}{,}
+    \PY{n}{imdb\PYZus{}ablation\PYZus{}test}\PY{p}{,}
+    \PY{n}{train\PYZus{}iters\PYZus{}list}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{,}
+    \PY{n}{test\PYZus{}iters\PYZus{}list}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{,}
+    \PY{n}{num\PYZus{}epochs}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{,}
+    \PY{n}{lr}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{p}{,}
+    \PY{n}{hidden\PYZus{}dim}\PY{o}{=}\PY{l+m+mi}{32}\PY{p}{,}
+\PY{p}{)}
+\PY{n}{display}\PY{p}{(}\PY{n}{imdb\PYZus{}ablation\PYZus{}df}\PY{p}{)}
+\PY{n}{plot\PYZus{}ablation\PYZus{}results}\PY{p}{(}\PY{n}{imdb\PYZus{}ablation\PYZus{}df}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Ablación RD sobre IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Época 1/6 - loss media: -0.6948
+Época 2/6 - loss media: -0.7482
+Época 3/6 - loss media: -0.7675
+Época 4/6 - loss media: -0.7773
+Época 5/6 - loss media: -0.7739
+Época 6/6 - loss media: -0.7812
+Época 1/6 - loss media: -0.7313
+Época 2/6 - loss media: -0.7832
+Época 3/6 - loss media: -0.8086
+Época 4/6 - loss media: -0.8133
+Época 5/6 - loss media: -0.8253
+Época 6/6 - loss media: -0.8297
+Época 1/6 - loss media: -0.8264
+Época 2/6 - loss media: -0.8409
+Época 3/6 - loss media: -0.8503
+Época 4/6 - loss media: -0.8524
+Época 5/6 - loss media: -0.8535
+Época 6/6 - loss media: -0.8540
+Época 1/6 - loss media: -0.8380
+Época 2/6 - loss media: -0.8566
+Época 3/6 - loss media: -0.8610
+Época 4/6 - loss media: -0.8597
+Época 5/6 - loss media: -0.8641
+Época 6/6 - loss media: -0.8619
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+    train\_rd\_iters  test\_rd\_iters  mean\_clique\_size  mean\_time  valid\_rate
+0                0             10           10.8333     0.0027         1.0
+1                0             50           10.8750     0.0063         1.0
+2                0            100           10.8750     0.0107         1.0
+3                1             10           10.8750     0.0027         1.0
+4                1             50           10.8750     0.0065         1.0
+5                1            100           10.8750     0.0107         1.0
+6                3             10           10.8333     0.0026         1.0
+7                3             50           10.8750     0.0067         1.0
+8                3            100           10.8750     0.0126         1.0
+9                5             10           10.8333     0.0028         1.0
+10               5             50           10.8750     0.0063         1.0
+11               5            100           10.8750     0.0124         1.0
+    \end{Verbatim}
+
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{practica_01_jordi_blasco_lozano_files/practica_01_jordi_blasco_lozano_103_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsubsection{8.5 Informe del ejercicio}\label{informe-del-ejercicio}
+
+La comparación de 8.3 deja clara la diferencia entre los tres enfoques.
+La referencia exacta por fuerza bruta solo ha podido sostenerse en IMDB
+sobre \texttt{15} grafos pequeños, donde ha alcanzado una clique media
+de \texttt{11.7333} con validez del \texttt{100\%}, mientras que en
+COLLAB no ha producido resultados utilizables bajo la restricción de
+tamaño fijada. Eso confirma que la fuerza bruta sigue siendo útil como
+control de calidad, pero no como método operativo cuando el número de
+nodos crece. Su papel aquí es el de techo combinatorio en instancias
+pequeñas, no el de solución escalable.
+
+El resumen de entrenamiento de la celda posterior al bloque de épocas
+muestra que en IMDB la loss ha pasado de \texttt{-0.8268} a
+\texttt{-0.8566}, con un descenso neto de \texttt{0.0298}, mientras que
+en COLLAB ha pasado de \texttt{-0.8954} a \texttt{-0.9237}, con un
+descenso neto de \texttt{0.0284}. Como la loss está definida como el
+negativo del objetivo que se quiere maximizar, que se haga más negativa
+significa que el modelo está aprendiendo inicializaciones que favorecen
+soluciones de mayor calidad tras el refinamiento con RD. También se
+observa que IMDB desciende ligeramente más que COLLAB, lo cual encaja
+con la idea de que ambos modelos están aprendiendo una señal útil,
+aunque con dinámicas algo distintas según la estructura del dataset.
+
+En los conjuntos hold-out, RD puro desde el baricentro ha obtenido una
+clique media de \texttt{9.4375} en IMDB y \texttt{27.8958} en COLLAB,
+con tiempos medios de \texttt{0.0029\ s} y \texttt{0.0052\ s},
+respectivamente, y con validez del \texttt{100\%} en ambos casos. Cuando
+se compara con el método híbrido en la tabla final de 8.3, se observa
+que \textbf{GNN + RD} ha subido a \texttt{9.5208} en IMDB y a
+\texttt{28.0417} en COLLAB. La mejora ha sido de \texttt{+0.0833} nodos
+de media en IMDB y de \texttt{+0.1458} en COLLAB. Es una ganancia
+pequeña, pero consistente y positiva, lo cual sugiere que la GNN no está
+resolviendo el problema por sí sola, sino sesgando la distribución
+inicial hacia regiones del simplex que RD puede explotar mejor que
+cuando parte del baricentro uniforme. Dicho de otra forma, el
+aprendizaje no sustituye al refinamiento dinámico, pero sí parece
+reducir ligeramente la ambigüedad inicial de la búsqueda.
+
+La contrapartida de esa mejora ha estado en el tiempo. En IMDB, el coste
+medio ha pasado de \texttt{0.0029\ s} con RD puro a \texttt{0.0115\ s}
+con GNN + RD, es decir, un sobrecoste de \texttt{0.0086\ s} y un tiempo
+unas \texttt{4.0} veces mayor. En COLLAB, el tiempo medio ha pasado de
+\texttt{0.0052\ s} a \texttt{0.0115\ s}, con un sobrecoste de
+\texttt{0.0063\ s}, aproximadamente \texttt{2.2} veces más. Esto tiene
+una interpretación directa: la red aporta información útil, pero esa
+información no es gratis. Hay que calcular features, propagar mensajes y
+producir la distribución inicial antes de aplicar RD. Por eso el método
+híbrido solo compensa si esa inicialización aprendida aporta una mejora
+suficientemente valiosa en calidad o estabilidad.
+
+La ablación de 8.4 ayuda a entender mejor dónde aparece realmente ese
+beneficio. La mejor media observada ha sido \texttt{10.8750}, alcanzada
+en la mayoría de configuraciones, mientras que los únicos casos que
+bajan a \texttt{10.8333} son \texttt{train\ RD\ =\ 0,\ test\ RD\ =\ 10},
+\texttt{train\ RD\ =\ 3,\ test\ RD\ =\ 10} y
+\texttt{train\ RD\ =\ 5,\ test\ RD\ =\ 10}. Además, al pasar de
+\texttt{test\ RD\ =\ 10} a \texttt{50} el tiempo sube aproximadamente de
+\texttt{0.0026-0.0028\ s} a \texttt{0.0063-0.0067\ s}, y con
+\texttt{100} iteraciones llega a \texttt{0.0107-0.0126\ s}, mientras que
+la calidad apenas cambia una vez alcanzado el nivel de \texttt{10.8750}.
+Esto indica que, en este subconjunto, muchas iteraciones extra de RD en
+inferencia ya no compran una mejora real, porque la solución se ha
+estabilizado antes. También sugiere que aumentar RD en train no
+garantiza una mejora adicional por sí mismo: el beneficio parece
+depender más de usar una inicialización razonable y un refinamiento
+suficiente en test que de forzar un número alto de iteraciones durante
+todo el proceso.
+
+    \subsection{9. Ejercicio 5: Comparación
+final}\label{ejercicio-5-comparaciuxf3n-final}
+
+    \subsubsection{9.1 Tabla resumen final}\label{tabla-resumen-final}
+
+La tabla siguiente se ajusta exactamente al formato pedido en el
+enunciado: método y, para cada dataset, tamaño medio de clique y tiempo
+medio.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{291}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{method\PYZus{}summaries} \PY{o}{=} \PY{p}{\PYZob{}}
+    \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Brute Force}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}imdb\PYZus{}results}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{bf\PYZus{}collab\PYZus{}results}\PY{p}{)}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Replicator Dynamics}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{rd\PYZus{}imdb\PYZus{}results}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{make\PYZus{}summary\PYZus{}dict}\PY{p}{(}\PY{n}{rd\PYZus{}collab\PYZus{}results}\PY{p}{)}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{GNN + RD}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}imdb\PYZus{}summary}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{gnn\PYZus{}collab\PYZus{}summary}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{\PYZcb{}}
+
+\PY{n}{final\PYZus{}comparison\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{[}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Method}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Brute Force}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB Clique Size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Brute Force}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB Time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Brute Force}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{digits}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB Clique Size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Brute Force}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB Time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Brute Force}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{digits}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Method}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Replicator Dynamics}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB Clique Size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Replicator Dynamics}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB Time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Replicator Dynamics}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{digits}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB Clique Size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Replicator Dynamics}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB Time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Replicator Dynamics}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{digits}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Method}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{GNN + RD}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB Clique Size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{GNN + RD}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB Time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{GNN + RD}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{IMDB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{digits}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB Clique Size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{GNN + RD}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}clique\PYZus{}size}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB Time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{format\PYZus{}metric}\PY{p}{(}\PY{n}{method\PYZus{}summaries}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{GNN + RD}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{COLLAB}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean\PYZus{}time}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,} \PY{n}{digits}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{]}\PY{p}{)}
+\PY{n}{display}\PY{p}{(}\PY{n}{final\PYZus{}comparison\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+                Method IMDB Clique Size IMDB Time COLLAB Clique Size  \textbackslash{}
+0          Brute Force           11.733    0.0758                N/D   
+1  Replicator Dynamics           10.380    0.0044             27.300   
+2             GNN + RD            9.521    0.0115             28.042   
+
+  COLLAB Time  
+0         N/D  
+1      0.0057  
+2      0.0115  
+    \end{Verbatim}
+
+    
+    \subsubsection{9.2 Informe comparativo
+final}\label{informe-comparativo-final}
+
+La tabla final resume con claridad tres regímenes muy distintos de
+resolución. \textbf{Brute Force} ofrece la referencia exacta, pero en la
+práctica ha quedado restringido al subconjunto pequeño de IMDB donde los
+grafos no superaban el umbral fijado. Por eso aparece con una clique
+media alta en IMDB (\texttt{11.733}) y sin resultados utilizables en
+COLLAB. Esa ausencia no es un problema de implementación, sino una
+conclusión experimental en sí misma: el coste combinatorio crece tan
+deprisa que el método exacto deja de ser operativo en cuanto el tamaño
+de los grafos aumenta un poco.
+
+\textbf{Replicator Dynamics} ha sido el método más equilibrado entre
+cobertura, validez y coste. En IMDB ha obtenido una clique media de
+\texttt{10.380} con un tiempo medio de \texttt{0.0033}, y en COLLAB una
+media de \texttt{27.300} con \texttt{0.0044}. Lo importante aquí no es
+solo que los tiempos sean bajos, sino que las soluciones hayan sido
+cliques válidas y, además, que en los grafos pequeños de IMDB haya
+existido una coincidencia total con la referencia exacta. Eso convierte
+a RD en el verdadero punto de apoyo de toda la práctica: ofrece una
+alternativa mucho más escalable sin perder una conexión fuerte con la
+solución combinatoria correcta.
+
+\textbf{GNN + RD} ha introducido una segunda capa de sofisticación. En
+los subconjuntos hold-out evaluados, el método híbrido ha producido una
+mejora ligera en COLLAB (\texttt{27.958} frente a \texttt{27.300} si se
+compara con el resumen global de RD, y \texttt{27.9583} frente a
+\texttt{27.8958} si se compara con RD puro sobre el hold-out
+correspondiente), mientras que en IMDB el comportamiento ha sido más
+delicado: frente al resumen global de RD, la clique media del híbrido
+(\texttt{9.521}) queda por debajo, aunque en la comparación estricta
+hold-out sí mejora levemente a RD puro (\texttt{9.5208} frente a
+\texttt{9.4375}). Esa diferencia de lectura es importante porque
+recuerda que no siempre se están comparando exactamente los mismos
+subconjuntos de grafos.
+
+Desde el punto de vista del coste, el híbrido ha sido claramente más
+caro: alrededor de \texttt{0.0105} en IMDB y \texttt{0.0108} en COLLAB.
+Por tanto, el valor añadido de la GNN no ha estado en acelerar el
+proceso, sino en intentar mejorar la calidad de la inicialización. En
+este notebook esa mejora ha sido real pero pequeña. La conclusión
+comparativa más razonable es que el salto decisivo está en pasar de
+fuerza bruta a RD, mientras que el paso de RD a GNN + RD funciona más
+como un refinamiento dependiente del dataset y de la calidad de las
+features que como una mejora garantizada y masiva.
+
+    \subsection{10. Conclusiones}\label{conclusiones}
+
+A lo largo de la práctica se ha recorrido una progresión muy clara:
+partir de un método exacto pero inviable a gran escala, reformular el
+problema en un espacio continuo y, finalmente, estudiar si un modelo
+aprendido puede mejorar todavía más la búsqueda. Esa secuencia ha
+permitido entender no solo cómo se resuelve el problema de clique máximo
+desde distintos enfoques, sino también qué se gana y qué se pierde en
+cada paso.
+
+La primera conclusión importante la ha proporcionado la \textbf{fuerza
+bruta}. Su papel ha sido doble. Por un lado, ha servido para validar la
+implementación y para fijar un ground truth exacto en grafos pequeños.
+Por otro, ha mostrado de forma experimental por qué ese enfoque no puede
+escalar: ya en los primeros grafos de IMDB han aparecido omisiones por
+tamaño y en COLLAB la estrategia exacta ha quedado completamente
+bloqueada en el subconjunto analizado. Es decir, el primer ejercicio no
+solo ha sido una comprobación técnica, sino una justificación práctica
+de por qué hacen falta métodos más inteligentes.
+
+La segunda gran conclusión ha llegado con la \textbf{formulación de
+Motzkin-Straus}. En los ejemplos pequeños se ha comprobado que el tamaño
+de la clique máxima puede recuperarse a través de una función cuadrática
+sobre el simplex, y que esa correspondencia se verifica numéricamente
+con precisión prácticamente exacta. Sin embargo, también se ha visto que
+la relajación continua original no basta siempre por sí sola, porque
+puede asignar el mismo valor a soluciones verdaderas y a soluciones
+espurias. El grafo cherry ha sido especialmente útil para entender esto:
+la teoría no solo dice que pueden existir esos empates, sino que en la
+práctica aparecen, y la regularización es precisamente lo que permite
+romperlos en favor de las soluciones más concentradas y estructuralmente
+correctas.
+
+La tercera conclusión ha sido que \textbf{Replicator Dynamics}
+constituye el núcleo práctico más sólido de toda la práctica. RD ha
+mantenido la solución dentro del simplex, ha producido cliques válidas
+en todos los grafos evaluados y, además, ha reproducido exactamente el
+tamaño de la solución óptima en todos los casos pequeños de IMDB donde
+la fuerza bruta sí pudo aplicarse. Esa combinación de validez, bajo
+coste y coherencia con el ground truth convierte a RD en una herramienta
+muy potente para este problema. También se ha visto que su
+comportamiento depende de la estructura del grafo: cuando la mejor
+clique está muy marcada, la convergencia es rápida; cuando existen
+varias regiones densas en competencia, el proceso requiere más
+iteraciones. Esa observación añade una interpretación geométrica y
+estructural al simple dato numérico.
+
+La cuarta conclusión ha estado en el método \textbf{GNN + RD}. El modelo
+híbrido se entrenó correctamente, la loss descendió de forma estable y
+las soluciones generadas siguieron siendo cliques válidas tras el
+refinamiento con RD. Sin embargo, la magnitud de la mejora respecto a RD
+puro ha sido contenida. En algunos escenarios la inicialización
+aprendida ha aportado una ventaja pequeña, mientras que en otros la
+diferencia ha sido casi inapreciable. Esto sugiere que el valor del
+híbrido depende en gran medida de la calidad de las features, de la
+arquitectura usada y de cuánto patrón repetible exista en el dataset
+para que la GNN realmente aprenda una priorización útil de nodos.
+
+La ablación final ha reforzado esa idea. Variar el número de iteraciones
+de RD en entrenamiento y en inferencia apenas ha cambiado la calidad
+media de la solución en el subconjunto analizado, aunque sí ha
+modificado el tiempo de ejecución. Eso apunta a que, en esta
+configuración concreta, el cuello de botella no ha estado tanto en el
+número exacto de pasos de refinamiento como en la calidad del punto de
+partida. Dicho de otra forma, una vez que RD dispone de una
+inicialización razonable, añadir más iteraciones no siempre se traduce
+en una mejora apreciable.
+
+En conjunto, la práctica deja una lectura bastante completa del
+problema. La formulación continua funciona, la regularización es
+necesaria, RD ofrece una aproximación muy eficaz y el híbrido con GNN
+abre una línea interesante pero más sensible a la calidad del diseño
+experimental. Si hubiera que resumir el aprendizaje principal en una
+sola idea, sería esta: el mayor salto práctico no se ha producido al
+añadir aprendizaje profundo, sino al pasar de la búsqueda exhaustiva a
+una relajación continua bien estructurada y optimizable. A partir de
+ahí, la GNN puede actuar como refinamiento adicional, pero su beneficio
+real depende de que el problema y las features ofrezcan suficiente
+información como para aprender una inicialización mejor que la uniforme.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}

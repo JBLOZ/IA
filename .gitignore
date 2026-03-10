@@ -25,6 +25,8 @@ lerna-debug.log*
 **/venv/
 **/env/
 *.venv*/
+*/data/*
+**/data/
 venv/
 .venv/
 
