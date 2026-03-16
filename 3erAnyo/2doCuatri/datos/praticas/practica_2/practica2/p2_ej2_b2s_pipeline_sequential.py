@@ -1,119 +1,100 @@
-from datetime import datetime, timedelta
 import os
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-
-DAG_ID = "p2_ej2_b2s_pipeline_sequential"
-
-SPARK_IMAGE = os.getenv("PMDV_SPARK_IMAGE", "bitnami/spark:3.5")
+PMDV_PROJECT_ROOT = os.environ.get("PMDV_PROJECT_ROOT", "/opt/airflow")
+PMDV_SPARK_IMAGE = os.getenv("PMDV_SPARK_IMAGE", "apache/spark:4.0.1")
+PMDV_DOCKER_NETWORK = os.getenv("PMDV_DOCKER_NETWORK", "datalake")
 SPARK_MASTER_URL = os.getenv("SPARK_MASTER_URL", "spark://spark-master:7077")
-SPARK_NETWORK = os.getenv("PMDV_DOCKER_NETWORK", "bridge")
-DOCKER_URL = os.getenv("DOCKER_HOST", "unix://var/run/docker.sock")
-HOST_JOBS_DIR = os.getenv("PMDV_HOST_JOBS_DIR", "/opt/airflow/dags")
-CONTAINER_JOBS_DIR = os.getenv("PMDV_CONTAINER_JOBS_DIR", "/opt/pmdv")
 
-COMMON_ENV = {
-    "MINIO_ENDPOINT": os.getenv("MINIO_ENDPOINT", "http://minio:9000"),
-    "MINIO_ACCESS_KEY": os.getenv("MINIO_ACCESS_KEY", "minioadmin"),
-    "MINIO_SECRET_KEY": os.getenv("MINIO_SECRET_KEY", "minioadmin"),
-    "MINIO_USE_SSL": os.getenv("MINIO_USE_SSL", "false"),
-}
+MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://minio:9000")
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "minioadmin123")
+MINIO_USE_SSL = os.getenv("MINIO_USE_SSL", "false")
+
+HOST_JOBS_DIR = f"{PMDV_PROJECT_ROOT}/jobs"
+HOST_SPARK_DEFAULTS = f"{PMDV_PROJECT_ROOT}/spark/conf/spark-defaults.conf"
+HOST_DATA_DIR = f"{PMDV_PROJECT_ROOT}/data"
+CONTAINER_JOBS_DIR = "/opt/jobs"
 
 COMMON_MOUNTS = [
     Mount(source=HOST_JOBS_DIR, target=CONTAINER_JOBS_DIR, type="bind"),
+    Mount(source=HOST_SPARK_DEFAULTS, target="/opt/spark/conf/spark-defaults.conf", type="bind", read_only=True),
+    Mount(source=HOST_DATA_DIR, target="/data", type="bind"),
 ]
 
-DEFAULT_ARGS = {
+
+def build_spark_task(task_id: str, script_name: str, input_path: str, output_path: str) -> DockerOperator:
+    command = (
+        f"/opt/spark/bin/spark-submit --master {SPARK_MASTER_URL} --deploy-mode client "
+        f"{CONTAINER_JOBS_DIR}/{script_name} --input '{input_path}' --output '{output_path}'"
+    )
+    return DockerOperator(
+        task_id=task_id,
+        image=PMDV_SPARK_IMAGE,
+        api_version="auto",
+        docker_url="unix://var/run/docker.sock",
+        network_mode=PMDV_DOCKER_NETWORK,
+        mounts=COMMON_MOUNTS,
+        mount_tmp_dir=False,
+        force_pull=False,
+        auto_remove="never",
+        user="0:0",
+        environment={
+            "SPARK_MASTER_URL": SPARK_MASTER_URL,
+            "MINIO_ENDPOINT": MINIO_ENDPOINT,
+            "MINIO_ACCESS_KEY": MINIO_ACCESS_KEY,
+            "MINIO_SECRET_KEY": MINIO_SECRET_KEY,
+            "MINIO_USE_SSL": MINIO_USE_SSL,
+        },
+        command=["/bin/bash", "-lc", command],
+    )
+
+
+default_args = {
     "owner": "airflow",
     "depends_on_past": False,
     "retries": 2,
     "retry_delay": timedelta(minutes=1),
 }
-
-
-def build_spark_submit(script_name: str, input_param: str, output_param: str) -> str:
-    return (
-        "spark-submit "
-        f"--master {SPARK_MASTER_URL} "
-        f"{CONTAINER_JOBS_DIR}/{script_name} "
-        f"--input-path '{{{{ params.{input_param} }}}}' "
-        f"--output-path '{{{{ params.{output_param} }}}}'"
-    )
-
-
 with DAG(
-    dag_id=DAG_ID,
-    description="Bronze a Silver con Spark usando DockerOperator en secuencial",
+    dag_id="p2_ej2_b2s_pipeline_sequential",
     start_date=datetime(2025, 1, 1),
     schedule=None,
     catchup=False,
-    default_args=DEFAULT_ARGS,
+    default_args=default_args,
     params={
-        "police_input_path": "s3a://bronze/Police_Department_Incident_Reports__2018_to_Present_20251208.csv/",
+        "police_input_path": "s3a://bronze/Police_Department_Incident_Reports__2018_to_Present_20251208.csv",
         "police_output_path": "s3a://silver/sf_police_incidents/",
-        "income_input_path": "s3a://bronze/sf_median_household_income/",
+        "income_input_path": "s3a://bronze/ACSST5Y2023.S1901-Data.csv",
         "income_output_path": "s3a://silver/sf_median_household_income/",
-        "tracts_input_path": "s3a://bronze/sf_neighborhoods_census_tracts/",
+        "tracts_input_path": "s3a://bronze/2020_census_tracts_to_neighborhoods_20251208.csv",
         "tracts_output_path": "s3a://silver/sf_neighborhoods_census_tracts/",
     },
-    render_template_as_native_obj=False,
     tags=["pmdv", "practica2", "spark", "sequential"],
 ) as dag:
-    police_task = DockerOperator(
-        task_id="run_sf_police_incidents",
-        image=SPARK_IMAGE,
-        api_version="auto",
-        auto_remove="success",
-        docker_url=DOCKER_URL,
-        network_mode=SPARK_NETWORK,
-        environment=COMMON_ENV,
-        mounts=COMMON_MOUNTS,
-        mount_tmp_dir=False,
-        working_dir=CONTAINER_JOBS_DIR,
-        command=build_spark_submit(
-            "p2_b2s_sf_police_incidents.py",
-            "police_input_path",
-            "police_output_path",
-        ),
+    run_sf_police_incidents = build_spark_task(
+        "run_sf_police_incidents",
+        "p2_b2s_sf_police_incidents.py",
+        '{{ dag_run.conf.get("police_input_path", params.police_input_path) }}',
+        '{{ dag_run.conf.get("police_output_path", params.police_output_path) }}',
     )
 
-    income_task = DockerOperator(
-        task_id="run_sf_median_household_income",
-        image=SPARK_IMAGE,
-        api_version="auto",
-        auto_remove="success",
-        docker_url=DOCKER_URL,
-        network_mode=SPARK_NETWORK,
-        environment=COMMON_ENV,
-        mounts=COMMON_MOUNTS,
-        mount_tmp_dir=False,
-        working_dir=CONTAINER_JOBS_DIR,
-        command=build_spark_submit(
-            "p2_b2s_sf_median_household_income.py",
-            "income_input_path",
-            "income_output_path",
-        ),
+    run_sf_median_household_income = build_spark_task(
+        "run_sf_median_household_income",
+        "p2_b2s_sf_median_household_income.py",
+        '{{ dag_run.conf.get("income_input_path", params.income_input_path) }}',
+        '{{ dag_run.conf.get("income_output_path", params.income_output_path) }}',
     )
 
-    tracts_task = DockerOperator(
-        task_id="run_sf_neighborhoods_census_tracts",
-        image=SPARK_IMAGE,
-        api_version="auto",
-        auto_remove="success",
-        docker_url=DOCKER_URL,
-        network_mode=SPARK_NETWORK,
-        environment=COMMON_ENV,
-        mounts=COMMON_MOUNTS,
-        mount_tmp_dir=False,
-        working_dir=CONTAINER_JOBS_DIR,
-        command=build_spark_submit(
-            "p2_b2ssf_neighborhoods_census_tracts.py",
-            "tracts_input_path",
-            "tracts_output_path",
-        ),
+    run_sf_neighborhoods_census_tracts = build_spark_task(
+        "run_sf_neighborhoods_census_tracts",
+        "p2_b2ssf_neighborhoods_census_tracts.py",
+        '{{ dag_run.conf.get("tracts_input_path", params.tracts_input_path) }}',
+        '{{ dag_run.conf.get("tracts_output_path", params.tracts_output_path) }}',
     )
 
-    police_task >> income_task >> tracts_task
+    run_sf_police_incidents >> run_sf_median_household_income >> run_sf_neighborhoods_census_tracts

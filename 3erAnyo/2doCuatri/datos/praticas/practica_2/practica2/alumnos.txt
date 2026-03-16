@@ -1,4 +1,5 @@
-Nombre y apellidos del alumno 1:
-Nombre y apellidos del alumno 2 (si aplica):
-DNI:
-Turno de practicas:
+Nombre y apellidos alumno 1: Jordi Blasco Lozano
+Nombre y apellidos alumno 2: Alejandro Parra Sanchez
+DNI 1: 74527208D
+DNI 2: 77043304C 
+Turno de prácticas: 2

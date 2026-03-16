@@ -4,65 +4,65 @@ import os
 from pyspark.sql import SparkSession, functions as F
 
 
-DEFAULT_INPUT_PATH = "s3a://bronze/sf_median_household_income/"
-DEFAULT_OUTPUT_PATH = "s3a://silver/sf_median_household_income/"
+def parse_args():
+    parser = argparse.ArgumentParser(description="Bronze to Silver job for SF median household income")
+    parser.add_argument("--input", required=True, help="Input path in Bronze, e.g. s3a://bronze/file.csv")
+    parser.add_argument("--output", required=True, help="Output path in Silver, e.g. s3a://silver/sf_median_household_income/")
+    return parser.parse_args()
 
 
-def configure_s3a(spark: SparkSession) -> None:
+def build_spark_session(app_name: str) -> SparkSession:
     minio_endpoint = os.getenv("MINIO_ENDPOINT", "http://minio:9000")
     minio_access_key = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
-    minio_secret_key = os.getenv("MINIO_SECRET_KEY", "minioadmin")
+    minio_secret_key = os.getenv("MINIO_SECRET_KEY", "minioadmin123")
     minio_use_ssl = os.getenv("MINIO_USE_SSL", "false").lower() == "true"
 
-    hconf = spark._jsc.hadoopConfiguration()
-    hconf.set("fs.s3a.endpoint", minio_endpoint)
-    hconf.set("fs.s3a.access.key", minio_access_key)
-    hconf.set("fs.s3a.secret.key", minio_secret_key)
-    hconf.set("fs.s3a.path.style.access", "true")
-    hconf.set("fs.s3a.connection.ssl.enabled", "true" if minio_use_ssl else "false")
-    hconf.set(
-        "fs.s3a.aws.credentials.provider",
-        "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
+    spark = (
+        SparkSession.builder.appName(app_name)
+        .config("spark.hadoop.fs.s3a.endpoint", minio_endpoint)
+        .config("spark.hadoop.fs.s3a.access.key", minio_access_key)
+        .config("spark.hadoop.fs.s3a.secret.key", minio_secret_key)
+        .config("spark.hadoop.fs.s3a.path.style.access", "true")
+        .config("spark.hadoop.fs.s3a.connection.ssl.enabled", str(minio_use_ssl).lower())
+        .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+        .getOrCreate()
     )
-    hconf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+    return spark
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input-path", default=DEFAULT_INPUT_PATH)
-    parser.add_argument("--output-path", default=DEFAULT_OUTPUT_PATH)
-    args = parser.parse_args()
+def main():
+    args = parse_args()
+    spark = build_spark_session("p2_b2s_sf_median_household_income")
 
-    spark = SparkSession.builder.getOrCreate()
-    spark.conf.set("spark.sql.session.timeZone", "UTC")
-    configure_s3a(spark)
-
-    df_raw = (
-        spark.read.option("header", True)
+    df = (
+        spark.read.option("header", "true")
         .option("inferSchema", "false")
-        .csv(args.input_path)
+        .csv(args.input)
     )
 
-    df = df_raw.filter(F.col("GEO_ID").startswith("1400000US"))
-    df = df.withColumn("census_tract", F.regexp_extract(F.col("GEO_ID"), r"US(\d+)$", 1))
-    df = df.select(
-        F.col("census_tract"),
-        F.col("S1901_C01_012E").alias("median_household_income_raw"),
-        F.col("NAME").alias("tract_name"),
+    df = df.filter(F.col("GEO_ID").startswith("1400000US"))
+
+    df = (
+        df.withColumn("census_tract", F.regexp_extract(F.col("GEO_ID"), r"US(\d+)$", 1))
+        .select(
+            F.col("census_tract"),
+            F.col("S1901_C01_012E").alias("median_household_income_raw"),
+            F.col("NAME").alias("tract_name"),
+        )
+        .withColumn(
+            "median_household_income",
+            F.when(
+                F.col("median_household_income_raw").rlike(r"^[0-9,]+\+?$"),
+                F.regexp_replace(F.regexp_replace(F.col("median_household_income_raw"), ",", ""), r"\+", "").cast("double"),
+            ).otherwise(F.lit(None).cast("double")),
+        )
+        .withColumn(
+            "income_is_censored",
+            F.when(F.col("median_household_income_raw") == "250,000+", F.lit(True)).otherwise(F.lit(False)),
+        )
     )
 
-    income_digits = F.regexp_replace(F.col("median_household_income_raw"), r"[^0-9]", "")
-    df = df.withColumn(
-        "median_household_income",
-        F.when(income_digits == "", F.lit(None).cast("double")).otherwise(income_digits.cast("double")),
-    )
-
-    df = df.withColumn(
-        "income_is_censored",
-        (F.col("median_household_income_raw") == F.lit("250,000+")).cast("boolean"),
-    )
-
-    df.write.mode("overwrite").parquet(args.output_path)
+    df.write.mode("overwrite").parquet(args.output)
     spark.stop()
 
 
