@@ -174,7 +174,7 @@ La pauta es muy clara: el kernel lineal necesita pocos vectores de soporte, mien
 
 El mejor modelo no lineal es el \textbf{SVM-RBF} con \textbf{0.9408} en test y \textbf{F1 ponderado de 0.9405}, pero el \textbf{kernel lineal} queda ligeramente por delante con \textbf{0.9431} en test. La conclusión de fondo es valiosa: la no linealidad aporta flexibilidad, pero el problema presenta una estructura muy cercana a la linealidad.
 
-Las clases extremas son las más fáciles de clasificar; las mayores confusiones aparecen en \textit{Normal\_Weight} y \textit{Overweight\_Level\_I}, donde las fronteras clínicas son más próximas.
+Las clases extremas son las más fáciles de clasificar; las mayores confusiones aparecen en \textit{Normal\_Weight} y \textit{Overweight\_Level\_I} tanto para un lado como para el otro, esto se debe a que las fronteras clínicas son más próximas.
 
 \section{Parte 2: Árboles de Decisión}
 
@@ -203,7 +203,7 @@ La exploración de \texttt{max\_depth} muestra el patrón clásico. Con profundi
 
 Aquí aparece uno de los resultados más llamativos de toda la práctica. Los criterios \textbf{entropy} y \textbf{log\_loss} alcanzan \textbf{0.9431} en validación cruzada y un \textbf{0.9739} en test, mientras que \textbf{gini} se queda en \textbf{0.9265}. Además, entropy/log\_loss lo logran con \textbf{81 hojas}, frente a las \textbf{97} de gini.
 
-Esto significa que, en este dataset, el criterio de división importa mucho. La entropía está encontrando splits más informativos y convierte a un árbol individual en un competidor de primer nivel, rivalizando incluso con los mejores ensembles.
+Esto significa que, en este dataset, el criterio de división importa mucho. La entropía está encontrando splits más informativos y convierte a un árbol individual en un competidor de primer nivel, rivalizando incluso con los mejores metodos de kernel.
 
 \subsection{Poda previa}
 
@@ -259,9 +259,9 @@ La estructura del árbol confirma, una vez más, lo que ya sugería el análisis
 
 \tbl{tree_summary}{Resumen del árbol completo, la mejor poda previa y la mejor poda posterior.}{tab:tree_summary}
 
-Si seguimos estrictamente el resumen final generado por el notebook, la familia de árboles queda liderada por la \textbf{poda posterior}, con \textbf{0.9313} en test y \textbf{F1 ponderado de 0.9318}. El árbol sin restricciones y la poda previa se quedan en \textbf{0.9265}.
+Si seguimos el resumen final del notebook, la familia de árboles queda liderada por la {poda posterior}, con {0.9313} en test y {F1 ponderado de 0.9318}. El árbol sin restricciones y la poda previa se quedan en {0.9265}.
 
-Sin embargo, para que la memoria sea fiel a todos los resultados obtenidos, hay que subrayar una matización crucial: el mejor resultado aislado dentro de esta familia no está en la tabla resumen de poda, sino en la comparación de criterios, donde \textbf{entropy/log\_loss} alcanzan \textbf{0.9739} en test. Es, probablemente, el hallazgo más llamativo de toda la práctica.
+Sin embargo, para que la memoria sea fiel a todos los resultados obtenidos, hay que subrayar una matización crucial: el mejor resultado aislado dentro de esta familia no está en la tabla resumen de poda, sino en la comparación de criterios, donde \textbf{entropy/log\_loss} alcanzan \textbf{0.9739} en test usando 81 hojas. Es, probablemente, el hallazgo más llamativo de toda la práctica.
 
 \section{Parte 3: Random Forest y Extra Trees}
 
@@ -397,7 +397,7 @@ Gradient Boosting es la familia más fuerte del bloque. El modelo seleccionado p
 \label{fig:cm_final}
 \end{figure}
 
-Siguiendo la selección final realizada por el notebook, el ranking queda así:
+Siguiendo la selección final del notebook, el ranking queda así:
 \[
 \text{Gradient Boosting} > \text{Random Forest} > \text{SVM-RBF} > \text{Decision Tree} \gg \text{AdaBoost}
 \]
@@ -411,13 +411,13 @@ En cifras:
     \item \textbf{AdaBoost}: \textbf{0.4313} accuracy, \textbf{0.3116} F1, tiempo \textbf{0.42 s}
 \end{itemize}
 
-Sin embargo, esta comparativa automática no agota toda la información del notebook. De hecho, dos resultados aislados del propio experimento son aún más llamativos:
+Sin embargo, esta comparativa no es realista si tenemos en perspectiva toda la información del notebook. Los siguientes dos resultados aislados del propio experimento son aún más llamativos:
 \begin{itemize}
     \item El árbol con criterio \texttt{entropy}/\texttt{log\_loss} alcanza \textbf{0.9739} en test.
     \item El mejor Gradient Boosting del GridSearch, con \texttt{learning\_rate=0.1}, \texttt{max\_depth=3}, \texttt{n\_estimators=200} y \texttt{subsample=1.0}, también alcanza \textbf{0.9739} en test.
 \end{itemize}
 
-Esto obliga a distinguir entre ``mejor modelo seleccionado automáticamente por el notebook'' y ``mejor resultado observado dentro de los experimentos ejecutados''.
+Esto obliga a distinguir entre ``mejor modelo'' y ``mejor resultado observado dentro de los experimentos ejecutados''.
 
 \section{Discusión}
 
@@ -434,7 +434,7 @@ Todas las familias de modelos convergen en la misma conclusión: \texttt{Weight}
 La revisión detallada del notebook deja dos observaciones especialmente importantes:
 \begin{enumerate}
     \item El árbol seleccionado en la comparativa final automática no representa el mejor resultado real de la familia de árboles, porque la comparación de criterios muestra un rendimiento muy superior con \texttt{entropy}/\texttt{log\_loss}.
-    \item En SVM conviene distinguir entre el mejor modelo dentro de la tabla resumen automática y la lectura completa de la familia: aunque el notebook destaca el mejor RBF en la comparativa global, la exploración de kernels muestra que el lineal obtiene una accuracy ligeramente superior.
+    \item En SVM conviene distinguir entre el mejor modelo dentro de la tabla resumen y la lectura completa de la familia: aunque el notebook destaca el mejor RBF en la comparativa global, la exploración de kernels muestra que el lineal obtiene una accuracy ligeramente superior.
 \end{enumerate}
 
 \section{Conclusiones}
@@ -453,6 +453,5 @@ La revisión detallada del notebook deja dos observaciones especialmente importa
     \item \textbf{La interpretación de los resultados exige mirar más allá de la comparativa automática}. Algunos hallazgos relevantes aparecen en análisis intermedios, como el árbol con \texttt{entropy}/\texttt{log\_loss} o la ligera ventaja del SVM lineal frente al RBF.
 \end{enumerate}
 
-En conjunto, la práctica muestra con bastante claridad cómo cambia el rendimiento al pasar de modelos interpretables pero frágiles a ensembles cada vez más sofisticados. También deja una enseñanza importante: para interpretar bien un experimento no basta con quedarse con la tabla final, sino que conviene relacionar las métricas globales con la estructura interna de cada modelo, su complejidad efectiva y el papel que desempeñan las variables más informativas.
-
+En conjunto, la práctica muestra con bastante claridad cómo cambia el rendimiento al pasar de modelos interpretables pero frágiles a ensembles cada vez más sofisticados.
 \end{document}
