@@ -13,7 +13,6 @@
 \usepackage{newunicodechar}
 
 \newunicodechar{γ}{$\gamma$}
-
 \graphicspath{{images/}}
 
 \lstset{
@@ -58,36 +57,24 @@
 
 \begin{abstract}
 \textit{
-En esta práctica se comparan varias familias de algoritmos de aprendizaje supervisado sobre un problema real de clasificación multiclase: la predicción del nivel de obesidad a partir de variables antropométricas, hábitos alimenticios y actividad física. Para mantener una base experimental homogénea, se reutiliza exactamente el mismo dataset y el mismo preprocesado de la Práctica 0. Sobre esa base se evalúan máquinas de vectores soporte, árboles de decisión y métodos ensemble basados tanto en bagging como en boosting. Los resultados muestran una jerarquía muy clara: Gradient Boosting obtiene el mejor rendimiento global con un \textbf{97.16\%} de accuracy en test y un \textbf{F1 ponderado de 0.9718}; Random Forest se sitúa en segundo lugar con \textbf{95.50\%}; SVM-RBF optimizado alcanza \textbf{94.31\%}; y AdaBoost con stumps resulta claramente insuficiente para este problema multiclase. El análisis detallado confirma que las variables \texttt{Weight} y \texttt{Height} siguen siendo el núcleo informativo del problema, mientras que los ensembles son los que mejor capturan las fronteras complejas entre las categorías intermedias de obesidad.
-}
+En esta práctica se comparan varias familias de algoritmos de aprendizaje supervisado sobre un problema real de clasificación multiclase: la estimación del nivel de obesidad a partir de variables antropométricas, hábitos alimenticios y actividad física. Tras corregir el \textit{data leakage} existente en la transformación Box-Cox de \texttt{Age}, el experimento queda metodológicamente mejor planteado y también cambian algunas conclusiones. En la comparativa final generada automáticamente por el notebook, Gradient Boosting sigue ocupando la primera posición con un \textbf{96.45\%} de accuracy en test y un \textbf{F1 ponderado de 0.9646}, seguido por Random Forest con \textbf{95.73\%}, SVM-RBF con \textbf{94.08\%} y AdaBoost con stumps muy lejos del resto. Sin embargo, el análisis detallado revela dos hallazgos especialmente relevantes: el kernel lineal de SVM pasa a ser ligeramente mejor que el RBF optimizado, y un árbol individual con criterio \texttt{entropy}/\texttt{log\_loss} alcanza \textbf{97.39\%} en test, rivalizando con los mejores ensembles.}
 \end{abstract}
 
 \vspace{0.5cm}
 
 \section{Introducción}
 
-Esta práctica tiene como objetivo aplicar los algoritmos de aprendizaje supervisado vistos en teoría a un caso real y comparar su comportamiento con un criterio experimental homogéneo. No se trata solo de identificar qué modelo obtiene la mejor accuracy, sino de estudiar cómo cambia el rendimiento cuando variamos la complejidad del modelo, cómo afectan los hiperparámetros y qué patrones permiten explicar por qué algunos enfoques generalizan mejor que otros.
+El objetivo de esta práctica es aplicar y comparar varios algoritmos clásicos de aprendizaje supervisado sobre un mismo problema real, manteniendo un protocolo experimental homogéneo. La idea no es únicamente comprobar qué modelo obtiene la mejor accuracy, sino entender cómo cambian los resultados cuando aumenta la capacidad no lineal del modelo, cuando se agregan múltiples árboles o cuando se modifica la forma en que se construye la frontera de decisión.
 
-Para facilitar la comparación con la práctica anterior, se ha reutilizado el dataset \textit{Estimation of Obesity Levels Based on Eating Habits and Physical Condition} del repositorio UCI. Es el mismo conjunto de datos empleado en la Práctica 0, lo que permite conectar directamente ambas memorias: primero se construyó un flujo completo de preprocesado y una línea base con Regresión Logística, y ahora se estudia cómo evolucionan los resultados al introducir modelos con mayor capacidad no lineal y métodos ensemble.
+Para facilitar la comparación con la Práctica 0, se reutiliza el dataset \textit{Estimation of Obesity Levels Based on Eating Habits and Physical Condition} del repositorio UCI. También se mantiene la misma lógica general de limpieza y codificación, aunque en esta versión se corrige un punto metodológico importante: la transformación Box-Cox de \texttt{Age} se ajusta solo con el conjunto de entrenamiento y después se aplica a test con el mismo parámetro, evitando así cualquier fuga de información.
 
-El problema es de \textbf{clasificación multiclase} con 7 categorías:
-\begin{itemize}
-    \item \textit{Insufficient\_Weight}
-    \item \textit{Normal\_Weight}
-    \item \textit{Overweight\_Level\_I}
-    \item \textit{Overweight\_Level\_II}
-    \item \textit{Obesity\_Type\_I}
-    \item \textit{Obesity\_Type\_II}
-    \item \textit{Obesity\_Type\_III}
-\end{itemize}
-
-La dificultad real del problema no está en distinguir los extremos, que suelen estar muy bien separados por peso y altura, sino en discriminar las clases intermedias, donde pequeñas variaciones en IMC y hábitos provocan fronteras más difusas.
+El problema es de clasificación multiclase con 7 categorías de peso y obesidad. La dificultad principal no está en distinguir los extremos, que suelen separarse bien con peso y altura, sino en discriminar las clases intermedias, donde pequeñas variaciones provocan fronteras más difusas.
 
 \section{Configuración Experimental}
 
 \subsection{Dataset}
 
-El dataset original contiene 2111 filas y 17 columnas: 16 variables predictoras y 1 variable objetivo. Tras aplicar exactamente el mismo tratamiento de outliers y codificación que en la Práctica 0, el conjunto final utilizado en esta práctica queda en 2107 instancias y 23 características tras el encoding. El split estratificado deja 1685 muestras para entrenamiento y 422 para test.
+El dataset original contiene 2111 filas y 17 columnas: 16 variables predictoras y una variable objetivo. En esta nueva versión del notebook, primero se filtran únicamente los outliers puntuales de \texttt{Weight} y \texttt{Height}, quedando 2109 instancias. A partir de ahí se realiza el split estratificado, y solo sobre train se ajusta la transformación Box-Cox de \texttt{Age} y su filtrado IQR posterior. El conjunto realmente utilizado para entrenar los modelos queda en 1686 muestras de entrenamiento y 422 de test, con 23 características tras el encoding.
 
 \begin{table}[H]
 \centering
@@ -98,138 +85,104 @@ El dataset original contiene 2111 filas y 17 columnas: 16 variables predictoras 
 \toprule
 \textbf{Característica} & \textbf{Valor} \\ \midrule
 Dataset original & 2111 filas, 17 columnas \\
-Dataset tras limpieza & 2107 filas, 17 columnas \\
+Tras IQR en Weight/Height & 2109 filas, 17 columnas \\
 Features tras encoding & 23 \\
-Train/Test & 1685 / 422 \\
+Train/Test final & 1686 / 422 \\
 Variable objetivo & NObeyesdad (7 clases) \\
 Tipo de problema & Clasificación multiclase \\
 Valores faltantes & 0 \\ \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Preprocesado reutilizado de la Práctica 0}
+\subsection{Preprocesado corregido}
 
-El enunciado de esta práctica indica que el preprocesado puede darse por supuesto. Aun así, en una memoria rigurosa conviene dejarlo fijado porque condiciona directamente el comportamiento de los modelos. Se reutiliza la misma receta de la Práctica 0 por dos motivos: mantener comparabilidad experimental y evitar introducir sesgos debidos a un cambio de pipeline.
+El enunciado permitía no detallar el preprocesado, pero aquí conviene fijarlo con claridad porque condiciona toda la interpretación posterior. La lógica general se mantiene respecto a la Práctica 0, pero con una corrección importante para evitar leakage.
 
-Los pasos aplicados son los siguientes:
+Los pasos aplicados son:
 \begin{enumerate}
     \item Eliminación mediante IQR de los outliers puntuales de \texttt{Weight} y \texttt{Height}.
-    \item Transformación Box-Cox de \texttt{Age} y posterior filtrado IQR.
-    \item \textit{Label Encoding} para variables binarias.
-    \item \textit{One-Hot Encoding} con \texttt{drop\_first} para variables categóricas multiclase.
-    \item División train/test estratificada 80/20.
-    \item Comprobación adicional de outliers en train por Z-score sobre variables numéricas; en este caso no se eliminó ninguna muestra adicional.
+    \item División train/test estratificada 80/20 antes de transformar \texttt{Age}.
+    \item Ajuste de Box-Cox sobre \texttt{Age} exclusivamente en train, con \(\lambda \approx -1.6770\), y aplicación posterior a test con el mismo parámetro.
+    \item Filtrado IQR post-Box-Cox solo en train; en esta ejecución se elimina 1 fila adicional.
+    \item \textit{Label Encoding} para variables binarias y \textit{One-Hot Encoding} con \texttt{drop\_first} para variables multiclase, ajustados sobre train y alineados con test.
+    \item Comprobación adicional de outliers en train por Z-score; en este caso no se elimina ninguna fila adicional.
 \end{enumerate}
 
-Este detalle es especialmente importante para interpretar los resultados de SVM. Las máquinas de vectores soporte son muy sensibles a la escala de las variables, de manera que la estandarización dentro de \texttt{Pipeline} no es opcional sino estructural. En cambio, los métodos basados en árboles son prácticamente invariantes a transformaciones monótonas de escala, por lo que el preprocesado les afecta mucho menos.
+Este cambio metodológico es especialmente importante porque explica parte de las diferencias respecto a la práctica anterior. En modelos sensibles a la geometría de los datos, como SVM, una fuga de información en la transformación de una variable puede alterar de forma sutil la frontera aprendida.
 
-\subsection{Métricas de evaluación}
+\subsection{Métricas}
 
-Se han utilizado tres niveles de evaluación:
+Se emplean tres niveles de evaluación:
 \begin{itemize}
-    \item \textbf{Validación cruzada 5-Fold} sobre train, para estimar capacidad de generalización y comparar configuraciones de forma más robusta.
-    \item \textbf{Accuracy en test}, para medir rendimiento final sobre datos no vistos.
-    \item \textbf{Precision, Recall y F1 ponderados}, para evitar que las conclusiones dependan solo de la accuracy global.
+    \item \textbf{Validación cruzada 5-Fold} sobre train.
+    \item \textbf{Accuracy en test}.
+    \item \textbf{Precision, Recall y F1 ponderados}.
 \end{itemize}
 
-También se han estudiado métricas complementarias según la familia de modelos:
-\begin{itemize}
-    \item Número de vectores de soporte en SVM.
-    \item Profundidad, número de hojas y curvas de poda en árboles.
-    \item OOB Score en Random Forest.
-    \item Importancia de características por impureza y por permutación en ensembles.
-\end{itemize}
+Además, según la familia de modelos, se consideran medidas complementarias como número de vectores de soporte, profundidad y hojas de los árboles, OOB Score en Random Forest e importancia de características.
 
 \section{Parte 1: Support Vector Machines}
 
 \subsection{Comparación inicial de kernels}
 
-La primera exploración compara los cuatro kernels más habituales de \texttt{SVC}: lineal, polinomial de grado 3, RBF y sigmoide. El objetivo no es solo identificar cuál funciona mejor, sino observar cuánto depende cada kernel de un ajuste posterior de hiperparámetros.
-
 \tbl{svm_kernels}{Comparativa inicial de SVM con kernels por defecto.}{tab:svm_kernels}
 
-El resultado más llamativo es que el kernel \textbf{lineal} ya parte de un nivel altísimo: \textbf{0.9418} en validación cruzada y \textbf{0.9384} en test. Este comportamiento no es casual. Después del One-Hot Encoding, el problema deja de estar en un espacio de 8 variables numéricas y pasa a un espacio de 23 dimensiones donde muchas separaciones relevantes se vuelven casi lineales. Además, en la Práctica 0 ya se había visto que una Regresión Logística bien ajustada alcanzaba un F1 de 0.9359; por tanto, aquí ya existía una señal previa de que el dataset era bastante separable con fronteras aproximadamente lineales.
+El primer resultado importante es que el kernel lineal no solo sigue funcionando muy bien, sino que mejora ligeramente tras corregir el leakage: alcanza \textbf{0.9496} en validación cruzada y \textbf{0.9431} en test. Esto refuerza una idea que ya estaba latente en la práctica anterior: tras el encoding y la estandarización, gran parte del problema es separable mediante fronteras aproximadamente lineales.
 
-El kernel \textbf{RBF} por defecto arranca claramente por debajo (\textbf{0.8528} en CV y \textbf{0.8720} en test), pero esta cifra hay que interpretarla con cuidado. El RBF suele ser uno de los kernels más potentes, pero también uno de los más sensibles a la combinación de \(C\) y \(\gamma\). Un valor inadecuado de \(\gamma\) puede producir una frontera excesivamente suave o, al contrario, demasiado local.
+El kernel \textbf{RBF} por defecto mejora algo respecto a la ejecución anterior, pero sigue claramente por debajo del lineal si no se ajustan sus hiperparámetros: \textbf{0.8576} en CV y \textbf{0.8744} en test. El kernel polinomial y el sigmoide vuelven a quedar lejos de las mejores opciones, lo que sugiere que el problema no necesita una estructura polinómica global ni encaja bien con la familia sigmoide.
 
-Los kernels \textbf{polinomial} y \textbf{sigmoide} quedan muy lejos de las dos mejores opciones. El polinomial por defecto se sitúa en torno al \textbf{74.4\%} en test, y el sigmoide apenas llega al \textbf{65.2\%}. El motivo de fondo es que el problema no parece requerir interacciones polinómicas globales de una forma estable, y el kernel sigmoide, además de ser menos robusto, suele necesitar un ajuste fino mucho más delicado para no deteriorarse.
-
-Un aspecto muy útil para interpretar estos resultados es el número de vectores de soporte. El kernel lineal utiliza 565, es decir, un \textbf{33.5\%} del conjunto de entrenamiento. Los kernels no lineales por defecto necesitan entre el \textbf{64\%} y el \textbf{72\%}. Eso significa que, con la configuración inicial, su frontera depende de muchos más ejemplos, lo que sugiere dos cosas a la vez: que la solución es más compleja y que el coste de inferencia crece de forma importante.
+También resulta muy útil observar el número de vectores de soporte. El kernel lineal utiliza \textbf{564} SV, es decir, un \textbf{33.45\%} del conjunto de entrenamiento, mientras que los kernels no lineales por defecto se mueven entre el \textbf{64\%} y el \textbf{72\%}. Esto indica una frontera efectiva bastante más compleja y un mayor coste de inferencia.
 
 \subsection{Ajuste del kernel RBF}
 
-El kernel RBF define la similitud entre muestras mediante una función gaussiana. Sus dos hiperparámetros críticos son:
-\begin{itemize}
-    \item \(C\): controla cuánto castiga el modelo los errores de clasificación.
-    \item \(\gamma\): controla el alcance de influencia de cada muestra.
-\end{itemize}
-
-Si \(C\) es muy pequeño, el clasificador acepta errores con facilidad y la frontera queda demasiado suave. Si \(C\) es muy grande, el modelo fuerza una separación más rígida. Si \(\gamma\) es demasiado bajo, cada punto influye sobre una región muy amplia y la frontera pierde capacidad de adaptación; si es demasiado alto, la frontera se vuelve excesivamente local y puede acabar memorizando.
-
 \tbl{svm_rbf_grid}{GridSearch y configuraciones representativas para SVM con kernel RBF.}{tab:svm_rbf}
 
-El mejor punto encontrado es \textbf{\(C = 100\)} y \textbf{\(\gamma = 0.01\)}, con \textbf{0.9401} de CV Accuracy y \textbf{0.9431} de Test Accuracy. Hay varios detalles interesantes aquí:
-\begin{itemize}
-    \item La mejora sobre el RBF por defecto es enorme: pasa de \textbf{87.20\%} a \textbf{94.31\%} en test.
-    \item El número de vectores de soporte cae de 1089 a 629. Esto indica una frontera no lineal mucho mejor ajustada, pero sin llegar a la complejidad excesiva de otras configuraciones.
-    \item Configuraciones como \(C=100, \gamma=1\) o valores altos de \(\gamma\) en general elevan mucho el número de vectores de soporte y empeoran la generalización, porque convierten la frontera en algo demasiado local.
-\end{itemize}
+El mejor punto encontrado sigue siendo \textbf{\(C = 100\)} y \textbf{\(\gamma = 0.01\)}, con \textbf{0.9401} de CV Accuracy y \textbf{0.9408} de Test Accuracy. La mejora respecto al RBF por defecto sigue siendo muy grande: pasa de \textbf{87.44\%} a \textbf{94.08\%} en test.
 
-En otras palabras, el mejor RBF no gana por ``ser más complejo'', sino por usar la cantidad justa de no linealidad: suficiente para corregir las confusiones que un hiperplano puro no resuelve, pero sin entrar en una dinámica de ajuste demasiado fino.
+Sin embargo, aquí aparece una diferencia importante respecto a la versión previa del notebook: una vez eliminado el leakage, el RBF optimizado ya \textbf{no supera} al kernel lineal. Queda ligeramente por debajo tanto en CV como en test. La lectura es muy interesante porque sugiere que la pequeña ventaja aparente del RBF en la versión anterior estaba probablemente inflada por el preprocesado de \texttt{Age} sobre todo el dataset.
+
+El valor alto de \(C\) indica que el modelo se beneficia de penalizar más los errores de clasificación, mientras que \(\gamma = 0.01\) sigue siendo lo bastante pequeño como para evitar una frontera excesivamente local. El número de vectores de soporte baja a 632, lejos de configuraciones mucho más complejas como \(C=100, \gamma=1\), donde la frontera se vuelve casi memorística.
 
 \subsection{Ajuste del kernel polinomial}
 
 \tbl{svm_poly_grid}{GridSearch y configuraciones representativas para SVM con kernel polinomial.}{tab:svm_poly}
 
-La mejor combinación polinomial es \textbf{grado 3, \(C=10\), \(\gamma=0.1\)}, con \textbf{0.8718} en validación cruzada y \textbf{0.8886} en test. Aunque mejora mucho respecto al polinomial por defecto, sigue lejos tanto del lineal como del RBF optimizado.
+La mejor configuración polinomial pasa a ser \textbf{grado 3, \(C=10\), \(\gamma=0.1\)} con \textbf{0.8808} en validación cruzada y \textbf{0.8791} en test. Mejora respecto a la ejecución anterior, pero sigue claramente por debajo tanto del kernel lineal como del RBF. Esto sugiere que el problema no necesita interacciones polinómicas de orden alto para modelarse bien.
 
-La lectura más razonable es que el problema no tiene una geometría global bien capturable con una transformación polinómica relativamente simple. Los límites entre clases parecen depender más de umbrales y relaciones locales entre variables como peso, altura, edad y algunos hábitos, no de una estructura polinómica limpia en todo el espacio.
-
-\subsection{Comparación de implementaciones lineales}
+\subsection{Implementaciones lineales}
 
 \tbl{svm_linear_impl}{Comparación entre \texttt{SVC(linear)}, \texttt{LinearSVC} y \texttt{SGDClassifier}.}{tab:svm_linear_impl}
 
-Aquí aparece uno de los hallazgos más claros de la práctica. \texttt{SVC(linear)} mantiene el excelente rendimiento ya observado, mientras que \texttt{LinearSVC} cae hasta \textbf{0.7867} en test y \texttt{SGDClassifier} baja aún más, hasta \textbf{0.6896}. No es una diferencia marginal, sino estructural.
+\texttt{SVC(linear)} vuelve a ser claramente superior: \textbf{0.9496} en CV y \textbf{0.9431} en test. \texttt{LinearSVC} cae hasta \textbf{0.7796} en test y \texttt{SGDClassifier} hasta \textbf{0.6801}. La conclusión aquí no es que esas implementaciones sean malas en general, sino que en este dataset pequeño y ya bien estructurado la optimización dual exacta de \texttt{SVC} compensa de sobra.
 
-Esto no significa que \texttt{LinearSVC} o \texttt{SGDClassifier} sean malos algoritmos. Lo que indica es que, con los hiperparámetros por defecto y en este conjunto concreto, la optimización dual exacta de \texttt{SVC} captura mucho mejor la frontera. \texttt{LinearSVC} utiliza otra formulación y \texttt{SGDClassifier} resuelve el problema de forma aproximada y estocástica; ambas opciones suelen ser muy útiles en datasets mucho más grandes, pero aquí la ventaja de escalabilidad no compensa la pérdida de calidad.
-
-\subsection{Vectores de soporte y complejidad efectiva}
+\subsection{Vectores de soporte}
 
 \tbl{svm_support_vectors}{Comparación del número de vectores de soporte en configuraciones representativas.}{tab:svm_sv}
 
-La tabla deja ver una pauta muy coherente:
-\begin{itemize}
-    \item El lineal necesita pocos SV porque la frontera es relativamente simple.
-    \item El RBF con parámetros razonables aumenta el número de SV, pero todavía mantiene un equilibrio aceptable.
-    \item El RBF con \(\gamma\) alto y el polinomial utilizan muchísimos SV, lo que suele ser síntoma de una frontera demasiado sensible a detalles locales.
-\end{itemize}
-
-En particular, la configuración \textbf{RBF (\(C=100,\gamma=1\))} usa el \textbf{74.8\%} del training set como vectores de soporte. Eso es prácticamente una señal de alarma: el modelo está tan condicionado por la vecindad inmediata de los datos que corre el riesgo de comportarse más como un memorista que como un clasificador con buena generalización.
+La pauta vuelve a ser muy clara: el kernel lineal necesita pocos vectores de soporte, mientras que RBF con \(\gamma\) alto y el polinomial utilizan una proporción muy elevada del training set. La configuración extrema \textbf{RBF (\(C=100,\gamma=1\))} usa más del \textbf{75\%} de las muestras como vectores de soporte, una señal de frontera muy local y riesgo claro de sobreajuste.
 
 \subsection{Resumen de SVM}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.82\textwidth]{confusion_matrix_svm.png}
-\caption{Matriz de confusión del mejor modelo SVM, correspondiente al kernel RBF optimizado.}
+\caption{Matriz de confusión del mejor modelo SVM no lineal, correspondiente al kernel RBF optimizado.}
 \label{fig:cm_svm}
 \end{figure}
 
 \tbl{svm_summary}{Resumen de los mejores resultados obtenidos por cada familia de kernel SVM.}{tab:svm_summary}
 
-El mejor modelo de la familia es el \textbf{SVM-RBF} con \textbf{0.9431} en test y \textbf{F1 ponderado de 0.9432}. El kernel lineal queda extremadamente cerca, lo cual es una conclusión importante: la mejora del RBF existe, pero es pequeña. Por tanto, en este problema la no linealidad aporta valor, aunque no de forma revolucionaria.
+Tras corregir el leakage, la lectura de esta familia cambia. El mejor modelo no lineal sigue siendo el \textbf{SVM-RBF} con \textbf{0.9408} en test y \textbf{F1 ponderado de 0.9405}, pero el \textbf{kernel lineal} pasa a estar ligeramente por delante con \textbf{0.9431} en test. La conclusión de fondo es muy valiosa: la no linealidad sigue aportando algo, pero el problema parece más lineal de lo que sugería la versión previa del notebook.
 
-El \textit{classification report} del mejor SVM confirma además una pauta que se repetirá en el resto de familias: las clases extremas se clasifican mejor que las intermedias. \textit{Insufficient\_Weight} y \textit{Obesity\_Type\_III} tienen F1 muy altos, mientras que \textit{Normal\_Weight} o \textit{Overweight\_Level\_I} concentran más confusiones. Esto es completamente esperable porque las fronteras entre categorías contiguas de IMC son más borrosas que las que separan extremos bien alejados.
+Las clases extremas siguen siendo las más fáciles de clasificar; las mayores confusiones aparecen, de nuevo, en \textit{Normal\_Weight} y \textit{Overweight\_Level\_I}, donde las fronteras clínicas son más próximas.
 
 \section{Parte 2: Árboles de Decisión}
 
 \subsection{Árbol sin restricciones}
 
-Los árboles de decisión son el primer modelo verdaderamente interpretable de la práctica. A diferencia de SVM, no construyen una frontera global, sino una secuencia de particiones del espacio de características.
-
 \tbl{tree_baseline}{Rendimiento del árbol de decisión sin restricciones.}{tab:tree_baseline}
 
-El árbol completo alcanza \textbf{100\%} de accuracy en train y \textbf{92.89\%} en test, con profundidad 12 y 101 hojas. El diagnóstico aquí es inmediato: existe \textbf{sobreajuste}. No es un sobreajuste extremo en el sentido de que el test sigue siendo bastante bueno, pero sí está claro que el árbol ha aprendido patrones específicos del conjunto de entrenamiento que no aportan generalización adicional.
+El árbol completo alcanza \textbf{100\%} en train pero solo \textbf{92.65\%} en test, con profundidad 11 y 97 hojas. La conclusión inmediata sigue siendo la misma: existe sobreajuste. El árbol es capaz de memorizar el entrenamiento, pero esa complejidad extra no se traduce en mejor generalización.
 
 \subsection{Efecto de la profundidad}
 
@@ -242,32 +195,23 @@ El árbol completo alcanza \textbf{100\%} de accuracy en train y \textbf{92.89\%
 \label{fig:tree_depth_curve}
 \end{figure}
 
-La curva de profundidad es muy ilustrativa porque resume el compromiso clásico entre sesgo y varianza:
-\begin{itemize}
-    \item Con profundidad 1, 2 o 3 el árbol es demasiado simple y cae en \textit{underfitting}.
-    \item Entre profundidad 5 y 7 el rendimiento mejora mucho porque el modelo ya puede combinar varios umbrales sobre peso, altura y otras variables.
-    \item A partir de profundidad 10 el train se dispara prácticamente a 1, mientras que test y CV dejan de mejorar.
-\end{itemize}
-
-La explicación conceptual es sencilla: un árbol profundo tiene mucha facilidad para crear regiones pequeñas del espacio y capturar excepciones. Eso mejora el ajuste sobre train, pero no necesariamente ayuda a construir reglas verdaderamente robustas.
+La exploración de \texttt{max\_depth} vuelve a mostrar el patrón clásico. Con profundidad 1, 2 o 3 el árbol es demasiado simple y cae en \textit{underfitting}. A medida que aumenta la profundidad, el rendimiento mejora hasta estabilizarse en torno a 10--15 niveles. Más allá de ese punto, el train se hace prácticamente perfecto y la ganancia en test desaparece.
 
 \subsection{Criterio de división}
 
 \tbl{tree_criteria}{Comparación entre los criterios \texttt{gini}, \texttt{entropy} y \texttt{log\_loss}.}{tab:tree_criteria}
 
-Esta es una de las partes más interesantes del notebook y, al mismo tiempo, una de las que merece una lectura más cuidadosa. El árbol con \textbf{entropía} o \textbf{log\_loss} alcanza \textbf{0.9418} en validación cruzada y \textbf{0.9597} en test, muy por encima del árbol basado en Gini, que se queda en \textbf{0.9289}.
+Aquí aparece uno de los resultados más llamativos de toda la práctica. Los criterios \textbf{entropy} y \textbf{log\_loss} alcanzan \textbf{0.9431} en validación cruzada y un \textbf{0.9739} en test, mientras que \textbf{gini} se queda en \textbf{0.9265}. Además, entropy/log\_loss lo logran con \textbf{81 hojas}, frente a las \textbf{97} de gini.
 
-No es habitual encontrar una diferencia tan grande solo por cambiar el criterio, pero en este dataset tiene sentido que ocurra. Gini y entropía no penalizan exactamente igual las distribuciones de clase en los nodos. La entropía suele ser algo más sensible a repartos inciertos y, en este problema, parece estar encontrando divisiones iniciales mucho más informativas para separar categorías próximas.
-
-Además, el árbol con entropía termina con \textbf{79 hojas}, frente a las \textbf{101} del árbol Gini completo. Es decir, no solo rinde mejor, sino que lo hace con una estructura más compacta. Este detalle es importante porque sugiere que la mejora no viene de construir un árbol más complejo, sino de tomar mejores decisiones en los splits clave.
+Esto significa que, en este dataset y con el nuevo preprocesado sin leakage, el criterio de división importa mucho. La entropía está encontrando splits más informativos y convierte a un árbol individual en un competidor de primer nivel, rivalizando incluso con los mejores ensembles.
 
 \subsection{Poda previa}
 
 \tbl{tree_grid_prepruning}{Configuraciones más relevantes encontradas por GridSearch para poda previa.}{tab:tree_prepruning}
 
-El mejor resultado de la búsqueda por poda previa corresponde a \texttt{min\_samples\_leaf = 2} sin límite de profundidad explícito, con \textbf{0.9288} de CV y \textbf{0.9218} en test. A nivel intuitivo, aumentar \texttt{min\_samples\_leaf} evita hojas degeneradas con una sola muestra y reduce la tendencia del árbol a memorizar.
+La búsqueda de poda previa no aporta una mejora clara en esta ejecución. La mejor configuración dentro del espacio explorado es, de hecho, el árbol prácticamente sin restricciones: \texttt{max\_depth=None}, \texttt{min\_samples\_leaf=1}, \texttt{min\_samples\_split=2}, con \textbf{0.9383} de CV y \textbf{0.9265} en test.
 
-Sin embargo, aquí aparece una observación importante: la configuración ganadora por validación cruzada dentro de ese grid no es la mejor en test entre todas las variantes evaluadas en la parte de árboles. De hecho, varias configuraciones cercanas alcanzan \textbf{0.9289} y el cambio de criterio a entropía supera claramente a todas ellas. Esto no invalida el experimento; al contrario, ilustra muy bien que el rendimiento de un árbol depende de varios ejes a la vez y que una búsqueda limitada puede perder soluciones mejores si no incluye criterios alternativos.
+Sí aparecen algunas configuraciones algo más compactas que suben el test hasta \textbf{0.9360}, pero con una CV ligeramente inferior. Lo más importante es que este grid no estaba variando el criterio de división, y precisamente ahí es donde está el mayor salto de rendimiento en la familia de árboles.
 
 \subsection{Poda posterior por cost-complexity pruning}
 
@@ -280,13 +224,11 @@ Sin embargo, aquí aparece una observación importante: la configuración ganado
 \label{fig:tree_ccp}
 \end{figure}
 
-La poda posterior permite entrenar primero el árbol completo y simplificarlo después. El mejor valor dentro de los alphas seleccionados es \textbf{\(\texttt{ccp\_alpha} \approx 0.00079\)}, con \textbf{0.9276} de CV y \textbf{0.9289} en test.
+La poda posterior vuelve a ser útil. El mejor valor dentro de los alphas seleccionados es \textbf{\(\texttt{ccp\_alpha} \approx 0.00089\)}, con \textbf{0.9389} de CV y \textbf{0.9313} en test. Eso significa que una poda ligera reduce la complejidad del árbol, pasando de 97 a 71 hojas, y mejora ligeramente la generalización frente al baseline.
 
-La lectura aquí es muy elegante desde el punto de vista del aprendizaje estadístico: al podar ligeramente, el árbol conserva la misma capacidad predictiva del modelo completo pero reduce su complejidad de \textbf{101} a \textbf{74 hojas} y de profundidad \textbf{12} a \textbf{10}. Eso significa que parte de la estructura del árbol completo era redundante. La poda no mejora la accuracy final, pero sí mejora la parsimonia del modelo.
+También aparece un detalle interesante: una poda algo más agresiva con \(\alpha \approx 0.0023\) baja en CV, pero llega a \textbf{0.9384} en test. No conviene sobreinterpretar esa cifra aislada, pero sí sirve para recordar que una única partición train/test puede favorecer puntualmente configuraciones menos estables.
 
-También hay un dato curioso: una poda algo más agresiva con \(\alpha \approx 0.0021\) cae en CV hasta \textbf{0.9181}, pero obtiene \textbf{0.9360} en test. No conviene sobreinterpretar esa subida aislada, pero sí sirve para recordar que, con un único split train/test, pequeñas oscilaciones pueden favorecer puntualmente configuraciones algo menos consistentes.
-
-\subsection{Importancia de variables e interpretación del árbol}
+\subsection{Importancia de variables}
 
 \tbl{tree_feature_importance}{Importancia de características en el árbol de decisión.}{tab:tree_importance}
 
@@ -304,34 +246,30 @@ También hay un dato curioso: una poda algo más agresiva con \(\alpha \approx 0
 \label{fig:tree_viz}
 \end{figure}
 
-La estructura del árbol confirma de forma casi literal lo que ya sugería el análisis exploratorio de la Práctica 0: \textbf{Weight} es la variable dominante, seguida a mucha distancia por \textbf{Height}. Después aparece \textbf{Gender} con un peso sorprendentemente alto, y más atrás \textbf{Age}, \textbf{FAVC}, \textbf{CH2O} y algunas variables categóricas.
-
-Que \texttt{Weight} y \texttt{Height} lideren con claridad es completamente lógico, porque el nivel de obesidad está íntimamente vinculado al IMC. En un árbol, esto se traduce en que los primeros splits usan justamente esas variables para hacer las divisiones más rentables. A partir de ahí, variables como género, edad o hábitos refinan zonas donde peso y altura no bastan para separar con limpieza dos clases contiguas.
+La estructura del árbol confirma, una vez más, lo que ya sugería el análisis exploratorio de la Práctica 0: \textbf{Weight} y \textbf{Height} dominan con claridad. Después aparece \textbf{Gender}, y más atrás \textbf{FAVC}, \textbf{Age}, \textbf{CH2O}, \textbf{TUE} y otras variables que refinan regiones más ambiguas del espacio.
 
 \subsection{Resumen de árboles}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.82\textwidth]{confusion_matrix_tree.png}
-\caption{Matriz de confusión del árbol seleccionado en el notebook como representante final de esta familia.}
+\caption{Matriz de confusión del árbol seleccionado en el notebook para representar esta familia.}
 \label{fig:cm_tree}
 \end{figure}
 
 \tbl{tree_summary}{Resumen del árbol completo, la mejor poda previa y la mejor poda posterior.}{tab:tree_summary}
 
-Si seguimos estrictamente el resumen final generado por el notebook, la familia de árboles queda liderada por el árbol sin restricciones y la poda posterior, ambos con \textbf{0.9289} en test y \textbf{F1 ponderado de 0.9297}. La poda previa queda algo por debajo, con \textbf{0.9218}.
+Si seguimos estrictamente el resumen final generado por el notebook, la familia de árboles queda liderada por la \textbf{poda posterior}, con \textbf{0.9313} en test y \textbf{F1 ponderado de 0.9318}. El árbol sin restricciones y la poda previa se quedan en \textbf{0.9265}.
 
-No obstante, para que la memoria sea fiel a \textbf{todos} los resultados obtenidos, conviene dejar constancia de una matización importante: el mejor resultado aislado dentro de esta familia no está en la tabla resumen de poda, sino en la comparación de criterios, donde \textbf{entropy/log\_loss} alcanzan \textbf{0.9597} en test. Es decir, el notebook selecciona como ``mejor árbol'' una variante de poda previa para la comparativa global, pero los experimentos muestran que el cambio de criterio produce un árbol individual claramente superior. Esta observación no invalida la práctica; al contrario, la refuerza, porque demuestra lectura crítica sobre lo ejecutado.
+Sin embargo, para que la memoria sea fiel a todos los resultados obtenidos, hay que subrayar una matización crucial: el mejor resultado aislado dentro de esta familia no está en la tabla resumen de poda, sino en la comparación de criterios, donde \textbf{entropy/log\_loss} alcanzan \textbf{0.9739} en test. Es, probablemente, el hallazgo más llamativo de toda la práctica.
 
 \section{Parte 3: Random Forest y Extra Trees}
 
 \subsection{Random Forest por defecto}
 
-Random Forest parte de una idea muy poderosa: si un árbol individual sufre por alta varianza, una forma natural de estabilizarlo es promediar muchos árboles distintos. Cada árbol ve un bootstrap distinto y, además, cada split se construye a partir de un subconjunto aleatorio de features.
-
 \tbl{rf_default}{Rendimiento del Random Forest con configuración por defecto.}{tab:rf_default}
 
-El modelo por defecto ya alcanza \textbf{0.9479} de accuracy en test y \textbf{0.9490} de F1 ponderado, con un \textbf{OOB Score de 0.9407}. El salto respecto al árbol Gini completo es muy claro. La explicación es la esperada: al promediar muchos árboles, se reducen errores inestables y se suaviza el impacto de splits demasiado dependientes de muestras concretas.
+El Random Forest por defecto alcanza \textbf{0.9455} de accuracy en test y \textbf{0.9460} de F1 ponderado, con un \textbf{OOB Score de 0.9371}. El salto respecto al árbol Gini completo sigue siendo claro: al agregar muchos árboles se reduce la varianza y se estabilizan errores que en un árbol individual dependen demasiado de muestras concretas.
 
 \subsection{Número de estimadores}
 
@@ -344,27 +282,23 @@ El modelo por defecto ya alcanza \textbf{0.9479} de accuracy en test y \textbf{0
 \label{fig:rf_n_curve}
 \end{figure}
 
-La tendencia es muy limpia. Pasar de 10 a 50 árboles mejora mucho el rendimiento, pero a partir de 100 árboles aparece la ley de los rendimientos decrecientes. El test pasa de \textbf{0.9076} con 10 árboles a \textbf{0.9479} con 50 y se mantiene prácticamente igual en 100 y 200, hasta llegar a \textbf{0.9526} con 500.
+La tendencia es muy limpia. Pasar de 10 a 100 árboles mejora mucho el rendimiento, pero a partir de ahí aparece la ley de los rendimientos decrecientes. El test pasa de \textbf{0.9313} con 10 árboles a \textbf{0.9455} con 100, y solo sube hasta \textbf{0.9502} con 500.
 
-Esto encaja perfectamente con la teoría. Más árboles reducen varianza, pero llega un punto en el que la agregación ya ha estabilizado casi todo lo que podía estabilizar. A partir de ahí, el coste computacional crece más rápido que la mejora real.
-
-El OOB Score sigue una evolución paralela. Eso da confianza en esta métrica como estimador interno de generalización, especialmente cuando el número de árboles ya es razonablemente alto.
+El OOB Score sigue una trayectoria muy parecida y converge cerca del \textbf{94.9\%}, lo que vuelve a confirmar que es una estimación interna razonablemente fiable cuando el bosque ya tiene suficientes árboles.
 
 \subsection{Efecto de \texttt{max\_features}}
 
 \tbl{rf_max_features}{Comparación de distintas estrategias de selección de features por split en Random Forest.}{tab:rf_max_features}
 
-Aquí aparece otro resultado muy interesante. Las opciones clásicas \texttt{sqrt} y \texttt{log2} se quedan en \textbf{0.9479} de test, mientras que \texttt{None} sube a \textbf{0.9526} y \texttt{0.5} alcanza \textbf{0.9550}. La interpretación más coherente es que el dataset tiene pocas variables realmente decisivas y conviene que estén disponibles con frecuencia en cada split.
+Con la nueva ejecución, usar \textbf{todas las features} (\texttt{None}) pasa a ser la mejor opción tanto en OOB como en test, alcanzando \textbf{0.9573}. La opción \texttt{0.5} queda muy cerca con \textbf{0.9550}, mientras que \texttt{sqrt} y \texttt{log2} se quedan claramente por detrás.
 
-Cuando un problema depende mucho de dos o tres features dominantes, restringir demasiado el conjunto candidato puede perjudicar la calidad de cada árbol más de lo que ayuda la decorrelación entre árboles. En este caso, \texttt{Weight} y \texttt{Height} vuelven a ser la clave: si en un split importante una de ellas no está disponible, el árbol puede desperdiciar una división muy informativa.
+Esto refuerza la idea de que el problema tiene unas pocas variables dominantes, especialmente \texttt{Weight} y \texttt{Height}, y conviene que estén disponibles en todos los splits importantes. Restringir demasiado las features candidatas puede dejar fuera justo la variable más discriminante en un nodo clave.
 
 \subsection{GridSearch de Random Forest}
 
 \tbl{rf_grid}{Configuraciones más competitivas encontradas por GridSearch en Random Forest.}{tab:rf_grid}
 
-El mejor modelo según la búsqueda efectuada es \textbf{200 árboles, \texttt{max\_features=None}, \texttt{min\_samples\_leaf=1}} con \textbf{0.9519} en CV y \textbf{0.9550} en test.
-
-Aquí merece la pena hacer una aclaración metodológica importante. En el barrido directo de \texttt{max\_features}, la opción \texttt{0.5} resulta ligeramente mejor que \texttt{None}. Sin embargo, el GridSearch no incluía \texttt{0.5} dentro de su espacio de búsqueda, por lo que el mejor modelo del grid es el mejor \textbf{dentro del espacio explorado}, no necesariamente el mejor absoluto de todas las variantes probadas. Señalar esto es importante porque evita interpretar el resultado del grid como una verdad cerrada cuando realmente depende del dominio de búsqueda elegido.
+El mejor modelo según la búsqueda efectuada es \textbf{100 árboles, \texttt{max\_features=None}, \texttt{min\_samples\_leaf=1}} con \textbf{0.9561} en CV y \textbf{0.9573} en test. A diferencia de la versión anterior del notebook, ahora el barrido específico de \texttt{max\_features} y el GridSearch quedan bastante alineados: ambos apuntan a \texttt{None} como mejor elección.
 
 \subsection{Importancia de características}
 
@@ -377,25 +311,15 @@ Aquí merece la pena hacer una aclaración metodológica importante. En el barri
 \label{fig:rf_importance}
 \end{figure}
 
-La comparación entre importancia Gini y \textit{permutation importance} es especialmente valiosa porque permite distinguir entre variables que el bosque usa mucho para dividir y variables cuya alteración realmente deteriora la capacidad predictiva.
-
-Las conclusiones principales son muy claras:
-\begin{itemize}
-    \item \textbf{Weight} es la variable más decisiva con mucha diferencia.
-    \item \textbf{Height} ocupa una segunda posición también muy dominante.
-    \item \textbf{Gender} aparece sorprendentemente arriba en ambas medidas.
-    \item Muchas variables con importancia Gini moderada o baja tienen importancia por permutación cercana a cero o incluso negativa, lo que sugiere contribuciones débiles o redundantes.
-\end{itemize}
-
-Que algunas variables presenten importancia por permutación ligeramente negativa no significa que sean ``perjudiciales'' en un sentido fuerte, sino que su aportación es tan pequeña que al permutarlas el rendimiento apenas cambia y las oscilaciones estadísticas pueden invertir el signo.
+La comparación entre importancia Gini y \textit{permutation importance} sigue contando la misma historia: \textbf{Weight} y \textbf{Height} dominan con mucha claridad, seguidas por \textbf{Gender} y \textbf{Age}. El resto de variables aportan información, pero con un peso mucho menor o más redundante.
 
 \subsection{Extra Trees}
 
 \tbl{extra_trees}{Resultado de Extra Trees con 100 árboles.}{tab:extra_trees}
 
-Extra Trees obtiene \textbf{0.9265} en test, por debajo tanto del Random Forest por defecto como del optimizado. La aleatorización adicional de umbrales no ayuda aquí. En datasets muy ruidosos o con alta varianza puede ser una buena estrategia, pero en este problema parece introducir demasiado sesgo sin recibir a cambio una reducción de varianza suficientemente útil.
+Extra Trees obtiene \textbf{0.9218} en test, por debajo tanto del Random Forest por defecto como del optimizado, e incluso por debajo del árbol post-podado. La aleatorización adicional de umbrales no ayuda aquí: introduce más sesgo del que consigue compensar con reducción de varianza.
 
-\subsection{Resumen de ensembles por bagging}
+\subsection{Resumen de bagging}
 
 \begin{figure}[H]
 \centering
@@ -406,25 +330,21 @@ Extra Trees obtiene \textbf{0.9265} en test, por debajo tanto del Random Forest 
 
 \tbl{rf_summary}{Comparativa final de métodos basados en bagging y referencia del árbol individual.}{tab:rf_summary}
 
-La conclusión principal es nítida: \textbf{Random Forest} mejora de manera consistente al árbol individual. El mejor modelo del resumen alcanza \textbf{95.50\%} de test y \textbf{F1 ponderado de 0.9553}. El bagging funciona especialmente bien aquí porque el árbol individual ya es fuerte, pero todavía tiene suficiente varianza como para beneficiarse mucho de la agregación.
+La conclusión principal sigue siendo nítida: \textbf{Random Forest} mejora de manera consistente al árbol individual Gini y alcanza \textbf{95.73\%} de test con \textbf{F1 ponderado de 0.9576}. El bagging funciona muy bien aquí porque el árbol individual ya es relativamente fuerte, pero todavía tiene suficiente varianza como para beneficiarse mucho de la agregación.
 
 \section{Parte 4: Gradient Boosting y AdaBoost}
 
 \subsection{Gradient Boosting por defecto}
 
-En Gradient Boosting la lógica cambia por completo respecto a Random Forest. Aquí los árboles no se entrenan en paralelo e independientemente, sino secuencialmente, corrigiendo de forma iterativa los errores residuales de los árboles anteriores.
-
 \tbl{gb_default}{Rendimiento del Gradient Boosting con configuración por defecto.}{tab:gb_default}
 
-Con los parámetros por defecto, Gradient Boosting ya alcanza \textbf{0.9668} en test y \textbf{0.9674} de F1 ponderado. Es un resultado extraordinario, superior a todos los modelos vistos hasta este punto. La razón de fondo es que el boosting no solo reduce varianza; también reduce sesgo al ir refinando la frontera en las regiones difíciles.
+Con los parámetros por defecto, Gradient Boosting alcanza \textbf{0.9573} en test y \textbf{0.9579} de F1 ponderado. Sigue siendo un resultado excelente, comparable al mejor Random Forest, aunque ya no tan claramente dominante como en la ejecución anterior del notebook.
 
 \subsection{Interacción entre \texttt{n\_estimators} y \texttt{learning\_rate}}
 
 \tbl{gb_n_lr}{Relación entre número de estimadores y learning rate en Gradient Boosting.}{tab:gb_nlr}
 
-La tabla muestra uno de los principios más importantes de boosting: \texttt{learning\_rate} y \texttt{n\_estimators} no deben interpretarse por separado. Un \texttt{learning\_rate} bajo hace que cada árbol corrija poco y, por tanto, suele necesitar más iteraciones para converger. Un valor alto acelera el ajuste, pero puede volverlo demasiado brusco.
-
-El mejor equilibrio dentro de las configuraciones probadas es \textbf{200 árboles con \texttt{learning\_rate = 0.1}}, alcanzando \textbf{0.9716} en test. En cambio, \texttt{learning\_rate = 0.01} con 200 árboles se queda en \textbf{0.9005}. Ese resultado no debe leerse como que un learning rate pequeño es ``malo'', sino como que con solo 200 iteraciones el modelo aún no ha tenido suficiente capacidad acumulada para aproximar bien la frontera.
+La configuración con mejor resultado en test dentro de este barrido es \textbf{200 árboles con \texttt{learning\_rate = 0.1}}, alcanzando \textbf{0.9739}. En cambio, \texttt{learning\_rate = 0.01} con 200 árboles se queda en \textbf{0.8815}. La lectura de fondo se mantiene: un learning rate muy bajo necesita muchas más iteraciones para resultar competitivo.
 
 \subsection{Profundidad de los árboles base}
 
@@ -437,57 +357,43 @@ El mejor equilibrio dentro de las configuraciones probadas es \textbf{200 árbol
 \label{fig:gb_depth}
 \end{figure}
 
-Aquí aparece otro patrón clásico y muy didáctico:
-\begin{itemize}
-    \item Con \texttt{max\_depth = 1}, el modelo se queda en torno al \textbf{84\%}: los stumps son demasiado débiles para un problema de 7 clases.
-    \item Con profundidad 2 mejora mucho, pero todavía no es suficiente.
-    \item Con profundidad 3 se logra el mejor equilibrio global.
-    \item Con profundidad 5 el train se vuelve perfecto, pero test ya no mejora e incluso cae frente a profundidad 3.
-\end{itemize}
-
-Esto encaja muy bien con la filosofía de Gradient Boosting: los árboles base no deben ser excesivamente complejos, porque la complejidad total emerge de la suma secuencial de muchos árboles moderados.
+En esta ejecución, \texttt{max\_depth=5} pasa a ser la mejor opción dentro del barrido simple, tanto en CV como en test. La diferencia frente a profundidad 3 no es enorme, pero sí suficiente para mostrar que, en este problema, árboles base un poco más profundos pueden capturar interacciones útiles sin degradar la generalización. En cambio, los stumps siguen quedando muy lejos, lo que confirma que aquí hacen falta interacciones entre varias variables.
 
 \subsection{GridSearch de Gradient Boosting}
 
 \tbl{gb_grid}{Mejores configuraciones encontradas para Gradient Boosting.}{tab:gb_grid}
 
-El mejor modelo encontrado es \textbf{\texttt{learning\_rate = 0.1}}, \textbf{\texttt{max\_depth = 3}}, \textbf{\texttt{n\_estimators = 200}} y \textbf{\texttt{subsample = 1.0}}, con \textbf{0.9608} de CV y \textbf{0.9716} en test.
+El mejor modelo seleccionado por \texttt{GridSearchCV} es \textbf{\texttt{learning\_rate = 0.5}}, \textbf{\texttt{max\_depth = 3}}, \textbf{\texttt{n\_estimators = 200}} y \textbf{\texttt{subsample = 0.8}}, con \textbf{0.9609} de CV y \textbf{0.9645} en test.
 
-Hay dos lecturas importantes:
-\begin{itemize}
-    \item El mejor modelo no necesita \textit{stochastic boosting}; usar \texttt{subsample = 0.8} no supera a \texttt{1.0}.
-    \item Las mejores configuraciones se concentran casi todas en profundidad 3. Eso refuerza mucho la idea de que el modelo necesita árboles base expresivos, pero no grandes.
-\end{itemize}
+Aquí aparece una distinción muy importante entre selección por validación cruzada y mejor test observado. Dentro de la misma tabla del grid hay una configuración muy próxima, \texttt{learning\_rate=0.1}, \texttt{max\_depth=3}, \texttt{n\_estimators=200}, \texttt{subsample=1.0}, que alcanza \textbf{0.9739} en test. Metodológicamente el notebook hace bien en quedarse con el mejor estimador por CV, pero es importante dejar constancia de que otra combinación del mismo espacio generaliza mejor en esta partición concreta.
 
 \subsection{AdaBoost con stumps}
 
 \tbl{adaboost}{Resultados de AdaBoost usando stumps como estimadores base.}{tab:adaboost}
 
-AdaBoost es el gran perdedor de la práctica. Las accuracies en validación cruzada rondan el \textbf{44--47\%} y el test cae incluso al \textbf{40.76\%} en la configuración que el notebook selecciona por CV. Hay un caso con \textbf{49.76\%} en test, pero tampoco cambia la conclusión de fondo: el rendimiento es claramente insuficiente.
+AdaBoost sigue siendo, con mucha diferencia, el peor modelo de la práctica. Las accuracies en validación cruzada rondan el \textbf{44--46\%} y el modelo seleccionado por CV cae hasta \textbf{43.13\%} en test. Hay un caso con \textbf{53.55\%} en test, pero tampoco cambia la conclusión de fondo: los stumps son demasiado débiles para un problema multiclase de este nivel.
 
-La razón es completamente coherente con la teoría. Un stump solo puede hacer una división binaria basada en una única feature y un único umbral. En un problema binario simple esto puede bastar como componente débil, pero con 7 clases y fronteras complejas entre rangos contiguos de IMC, la capacidad representacional de cada estimador base es demasiado pobre. AdaBoost intenta corregir errores reponderando muestras, pero si los clasificadores base no tienen potencia suficiente, el proceso iterativo no puede construir una frontera competitiva.
-
-\subsection{Resumen del bloque de boosting}
+\subsection{Resumen de boosting}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.82\textwidth]{confusion_matrix_gb.png}
-\caption{Matriz de confusión del mejor modelo de boosting.}
+\caption{Matriz de confusión del mejor modelo de boosting seleccionado por el notebook.}
 \label{fig:cm_gb}
 \end{figure}
 
 \tbl{gb_summary}{Comparativa final entre Gradient Boosting, Random Forest y AdaBoost.}{tab:gb_summary}
 
-Gradient Boosting no solo gana este bloque, sino que lo domina con claridad. El modelo optimizado alcanza \textbf{97.16\%} en test, por encima del mejor Random Forest y muy por encima de AdaBoost. La mejora sobre Random Forest no es enorme en términos absolutos, pero sí muy consistente. Lo relevante es que el boosting consigue afinar mejor justamente donde más cuesta: en los bordes entre clases cercanas.
+Gradient Boosting sigue siendo la familia más fuerte del bloque. El modelo seleccionado por validación cruzada alcanza \textbf{96.45\%} en test, por encima del mejor Random Forest y muy por encima de AdaBoost. Además, una configuración vecina dentro del mismo grid llega a \textbf{97.39\%} en test, lo que confirma que el boosting sigue siendo especialmente eficaz afinando las fronteras en las regiones difíciles.
 
 \section{Comparación Global}
 
-\tbl{final_comparison}{Comparativa global de los modelos seleccionados por el notebook para cada familia.}{tab:final_comparison}
+\tbl{final_comparison}{Comparativa global de los modelos seleccionados automáticamente por el notebook para cada familia.}{tab:final_comparison}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.82\textwidth]{confusion_matrix_final.png}
-\caption{Matriz de confusión del mejor modelo global: Gradient Boosting.}
+\caption{Matriz de confusión del mejor modelo global según la comparativa automática del notebook.}
 \label{fig:cm_final}
 \end{figure}
 
@@ -498,75 +404,59 @@ Siguiendo la selección final realizada por el notebook, el ranking queda así:
 
 En cifras:
 \begin{itemize}
-    \item \textbf{Gradient Boosting}: \textbf{0.9716} accuracy, \textbf{0.9718} F1, tiempo \textbf{4.46 s}
-    \item \textbf{Random Forest}: \textbf{0.9550} accuracy, \textbf{0.9553} F1, tiempo \textbf{0.37 s}
-    \item \textbf{SVM-RBF}: \textbf{0.9431} accuracy, \textbf{0.9432} F1, tiempo \textbf{0.06 s}
-    \item \textbf{Decision Tree} (seleccionado por el notebook): \textbf{0.9218} accuracy, \textbf{0.9224} F1
-    \item \textbf{AdaBoost}: \textbf{0.4076} accuracy, \textbf{0.3802} F1
+    \item \textbf{Gradient Boosting}: \textbf{0.9645} accuracy, \textbf{0.9646} F1, tiempo \textbf{3.29 s}
+    \item \textbf{Random Forest}: \textbf{0.9573} accuracy, \textbf{0.9576} F1, tiempo \textbf{0.19 s}
+    \item \textbf{SVM-RBF}: \textbf{0.9408} accuracy, \textbf{0.9405} F1, tiempo \textbf{0.10 s}
+    \item \textbf{Decision Tree} (seleccionado por el notebook): \textbf{0.9265} accuracy, \textbf{0.9271} F1
+    \item \textbf{AdaBoost}: \textbf{0.4313} accuracy, \textbf{0.3116} F1
 \end{itemize}
 
-La matriz de confusión final y el \textit{classification report} del mejor modelo confirman una regularidad muy clara:
+Sin embargo, esta comparativa automática no agota toda la información del notebook. De hecho, dos resultados aislados del propio experimento son aún más llamativos:
 \begin{itemize}
-    \item \textit{Obesity\_Type\_III} es prácticamente perfecta: F1 = 1.00.
-    \item \textit{Obesity\_Type\_I}, \textit{Obesity\_Type\_II} y \textit{Overweight\_Level\_II} también se clasifican con enorme precisión.
-    \item Las clases que más resistencia ofrecen son \textit{Normal\_Weight}, \textit{Insufficient\_Weight} y \textit{Overweight\_Level\_I}, que están más próximas entre sí en términos fisiológicos y estadísticos.
+    \item El árbol con criterio \texttt{entropy}/\texttt{log\_loss} alcanza \textbf{0.9739} en test.
+    \item Una configuración de Gradient Boosting con \texttt{learning\_rate=0.1}, \texttt{max\_depth=3}, \texttt{n\_estimators=200}, \texttt{subsample=1.0} también alcanza \textbf{0.9739} en test.
 \end{itemize}
 
-Esto tiene todo el sentido del mundo. Las categorías extremas se corresponden con rangos muy marcados de peso para una cierta altura. En cambio, las clases intermedias están separadas por umbrales clínicos contiguos, de manera que pequeñas variaciones pueden mover una observación de una clase a otra sin que exista una diferencia sustancial en el resto de variables.
+Esto obliga a distinguir entre ``mejor modelo seleccionado automáticamente por el notebook'' y ``mejor resultado observado dentro de los experimentos ejecutados''.
 
 \section{Discusión}
 
-\subsection{Qué nos dicen realmente los resultados}
+\subsection{Qué cambia al corregir el leakage}
 
-La progresión de rendimiento observada a lo largo de la práctica no es casual, sino una ilustración muy clara de cómo crece la capacidad de modelado:
-\begin{itemize}
-    \item Un \textbf{árbol individual} aprende reglas legibles, pero es muy sensible a las particularidades del conjunto de entrenamiento.
-    \item \textbf{Random Forest} reduce esa fragilidad al promediar muchos árboles y logra un salto inmediato en generalización.
-    \item \textbf{Gradient Boosting} va un paso más allá porque no se limita a promediar árboles distintos, sino que construye cada nuevo árbol para corregir los errores anteriores.
-\end{itemize}
-
-Por eso el orden final tiene pleno sentido: primero mejora el control de la varianza y después mejora además el sesgo.
+La corrección metodológica en Box-Cox no solo era necesaria por limpieza experimental, sino que además cambia de forma perceptible la lectura de los resultados. SVM se vuelve más lineal de lo esperado, Random Forest queda algo mejor posicionado, y los árboles muestran un rendimiento con entropía extraordinariamente alto. Es decir, la fuga de información no estaba alterando todo el ranking de manera dramática, pero sí modificaba algunos matices importantes de interpretación.
 
 \subsection{Por qué SVM funciona tan bien}
 
-Que SVM lineal y SVM-RBF queden tan cerca entre sí es una pista muy potente sobre la estructura del problema. No estamos ante un dataset caótico ni ante una geometría altamente intrincada en la que solo una frontera muy compleja funcione. El encoding y la estandarización ya colocan los datos en un espacio donde una frontera casi lineal funciona sorprendentemente bien. El RBF añade flexibilidad útil, pero no cambia la naturaleza del problema por completo.
+Que SVM lineal y SVM-RBF queden tan cerca entre sí, e incluso con ligera ventaja del lineal, es una pista muy potente sobre la estructura del problema. No estamos ante un dataset caótico ni ante una geometría altamente intrincada. El encoding y la estandarización ya colocan los datos en un espacio donde una frontera casi lineal funciona sorprendentemente bien.
 
-\subsection{El papel central de Weight y Height}
+\subsection{El papel de Weight y Height}
 
-Todas las familias de modelos convergen en la misma conclusión: \texttt{Weight} y \texttt{Height} dominan el problema. Esto no es una casualidad estadística, sino la traducción algorítmica de una relación fisiológica básica. El nivel de obesidad está estrechamente vinculado al IMC, y el IMC depende directamente de peso y altura.
+Todas las familias de modelos convergen en la misma conclusión: \texttt{Weight} y \texttt{Height} siguen siendo el núcleo del problema. No es una casualidad estadística, sino la traducción algorítmica de una relación fisiológica evidente: el nivel de obesidad depende en gran medida del IMC, y el IMC está determinado esencialmente por peso y altura.
 
-Lo interesante no es solo que estas variables sean las más importantes, sino que el resto siguen aportando valor en los bordes difíciles. Si solo importaran peso y altura, un modelo mucho más simple alcanzaría casi el mismo techo que Gradient Boosting. El hecho de que boosting todavía mejore indica que variables como edad, género, hábitos alimenticios o consumo de agua ayudan a refinar la decisión en regiones ambiguas.
+\subsection{Lectura crítica del notebook}
 
-\subsection{Sobre las inconsistencias detectadas en el notebook}
-
-La revisión crítica del notebook deja dos observaciones metodológicas importantes:
+La revisión de la nueva ejecución deja dos observaciones especialmente importantes:
 \begin{enumerate}
-    \item En árboles, la tabla de criterios muestra que \texttt{entropy}/\texttt{log\_loss} obtienen un resultado notablemente mejor que el árbol usado después en la comparativa global. La memoria recoge este hecho explícitamente para no perder un hallazgo relevante.
-    \item En Random Forest, el barrido específico de \texttt{max\_features} sugiere que \texttt{0.5} es una opción muy competitiva, pero esa opción no estaba dentro del GridSearch posterior. Por tanto, el ``mejor modelo'' del grid debe interpretarse como el mejor del espacio explorado, no necesariamente el mejor absoluto entre todas las variantes ensayadas.
+    \item El árbol seleccionado en la comparativa final automática no representa el mejor resultado real de la familia de árboles, porque la comparación de criterios muestra un rendimiento muy superior con \texttt{entropy}/\texttt{log\_loss}.
+    \item En Gradient Boosting, el mejor estimador por validación cruzada no coincide exactamente con la configuración que obtiene el mejor test en esta partición. Esto no invalida el uso de CV; simplemente recuerda que una partición concreta puede favorecer ligeramente a otra combinación vecina.
 \end{enumerate}
-
-Lejos de ser un problema, este tipo de observaciones aportan valor a la práctica, porque muestran que la interpretación de resultados no debe limitarse a copiar la salida de una tabla, sino a leer el experimento completo con espíritu crítico.
 
 \section{Conclusiones}
 
-Los principales hallazgos de la práctica son los siguientes:
-
 \begin{enumerate}
-    \item \textbf{Gradient Boosting es el mejor modelo global}. Con \texttt{n\_estimators=200}, \texttt{learning\_rate=0.1}, \texttt{max\_depth=3} y \texttt{subsample=1.0} alcanza \textbf{97.16\%} de accuracy y \textbf{0.9718} de F1 ponderado en test.
+    \item \textbf{Gradient Boosting sigue siendo el mejor modelo dentro de la comparativa global automática del notebook}. La configuración seleccionada por validación cruzada alcanza \textbf{96.45\%} de accuracy y \textbf{0.9646} de F1 ponderado, aunque una combinación vecina del mismo grid llega a \textbf{97.39\%} en test.
 
-    \item \textbf{Random Forest ofrece el mejor equilibrio rendimiento-coste}. Se queda por debajo de Gradient Boosting, pero sigue siendo excelente (\textbf{95.50\%}) y entrena mucho más rápido.
+    \item \textbf{Random Forest ofrece un equilibrio rendimiento-coste excelente}. Se queda muy cerca del mejor boosting con \textbf{95.73\%} de accuracy y entrena mucho más rápido.
 
-    \item \textbf{SVM confirma que el problema es bastante separable}. El kernel lineal ya funciona muy bien y el RBF optimizado solo mejora ligeramente, señal de que la no linealidad existe pero no es extrema.
+    \item \textbf{SVM confirma que el problema es bastante separable}. Tras eliminar el leakage, el kernel lineal pasa a ser ligeramente mejor que el RBF optimizado, señal de que la no linealidad existe pero no es dominante.
 
-    \item \textbf{Los árboles individuales son interpretables, pero se quedan atrás}. Aun así, el experimento con \texttt{entropy}/\texttt{log\_loss} demuestra que un árbol bien configurado puede ser mucho más competitivo de lo que sugiere una lectura superficial.
+    \item \textbf{Los árboles individuales merecen mucha más atención de la que sugiere la comparativa final automática}. El experimento con \texttt{entropy}/\texttt{log\_loss} alcanza \textbf{97.39\%} en test, un resultado sobresaliente para un modelo interpretable.
 
     \item \textbf{AdaBoost con stumps no es adecuado para este problema}. El cuello de botella no está en el número de iteraciones, sino en la debilidad excesiva del clasificador base para una tarea multiclase de este nivel.
 
-    \item \textbf{Las clases extremas son las más fáciles de separar}. Las mayores confusiones siguen concentrándose en categorías intermedias y contiguas, especialmente alrededor de \textit{Normal\_Weight} y los niveles de sobrepeso.
-
-    \item \textbf{Weight y Height son el núcleo del problema}. Todas las familias de modelos, desde árboles hasta ensembles, coinciden en asignarles el mayor peso explicativo.
+    \item \textbf{La corrección del leakage era necesaria y cambia la historia experimental}. No altera la idea general de que los ensembles son muy fuertes, pero sí modifica conclusiones finas sobre qué familia domina realmente y hasta qué punto el problema requiere no linealidad.
 \end{enumerate}
 
-En conjunto, la práctica muestra con mucha claridad cómo cambia el rendimiento al pasar de modelos interpretable pero frágiles a ensembles cada vez más sofisticados. El resultado final no es solo que Gradient Boosting gane, sino entender \textbf{por qué} gana: porque combina árboles base con complejidad suficiente para capturar interacciones reales, pero los integra de manera secuencial y controlada, corrigiendo justo las regiones donde los modelos anteriores siguen fallando.
+En conjunto, la práctica muestra con bastante claridad cómo cambia el rendimiento al pasar de modelos interpretables pero frágiles a ensembles cada vez más sofisticados. Al mismo tiempo, esta versión corregida deja una enseñanza metodológica igual de importante: en aprendizaje automático no basta con obtener buenos números; también hay que asegurarse de que el pipeline que los produce es estadísticamente correcto.
 
 \end{document}
