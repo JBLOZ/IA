@@ -57,16 +57,16 @@
 
 \begin{abstract}
 \textit{
-En esta práctica se comparan varias familias de algoritmos de aprendizaje supervisado sobre un problema real de clasificación multiclase: la estimación del nivel de obesidad a partir de variables antropométricas, hábitos alimenticios y actividad física. Tras corregir el \textit{data leakage} existente en la transformación Box-Cox de \texttt{Age}, el experimento queda metodológicamente mejor planteado y también cambian algunas conclusiones. En la comparativa final generada automáticamente por el notebook, Gradient Boosting sigue ocupando la primera posición con un \textbf{96.45\%} de accuracy en test y un \textbf{F1 ponderado de 0.9646}, seguido por Random Forest con \textbf{95.73\%}, SVM-RBF con \textbf{94.08\%} y AdaBoost con stumps muy lejos del resto. Sin embargo, el análisis detallado revela dos hallazgos especialmente relevantes: el kernel lineal de SVM pasa a ser ligeramente mejor que el RBF optimizado, y un árbol individual con criterio \texttt{entropy}/\texttt{log\_loss} alcanza \textbf{97.39\%} en test, rivalizando con los mejores ensembles.}
+En esta práctica se comparan varias familias de algoritmos de aprendizaje supervisado sobre un problema real de clasificación multiclase: la estimación del nivel de obesidad a partir de variables antropométricas, hábitos alimenticios y actividad física. En la comparativa final, Gradient Boosting ocupa la primera posición con un {96.45\%} de accuracy en test y un {F1 ponderado de 0.9646}, seguido por Random Forest con {95.73\%}, SVM-RBF con {94.08\%} y AdaBoost con stumps muy lejos del resto. Sin embargo, el análisis revela dos hallazgos relevantes: el kernel lineal de SVM pasa a ser ligeramente mejor que el RBF optimizado, y un árbol individual con criterio {entropy}/{log\_loss} alcanza {97.39\%} en test, a continuación se explicará a que se debe.}
 \end{abstract}
 
 \vspace{0.5cm}
 
 \section{Introducción}
 
-El objetivo de esta práctica es aplicar y comparar varios algoritmos clásicos de aprendizaje supervisado sobre un mismo problema real, manteniendo un protocolo experimental homogéneo. La idea no es únicamente comprobar qué modelo obtiene la mejor accuracy, sino entender cómo cambian los resultados cuando aumenta la capacidad no lineal del modelo, cuando se agregan múltiples árboles o cuando se modifica la forma en que se construye la frontera de decisión.
+El objetivo de esta práctica es aplicar y comparar varios algoritmos clásicos de aprendizaje supervisado sobre un mismo problema real. La idea no es únicamente comprobar qué modelo obtiene la mejor accuracy, sino entender cómo cambian los resultados cuando aumenta la capacidad no lineal del modelo, cuando se agregan múltiples árboles o cuando se modifica la forma en que se construye la frontera de decisión.
 
-Para facilitar la comparación con la Práctica 0, se reutiliza el dataset \textit{Estimation of Obesity Levels Based on Eating Habits and Physical Condition} del repositorio UCI. También se mantiene la misma lógica general de limpieza y codificación, aunque en esta versión se corrige un punto metodológico importante: la transformación Box-Cox de \texttt{Age} se ajusta solo con el conjunto de entrenamiento y después se aplica a test con el mismo parámetro, evitando así cualquier fuga de información.
+Para facilitar la comparación con la Práctica 0, se reutiliza el dataset \textit{Estimation of Obesity Levels Based on Eating Habits and Physical Condition} del repositorio UCI. También se mantiene la misma lógica general de limpieza y codificación, aunque en esta versión se corrige un punto metodológico importante: la transformación Box-Cox de \texttt{Age} se ajusta solo con el conjunto de entrenamiento y después se aplica a test con el mismo parámetro, evitando así cualquier data leakage.
 
 El problema es de clasificación multiclase con 7 categorías de peso y obesidad. La dificultad principal no está en distinguir los extremos, que suelen separarse bien con peso y altura, sino en discriminar las clases intermedias, donde pequeñas variaciones provocan fronteras más difusas.
 
@@ -129,15 +129,15 @@ Además, según la familia de modelos, se consideran medidas complementarias com
 
 El primer resultado importante es que el kernel lineal no solo sigue funcionando muy bien, sino que mejora ligeramente tras corregir el leakage: alcanza \textbf{0.9496} en validación cruzada y \textbf{0.9431} en test. Esto refuerza una idea que ya estaba latente en la práctica anterior: tras el encoding y la estandarización, gran parte del problema es separable mediante fronteras aproximadamente lineales.
 
-El kernel \textbf{RBF} por defecto mejora algo respecto a la ejecución anterior, pero sigue claramente por debajo del lineal si no se ajustan sus hiperparámetros: \textbf{0.8576} en CV y \textbf{0.8744} en test. El kernel polinomial y el sigmoide vuelven a quedar lejos de las mejores opciones, lo que sugiere que el problema no necesita una estructura polinómica global ni encaja bien con la familia sigmoide.
+El kernel \textbf{RBF} está claramente por debajo del lineal si no se ajustan sus hiperparámetros: \textbf{0.8576} en CV y \textbf{0.8744} en test. El kernel polinomial y el sigmoide vuelven a quedar lejos de las mejores opciones, lo que sugiere que el problema no necesita una estructura polinómica global ni encaja bien con la familia sigmoide.
 
-También resulta muy útil observar el número de vectores de soporte. El kernel lineal utiliza \textbf{564} SV, es decir, un \textbf{33.45\%} del conjunto de entrenamiento, mientras que los kernels no lineales por defecto se mueven entre el \textbf{64\%} y el \textbf{72\%}. Esto indica una frontera efectiva bastante más compleja y un mayor coste de inferencia.
+También resulta muy útil observar el número de vectores de soporte. El kernel lineal utiliza \textbf{564} SV, es decir, un \textbf{33.45\%} del conjunto de entrenamiento, mientras que los kernels no lineales por defecto se mueven entre el \textbf{64\%} y el \textbf{72\%}. Esto indica una frontera menos efectiva pero bastante más compleja y a un coste mayor de inferencia.
 
 \subsection{Ajuste del kernel RBF}
 
 \tbl{svm_rbf_grid}{GridSearch y configuraciones representativas para SVM con kernel RBF.}{tab:svm_rbf}
 
-El mejor punto encontrado sigue siendo \textbf{\(C = 100\)} y \textbf{\(\gamma = 0.01\)}, con \textbf{0.9401} de CV Accuracy y \textbf{0.9408} de Test Accuracy. La mejora respecto al RBF por defecto sigue siendo muy grande: pasa de \textbf{87.44\%} a \textbf{94.08\%} en test.
+El mejor punto encontrado es \textbf{\(C = 100\)} y \textbf{\(\gamma = 0.01\)}, con \textbf{0.9401} de CV Accuracy y \textbf{0.9408} de Test Accuracy. La mejora respecto al RBF por defecto sigue siendo muy grande: pasa de \textbf{87.44\%} a \textbf{94.08\%} en test.
 
 Sin embargo, aquí aparece una diferencia importante respecto a la versión previa del notebook: una vez eliminado el leakage, el RBF optimizado ya \textbf{no supera} al kernel lineal. Queda ligeramente por debajo tanto en CV como en test. La lectura es muy interesante porque sugiere que la pequeña ventaja aparente del RBF en la versión anterior estaba probablemente inflada por el preprocesado de \texttt{Age} sobre todo el dataset.
 
