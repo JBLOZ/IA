@@ -153,7 +153,9 @@ La mejor configuración polinomial pasa a ser \textbf{grado 3, \(C=10\), \(\gamm
 
 \tbl{svm_linear_impl}{Comparación entre \texttt{SVC(linear)}, \texttt{LinearSVC} y \texttt{SGDClassifier}.}{tab:svm_linear_impl}
 
-\texttt{SVC(linear)} vuelve a ser claramente superior: \textbf{0.9496} en CV y \textbf{0.9431} en test. \texttt{LinearSVC} cae hasta \textbf{0.7796} en test y \texttt{SGDClassifier} hasta \textbf{0.6801}. La conclusión aquí no es que esas implementaciones sean malas en general, sino que en este dataset pequeño y ya bien estructurado la optimización dual exacta de \texttt{SVC} compensa de sobra.
+\texttt{SVC(linear)} vuelve a ser claramente superior: \textbf{0.9496} en CV y \textbf{0.9431} en test. \texttt{LinearSVC} cae hasta \textbf{0.7796} en test y \texttt{SGDClassifier} hasta \textbf{0.6754}. La conclusión aquí no es que esas implementaciones sean malas en general, sino que en este dataset pequeño y ya bien estructurado la optimización dual exacta de \texttt{SVC} compensa de sobra.
+
+Conviene aclarar además por qué en la tabla de implementaciones lineales solo aparece número de vectores de soporte para \texttt{SVC(linear)}. La razón no es que \texttt{LinearSVC} o \texttt{SGDClassifier} no tengan una intuición geométrica relacionada con el margen, sino que \textbf{scikit-learn no almacena un conjunto explícito de vectores de soporte en esas implementaciones}. \texttt{SVC} resuelve el problema dual y sí conserva la información necesaria para identificar qué muestras quedan activas en la frontera. En cambio, \texttt{LinearSVC} está basado en \texttt{liblinear} y trabaja principalmente con una formulación primal, mientras que \texttt{SGDClassifier(loss='hinge')} aproxima la solución por descenso estocástico sobre la pérdida hinge. En ambos casos se obtiene un hiperplano lineal, pero no un conjunto explícito de SV recuperable con \texttt{n\_support\_}.
 
 \subsection{Vectores de soporte}
 
@@ -357,15 +359,15 @@ La configuración con mejor resultado en test dentro de este barrido es \textbf{
 \label{fig:gb_depth}
 \end{figure}
 
-En esta ejecución, \texttt{max\_depth=5} pasa a ser la mejor opción dentro del barrido simple, tanto en CV como en test. La diferencia frente a profundidad 3 no es enorme, pero sí suficiente para mostrar que, en este problema, árboles base un poco más profundos pueden capturar interacciones útiles sin degradar la generalización. En cambio, los stumps siguen quedando muy lejos, lo que confirma que aquí hacen falta interacciones entre varias variables.
+En esta ejecución, \texttt{max\_depth=5} pasa a ser la mejor opción en validación cruzada, mientras que en test empata prácticamente con \texttt{max\_depth=3}. La diferencia no es grande, pero sí suficiente para mostrar que, en este problema, árboles base algo más profundos pueden capturar interacciones útiles sin degradar la generalización. En cambio, los stumps siguen quedando muy lejos, lo que confirma que aquí hacen falta interacciones entre varias variables.
 
 \subsection{GridSearch de Gradient Boosting}
 
 \tbl{gb_grid}{Mejores configuraciones encontradas para Gradient Boosting.}{tab:gb_grid}
 
-El mejor modelo seleccionado por \texttt{GridSearchCV} es \textbf{\texttt{learning\_rate = 0.5}}, \textbf{\texttt{max\_depth = 3}}, \textbf{\texttt{n\_estimators = 200}} y \textbf{\texttt{subsample = 0.8}}, con \textbf{0.9609} de CV y \textbf{0.9645} en test.
+El mejor modelo seleccionado por \texttt{GridSearchCV} es ahora \textbf{\texttt{learning\_rate = 0.1}}, \textbf{\texttt{max\_depth = 3}}, \textbf{\texttt{n\_estimators = 200}} y \textbf{\texttt{subsample = 1.0}}, con \textbf{0.9620} de CV y \textbf{0.9739} en test.
 
-Aquí aparece una distinción muy importante entre selección por validación cruzada y mejor test observado. Dentro de la misma tabla del grid hay una configuración muy próxima, \texttt{learning\_rate=0.1}, \texttt{max\_depth=3}, \texttt{n\_estimators=200}, \texttt{subsample=1.0}, que alcanza \textbf{0.9739} en test. Metodológicamente el notebook hace bien en quedarse con el mejor estimador por CV, pero es importante dejar constancia de que otra combinación del mismo espacio generaliza mejor en esta partición concreta.
+Este resultado es especialmente satisfactorio desde el punto de vista metodológico, porque en esta nueva ejecución ya no existe discrepancia entre la mejor configuración por validación cruzada y la mejor observada en test. Ambas lecturas apuntan a la misma receta clásica de boosting: un \texttt{learning\_rate} moderado, suficientes iteraciones y árboles base de profundidad intermedia.
 
 \subsection{AdaBoost con stumps}
 
@@ -384,7 +386,7 @@ AdaBoost sigue siendo, con mucha diferencia, el peor modelo de la práctica. Las
 
 \tbl{gb_summary}{Comparativa final entre Gradient Boosting, Random Forest y AdaBoost.}{tab:gb_summary}
 
-Gradient Boosting sigue siendo la familia más fuerte del bloque. El modelo seleccionado por validación cruzada alcanza \textbf{96.45\%} en test, por encima del mejor Random Forest y muy por encima de AdaBoost. Además, una configuración vecina dentro del mismo grid llega a \textbf{97.39\%} en test, lo que confirma que el boosting sigue siendo especialmente eficaz afinando las fronteras en las regiones difíciles.
+Gradient Boosting sigue siendo la familia más fuerte del bloque. En esta nueva ejecución, además, el modelo seleccionado por validación cruzada alcanza directamente \textbf{97.39\%} en test, por encima del mejor Random Forest y muy por encima de AdaBoost. El hecho de que el mejor modelo por CV coincida también con el mejor test observado refuerza aún más la confianza en esta familia.
 
 \section{Comparación Global}
 
@@ -404,17 +406,17 @@ Siguiendo la selección final realizada por el notebook, el ranking queda así:
 
 En cifras:
 \begin{itemize}
-    \item \textbf{Gradient Boosting}: \textbf{0.9645} accuracy, \textbf{0.9646} F1, tiempo \textbf{3.29 s}
-    \item \textbf{Random Forest}: \textbf{0.9573} accuracy, \textbf{0.9576} F1, tiempo \textbf{0.19 s}
-    \item \textbf{SVM-RBF}: \textbf{0.9408} accuracy, \textbf{0.9405} F1, tiempo \textbf{0.10 s}
+    \item \textbf{Gradient Boosting}: \textbf{0.9739} accuracy, \textbf{0.9742} F1, tiempo \textbf{4.38 s}
+    \item \textbf{Random Forest}: \textbf{0.9573} accuracy, \textbf{0.9576} F1, tiempo \textbf{0.21 s}
+    \item \textbf{SVM-RBF}: \textbf{0.9408} accuracy, \textbf{0.9405} F1, tiempo \textbf{0.04 s}
     \item \textbf{Decision Tree} (seleccionado por el notebook): \textbf{0.9265} accuracy, \textbf{0.9271} F1
-    \item \textbf{AdaBoost}: \textbf{0.4313} accuracy, \textbf{0.3116} F1
+    \item \textbf{AdaBoost}: \textbf{0.4313} accuracy, \textbf{0.3116} F1, tiempo \textbf{0.42 s}
 \end{itemize}
 
 Sin embargo, esta comparativa automática no agota toda la información del notebook. De hecho, dos resultados aislados del propio experimento son aún más llamativos:
 \begin{itemize}
     \item El árbol con criterio \texttt{entropy}/\texttt{log\_loss} alcanza \textbf{0.9739} en test.
-    \item Una configuración de Gradient Boosting con \texttt{learning\_rate=0.1}, \texttt{max\_depth=3}, \texttt{n\_estimators=200}, \texttt{subsample=1.0} también alcanza \textbf{0.9739} en test.
+    \item El mejor Gradient Boosting del GridSearch, con \texttt{learning\_rate=0.1}, \texttt{max\_depth=3}, \texttt{n\_estimators=200} y \texttt{subsample=1.0}, también alcanza \textbf{0.9739} en test.
 \end{itemize}
 
 Esto obliga a distinguir entre ``mejor modelo seleccionado automáticamente por el notebook'' y ``mejor resultado observado dentro de los experimentos ejecutados''.
@@ -444,7 +446,7 @@ La revisión de la nueva ejecución deja dos observaciones especialmente importa
 \section{Conclusiones}
 
 \begin{enumerate}
-    \item \textbf{Gradient Boosting sigue siendo el mejor modelo dentro de la comparativa global automática del notebook}. La configuración seleccionada por validación cruzada alcanza \textbf{96.45\%} de accuracy y \textbf{0.9646} de F1 ponderado, aunque una combinación vecina del mismo grid llega a \textbf{97.39\%} en test.
+    \item \textbf{Gradient Boosting sigue siendo el mejor modelo dentro de la comparativa global automática del notebook}. La configuración seleccionada por validación cruzada alcanza \textbf{97.39\%} de accuracy y \textbf{0.9742} de F1 ponderado en test.
 
     \item \textbf{Random Forest ofrece un equilibrio rendimiento-coste excelente}. Se queda muy cerca del mejor boosting con \textbf{95.73\%} de accuracy y entrena mucho más rápido.
 
