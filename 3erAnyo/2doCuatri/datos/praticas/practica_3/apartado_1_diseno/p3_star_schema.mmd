@@ -1,0 +1,54 @@
+erDiagram
+    DIM_DATE {
+        INT date_key PK
+        DATE calendar_date
+        INT year
+        INT quarter
+        INT month
+        STRING month_name
+        INT day
+        INT day_of_week
+        STRING day_name
+        INT week_of_year
+        BOOLEAN is_weekend
+    }
+
+    DIM_CATEGORY {
+        STRING category_key PK
+        STRING incident_category
+        STRING incident_subcategory
+        STRING incident_description
+        STRING report_type_code
+    }
+
+    DIM_STATUS {
+        STRING status_key PK
+        STRING resolution
+    }
+
+    DIM_LOCATION {
+        STRING location_key PK
+        STRING police_district
+        STRING analysis_neighborhood
+    }
+
+    FACT_INCIDENT {
+        BIGINT incident_id PK
+        STRING fk_category FK
+        STRING fk_status FK
+        STRING fk_location FK
+        INT fk_incident_date FK
+        INT fk_report_date FK
+        DOUBLE reporting_delay_minutes
+        INT incident_hour
+        INT report_hour
+        DOUBLE latitude
+        DOUBLE longitude
+        DOUBLE analysis_neighborhood_median_income
+    }
+
+    DIM_DATE ||--o{ FACT_INCIDENT : incident_date
+    DIM_DATE ||--o{ FACT_INCIDENT : report_date
+    DIM_CATEGORY ||--o{ FACT_INCIDENT : category
+    DIM_STATUS ||--o{ FACT_INCIDENT : status
+    DIM_LOCATION ||--o{ FACT_INCIDENT : location
