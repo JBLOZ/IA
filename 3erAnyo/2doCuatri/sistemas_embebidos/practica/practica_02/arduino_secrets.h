@@ -1,0 +1,7 @@
+#ifndef ARDUINO_SECRETS_H
+#define ARDUINO_SECRETS_H
+
+#define SECRET_SSID "TP-Link_7BC5"
+#define SECRET_PASS "81912834"
+
+#endif
